@@ -1,0 +1,226 @@
+syntax = "proto3";
+package slg.event.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/event;event";
+
+import "slg-proto/v1.1.0/common/types.proto";
+
+// 活动信息请求
+message ActivityInfoRequest {
+    string player_id = 1;                   // 玩家ID
+    repeated string activity_ids = 2;       // 指定活动ID列表(空表示所有)
+    bool include_ended = 3;                 // 是否包含已结束活动
+}
+
+// 活动信息响应
+message ActivityInfoResponse {
+    repeated Activity activities = 1;        // 活动列表
+    int64 server_time = 2;                  // 服务器时间
+}
+
+// 参与活动请求
+message ParticipateActivityRequest {
+    string player_id = 1;                   // 玩家ID
+    string activity_id = 2;                 // 活动ID
+    string stage_id = 3;                    // 阶段ID
+    map<string, string> params = 4;         // 参数
+}
+
+// 参与活动响应
+message ParticipateActivityResponse {
+    ActivityResult result = 1;              // 参与结果
+    ActivityReward reward = 2;              // 获得奖励
+    ActivityProgress progress = 3;          // 活动进度
+    string next_stage_id = 4;               // 下一阶段ID
+}
+
+// 活动排行榜请求
+message ActivityLeaderboardRequest {
+    string activity_id = 1;                 // 活动ID
+    string stage_id = 2;                    // 阶段ID
+    ActivityRankType rank_type = 3;         // 排行类型
+    int32 page = 4;                         // 页码
+    int32 page_size = 5;                    // 页面大小
+}
+
+// 活动排行榜响应
+message ActivityLeaderboardResponse {
+    repeated ActivityRankEntry entries = 1; // 排行榜条目
+    ActivityPlayerRank player_rank = 2;     // 玩家排名
+    int32 total_count = 3;                  // 总参与人数
+}
+
+// 活动奖励领取请求
+message ClaimActivityRewardRequest {
+    string player_id = 1;                   // 玩家ID
+    string activity_id = 2;                 // 活动ID
+    repeated string reward_ids = 3;         // 奖励ID列表
+}
+
+// 活动奖励领取响应
+message ClaimActivityRewardResponse {
+    repeated ActivityReward rewards = 1;    // 领取的奖励
+    ActivityProgress progress = 2;          // 更新后的进度
+}
+
+// 活动定义
+message Activity {
+    string activity_id = 1;                 // 活动ID
+    string activity_name = 2;               // 活动名称
+    string description = 3;                 // 活动描述
+    ActivityType activity_type = 4;         // 活动类型
+    ActivityStatus status = 5;              // 活动状态
+    int64 start_time = 6;                   // 开始时间
+    int64 end_time = 7;                     // 结束时间
+    repeated ActivityStage stages = 8;      // 活动阶段
+    repeated ActivityReward rewards = 9;    // 活动奖励
+    ActivityCondition condition = 10;       // 参与条件
+    map<string, string> config = 11;        // 活动配置
+    string banner_url = 12;                 // 横幅图片URL
+}
+
+// 活动阶段
+message ActivityStage {
+    string stage_id = 1;                    // 阶段ID
+    string stage_name = 2;                  // 阶段名称
+    string description = 3;                 // 阶段描述
+    int64 start_time = 4;                   // 开始时间
+    int64 end_time = 5;                     // 结束时间
+    repeated ActivityTask tasks = 6;        // 阶段任务
+    ActivityStageType stage_type = 7;       // 阶段类型
+    map<string, int32> requirements = 8;    // 阶段要求
+}
+
+// 活动任务
+message ActivityTask {
+    string task_id = 1;                     // 任务ID
+    string task_name = 2;                   // 任务名称
+    string description = 3;                 // 任务描述
+    ActivityTaskType task_type = 4;         // 任务类型
+    map<string, int32> targets = 5;         // 任务目标
+    ActivityReward reward = 6;              // 任务奖励
+    bool is_repeatable = 7;                 // 是否可重复
+    int32 max_count = 8;                    // 最大完成次数
+}
+
+// 活动进度
+message ActivityProgress {
+    string activity_id = 1;                 // 活动ID
+    string player_id = 2;                   // 玩家ID
+    string current_stage_id = 3;            // 当前阶段ID
+    map<string, int32> task_progress = 4;   // 任务进度
+    map<string, int32> stage_progress = 5;  // 阶段进度
+    repeated string completed_tasks = 6;    // 已完成任务
+    repeated string claimed_rewards = 7;    // 已领取奖励
+    int32 total_score = 8;                  // 总积分
+    int64 last_update_time = 9;             // 最后更新时间
+}
+
+// 活动奖励
+message ActivityReward {
+    string reward_id = 1;                   // 奖励ID
+    string reward_name = 2;                 // 奖励名称
+    ActivityRewardType reward_type = 3;     // 奖励类型
+    repeated slg.common.v1.Item items = 4;  // 物品奖励
+    int32 experience = 5;                   // 经验奖励
+    int32 gold = 6;                         // 金币奖励
+    string title_id = 7;                    // 称号ID
+    map<string, int32> resources = 8;       // 资源奖励
+    bool is_claimed = 9;                    // 是否已领取
+}
+
+// 活动条件
+message ActivityCondition {
+    int32 min_level = 1;                    // 最低等级
+    repeated string required_quests = 2;    // 前置任务
+    repeated string required_items = 3;     // 需要物品
+    bool vip_only = 4;                      // 仅VIP
+    repeated string forbidden_stages = 5;   // 禁止阶段
+}
+
+// 活动排行榜条目
+message ActivityRankEntry {
+    int32 rank = 1;                         // 排名
+    string player_id = 2;                   // 玩家ID
+    string player_name = 3;                 // 玩家名称
+    int32 score = 4;                        // 积分
+    map<string, int32> stats = 5;           // 统计数据
+    string guild_name = 6;                  // 公会名称
+    string avatar_id = 7;                   // 头像ID
+}
+
+// 活动玩家排名
+message ActivityPlayerRank {
+    int32 current_rank = 1;                 // 当前排名
+    int32 score = 2;                        // 当前积分
+    int32 percentage = 3;                   // 排名百分比
+    bool is_eligible_for_reward = 4;        // 是否有奖励资格
+}
+
+// 枚举定义
+enum ActivityType {
+    ACTIVITY_TYPE_UNKNOWN = 0;
+    ACTIVITY_TYPE_LOGIN = 1;                // 登录活动
+    ACTIVITY_TYPE_BATTLE = 2;               // 战斗活动
+    ACTIVITY_TYPE_COLLECT = 3;              // 收集活动
+    ACTIVITY_TYPE_RANKING = 4;              // 排行活动
+    ACTIVITY_TYPE_GUILD = 5;                // 公会活动
+    ACTIVITY_TYPE_SPENDING = 6;             // 消费活动
+    ACTIVITY_TYPE_FESTIVAL = 7;             // 节日活动
+    ACTIVITY_TYPE_PVP = 8;                  // PVP活动
+}
+
+enum ActivityStatus {
+    ACTIVITY_STATUS_UNKNOWN = 0;
+    ACTIVITY_STATUS_UPCOMING = 1;           // 即将开始
+    ACTIVITY_STATUS_ACTIVE = 2;             // 进行中
+    ACTIVITY_STATUS_PAUSED = 3;             // 暂停
+    ACTIVITY_STATUS_ENDED = 4;              // 已结束
+    ACTIVITY_STATUS_CANCELLED = 5;          // 已取消
+}
+
+enum ActivityStageType {
+    ACTIVITY_STAGE_TYPE_UNKNOWN = 0;
+    ACTIVITY_STAGE_TYPE_PREPARATION = 1;    // 准备阶段
+    ACTIVITY_STAGE_TYPE_MAIN = 2;           // 主要阶段
+    ACTIVITY_STAGE_TYPE_BONUS = 3;          // 奖励阶段
+    ACTIVITY_STAGE_TYPE_CLEANUP = 4;        // 清理阶段
+}
+
+enum ActivityTaskType {
+    ACTIVITY_TASK_TYPE_UNKNOWN = 0;
+    ACTIVITY_TASK_TYPE_KILL_MONSTER = 1;    // 击杀怪物
+    ACTIVITY_TASK_TYPE_COLLECT_ITEM = 2;    // 收集物品
+    ACTIVITY_TASK_TYPE_WIN_BATTLE = 3;      // 获胜战斗
+    ACTIVITY_TASK_TYPE_SPEND_RESOURCE = 4;  // 消耗资源
+    ACTIVITY_TASK_TYPE_LOGIN_DAYS = 5;      // 连续登录
+    ACTIVITY_TASK_TYPE_GUILD_DONATE = 6;    // 公会捐献
+    ACTIVITY_TASK_TYPE_PVP_WIN = 7;         // PVP胜利
+}
+
+enum ActivityRewardType {
+    ACTIVITY_REWARD_TYPE_UNKNOWN = 0;
+    ACTIVITY_REWARD_TYPE_MILESTONE = 1;     // 里程碑奖励
+    ACTIVITY_REWARD_TYPE_RANKING = 2;       // 排行奖励
+    ACTIVITY_REWARD_TYPE_PARTICIPATION = 3; // 参与奖励
+    ACTIVITY_REWARD_TYPE_COMPLETION = 4;    // 完成奖励
+    ACTIVITY_REWARD_TYPE_DAILY = 5;         // 每日奖励
+}
+
+enum ActivityRankType {
+    ACTIVITY_RANK_TYPE_UNKNOWN = 0;
+    ACTIVITY_RANK_TYPE_SCORE = 1;           // 积分排行
+    ACTIVITY_RANK_TYPE_PROGRESS = 2;        // 进度排行
+    ACTIVITY_RANK_TYPE_TIME = 3;            // 时间排行
+    ACTIVITY_RANK_TYPE_EFFICIENCY = 4;      // 效率排行
+}
+
+enum ActivityResult {
+    ACTIVITY_RESULT_UNKNOWN = 0;
+    ACTIVITY_RESULT_SUCCESS = 1;            // 成功
+    ACTIVITY_RESULT_FAILED = 2;             // 失败
+    ACTIVITY_RESULT_NOT_ELIGIBLE = 3;       // 不符合条件
+    ACTIVITY_RESULT_ALREADY_COMPLETED = 4;  // 已完成
+    ACTIVITY_RESULT_NOT_STARTED = 5;        // 未开始
+    ACTIVITY_RESULT_ENDED = 6;              // 已结束
+}

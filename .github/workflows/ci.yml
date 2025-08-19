@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+env:
+  GO_VERSION: '1.24'
+
+jobs:
+  # 代码检查和测试
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Set up buf
+      uses: bufbuild/buf-setup-action@v1
+      with:
+        github_token: ${{ github.token }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Generate protobuf code
+      run: protoc --go_out=. --go_opt=paths=source_relative proto/game/v1/game.proto
+
+    - name: Run tests
+      run: go test ./... -v -race -count=1
+
+    - name: Run tests with coverage
+      run: |
+        go test ./... -v -race -coverprofile=coverage.out -covermode=atomic
+        go tool cover -func=coverage.out | tail -1
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.out
+        flags: unittests
+        name: codecov-umbrella
+
+  # 基准测试
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Generate protobuf code
+      run: protoc --go_out=. --go_opt=paths=source_relative proto/game/v1/game.proto
+
+    - name: Run benchmarks
+      run: |
+        go test ./test -run=^$ -bench=. -benchmem -count=3 | tee benchmark_results.txt
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: benchmark_results.txt
+
+  # 模糊测试
+  fuzz:
+    name: Fuzz Test
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Generate protobuf code
+      run: protoc --go_out=. --go_opt=paths=source_relative proto/game/v1/game.proto
+
+    - name: Run fuzz tests
+      run: |
+        # 运行每个模糊测试30秒
+        go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s
+        go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s
+        go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s
+
+  # 多平台构建测试
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    needs: test
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Generate protobuf code (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        sudo apt-get update && sudo apt-get install -y protobuf-compiler || brew install protobuf || true
+        protoc --go_out=. --go_opt=paths=source_relative proto/game/v1/game.proto
+
+    - name: Generate protobuf code (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        protoc --go_out=. --go_opt=paths=source_relative proto/game/v1/game.proto
+
+    - name: Build main
+      run: go build -v ./...
+
+    - name: Test build artifacts
+      run: go test -c ./test

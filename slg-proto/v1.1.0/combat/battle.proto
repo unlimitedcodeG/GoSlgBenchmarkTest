@@ -1,0 +1,241 @@
+syntax = "proto3";
+package slg.combat.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/combat;combat";
+
+import "slg-proto/v1.1.0/common/types.proto";
+
+// 战斗请求
+message BattleRequest {
+    string battle_id = 1;                    // 战斗ID
+    string player_id = 2;                    // 玩家ID
+    BattleType battle_type = 3;              // 战斗类型
+    repeated string unit_ids = 4;            // 参战单位ID列表
+    slg.common.v1.Position target_pos = 5;   // 目标位置
+    int64 timestamp = 6;                     // 请求时间戳
+    
+    // v1.1.0 新增字段
+    string formation_id = 7;                 // 阵型ID
+    map<string, int32> battle_settings = 8;  // 战斗设置
+    repeated string preset_skills = 9;       // 预设技能列表
+}
+
+// 战斗响应
+message BattleResponse {
+    string battle_id = 1;                    // 战斗ID
+    BattleResult result = 2;                 // 战斗结果
+    repeated BattleUnit battle_units = 3;    // 战斗单位状态
+    BattleReward reward = 4;                 // 战斗奖励
+    int32 duration_ms = 5;                   // 战斗持续时间(毫秒)
+    
+    // v1.1.0 新增字段
+    BattleStatistics statistics = 6;        // 战斗统计
+    repeated string mvp_units = 7;           // MVP单位列表
+    string replay_data = 8;                  // 回放数据
+}
+
+// 战斗状态推送
+message BattleStatePush {
+    string battle_id = 1;                    // 战斗ID
+    uint64 frame_seq = 2;                    // 帧序列号
+    repeated BattleAction actions = 3;       // 本帧动作列表
+    BattlePhase phase = 4;                   // 战斗阶段
+    int64 timestamp = 5;                     // 服务器时间戳
+    
+    // v1.1.0 新增字段
+    EnvironmentEffect environment = 6;       // 环境效果
+    repeated string active_skills = 7;       // 激活技能列表
+}
+
+// 战斗单位
+message BattleUnit {
+    string unit_id = 1;                      // 单位ID
+    string template_id = 2;                  // 模板ID
+    int32 hp = 3;                           // 当前血量
+    int32 max_hp = 4;                       // 最大血量
+    int32 mp = 5;                           // 当前魔法值
+    int32 max_mp = 6;                       // 最大魔法值
+    slg.common.v1.Position position = 7;     // 位置
+    UnitStatus status = 8;                   // 状态
+    repeated UnitBuff buffs = 9;             // 增益/减益效果
+    UnitStats stats = 10;                    // 单位属性
+    
+    // v1.1.0 新增字段
+    repeated string available_skills = 11;   // 可用技能列表
+    int32 energy = 12;                      // 能量值
+    int32 max_energy = 13;                  // 最大能量值
+    UnitEquipment equipment = 14;           // 装备信息
+}
+
+// 战斗动作
+message BattleAction {
+    string action_id = 1;                    // 动作ID
+    ActionType action_type = 2;              // 动作类型
+    string source_unit_id = 3;               // 发起单位ID
+    repeated string target_unit_ids = 4;     // 目标单位ID列表
+    int32 damage = 5;                        // 伤害值
+    int32 healing = 6;                       // 治疗值
+    repeated string effect_ids = 7;          // 触发的效果ID列表
+    slg.common.v1.Position target_pos = 8;   // 目标位置
+    
+    // v1.1.0 新增字段
+    string skill_id = 9;                     // 技能ID
+    bool is_critical = 10;                   // 是否暴击
+    float damage_multiplier = 11;            // 伤害倍率
+    repeated string combo_skills = 12;       // 连击技能
+}
+
+// 战斗奖励
+message BattleReward {
+    int32 exp = 1;                          // 经验值
+    int32 gold = 2;                         // 金币
+    repeated slg.common.v1.Item items = 3;   // 物品奖励
+    int32 honor = 4;                        // 荣誉值
+    
+    // v1.1.0 新增字段
+    int32 pvp_rating = 5;                   // PVP评分变化
+    repeated string achievements = 6;        // 成就奖励
+    int32 guild_contribution = 7;           // 公会贡献
+}
+
+// 单位增益/减益效果
+message UnitBuff {
+    string buff_id = 1;                     // 效果ID
+    BuffType buff_type = 2;                 // 效果类型
+    int32 duration = 3;                     // 持续时间(秒)
+    int32 stack_count = 4;                  // 叠加层数
+    map<string, int32> effect_values = 5;   // 效果数值
+    
+    // v1.1.0 新增字段
+    string source_skill_id = 6;             // 来源技能ID
+    bool is_dispellable = 7;                // 是否可驱散
+}
+
+// 单位属性
+message UnitStats {
+    int32 attack = 1;                       // 攻击力
+    int32 defense = 2;                      // 防御力
+    int32 speed = 3;                        // 速度
+    int32 critical_rate = 4;                // 暴击率(千分比)
+    int32 critical_damage = 5;              // 暴击伤害(千分比)
+    int32 accuracy = 6;                     // 命中率(千分比)
+    int32 dodge = 7;                        // 闪避率(千分比)
+    
+    // v1.1.0 新增字段
+    int32 magic_attack = 8;                 // 魔法攻击力
+    int32 magic_defense = 9;                // 魔法防御力
+    int32 penetration = 10;                 // 穿透力
+    int32 block = 11;                       // 格挡率
+}
+
+// v1.1.0 新增消息类型
+
+// 战斗统计
+message BattleStatistics {
+    int32 total_damage_dealt = 1;           // 总伤害输出
+    int32 total_healing_done = 2;           // 总治疗量
+    int32 kills_count = 3;                  // 击杀数
+    int32 deaths_count = 4;                 // 死亡数
+    int32 assists_count = 5;                // 助攻数
+    map<string, int32> skill_usage = 6;     // 技能使用统计
+}
+
+// 环境效果
+message EnvironmentEffect {
+    string effect_id = 1;                   // 效果ID
+    EnvironmentType effect_type = 2;        // 环境类型
+    int32 duration = 3;                     // 持续时间
+    repeated string affected_units = 4;     // 受影响单位
+    map<string, float> effect_params = 5;   // 效果参数
+}
+
+// 单位装备
+message UnitEquipment {
+    string weapon_id = 1;                   // 武器ID
+    string armor_id = 2;                    // 护甲ID
+    string accessory_id = 3;                // 饰品ID
+    repeated string enchantments = 4;       // 附魔效果
+}
+
+// 枚举定义
+enum BattleType {
+    BATTLE_TYPE_UNKNOWN = 0;
+    BATTLE_TYPE_PVE = 1;                    // PVE战斗
+    BATTLE_TYPE_PVP = 2;                    // PVP战斗
+    BATTLE_TYPE_GUILD_WAR = 3;              // 公会战
+    BATTLE_TYPE_ARENA = 4;                  // 竞技场
+    BATTLE_TYPE_RAID = 5;                   // 团队副本
+    // v1.1.0 新增
+    BATTLE_TYPE_TOURNAMENT = 6;             // 锦标赛
+    BATTLE_TYPE_SIEGE = 7;                  // 攻城战
+}
+
+enum BattleResult {
+    BATTLE_RESULT_UNKNOWN = 0;
+    BATTLE_RESULT_VICTORY = 1;              // 胜利
+    BATTLE_RESULT_DEFEAT = 2;               // 失败
+    BATTLE_RESULT_DRAW = 3;                 // 平局
+    BATTLE_RESULT_TIMEOUT = 4;              // 超时
+    // v1.1.0 新增
+    BATTLE_RESULT_SURRENDER = 5;            // 投降
+}
+
+enum BattlePhase {
+    BATTLE_PHASE_UNKNOWN = 0;
+    BATTLE_PHASE_PREPARING = 1;             // 准备阶段
+    BATTLE_PHASE_FIGHTING = 2;              // 战斗阶段
+    BATTLE_PHASE_ENDING = 3;                // 结束阶段
+    // v1.1.0 新增
+    BATTLE_PHASE_COOLDOWN = 4;              // 冷却阶段
+}
+
+enum UnitStatus {
+    UNIT_STATUS_UNKNOWN = 0;
+    UNIT_STATUS_IDLE = 1;                   // 待机
+    UNIT_STATUS_MOVING = 2;                 // 移动中
+    UNIT_STATUS_ATTACKING = 3;              // 攻击中
+    UNIT_STATUS_CASTING = 4;                // 施法中
+    UNIT_STATUS_STUNNED = 5;                // 晕眩
+    UNIT_STATUS_DEAD = 6;                   // 死亡
+    // v1.1.0 新增
+    UNIT_STATUS_CHANNELING = 7;             // 引导中
+    UNIT_STATUS_INVISIBLE = 8;              // 隐身
+}
+
+enum ActionType {
+    ACTION_TYPE_UNKNOWN = 0;
+    ACTION_TYPE_MOVE = 1;                   // 移动
+    ACTION_TYPE_ATTACK = 2;                 // 普通攻击
+    ACTION_TYPE_SKILL = 3;                  // 技能攻击
+    ACTION_TYPE_HEAL = 4;                   // 治疗
+    ACTION_TYPE_BUFF = 5;                   // 增益
+    ACTION_TYPE_DEBUFF = 6;                 // 减益
+    // v1.1.0 新增
+    ACTION_TYPE_COMBO = 7;                  // 连击
+    ACTION_TYPE_ULTIMATE = 8;               // 终极技能
+}
+
+enum BuffType {
+    BUFF_TYPE_UNKNOWN = 0;
+    BUFF_TYPE_ATTACK_UP = 1;                // 攻击力提升
+    BUFF_TYPE_DEFENSE_UP = 2;               // 防御力提升
+    BUFF_TYPE_SPEED_UP = 3;                 // 速度提升
+    BUFF_TYPE_ATTACK_DOWN = 4;              // 攻击力降低
+    BUFF_TYPE_DEFENSE_DOWN = 5;             // 防御力降低
+    BUFF_TYPE_SPEED_DOWN = 6;               // 速度降低
+    BUFF_TYPE_POISON = 7;                   // 中毒
+    BUFF_TYPE_REGENERATION = 8;             // 回复
+    // v1.1.0 新增
+    BUFF_TYPE_SHIELD = 9;                   // 护盾
+    BUFF_TYPE_REFLECT = 10;                 // 反射
+    BUFF_TYPE_IMMUNE = 11;                  // 免疫
+}
+
+// v1.1.0 新增枚举
+enum EnvironmentType {
+    ENVIRONMENT_TYPE_UNKNOWN = 0;
+    ENVIRONMENT_TYPE_FIRE_RAIN = 1;         // 火雨
+    ENVIRONMENT_TYPE_ICE_STORM = 2;         // 冰暴
+    ENVIRONMENT_TYPE_HEALING_SPRING = 3;    // 治疗之泉
+    ENVIRONMENT_TYPE_MAGIC_FIELD = 4;       // 魔法场
+}

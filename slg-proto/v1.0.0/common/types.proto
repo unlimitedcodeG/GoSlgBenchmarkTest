@@ -1,0 +1,101 @@
+syntax = "proto3";
+package slg.common.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/common;common";
+
+// 通用位置信息
+message Position {
+    float x = 1;                            // X坐标
+    float y = 2;                            // Y坐标
+    float z = 3;                            // Z坐标 (可选，用于3D游戏)
+}
+
+// 通用物品信息
+message Item {
+    string item_id = 1;                     // 物品ID
+    string template_id = 2;                 // 物品模板ID
+    int32 quantity = 3;                     // 数量
+    int32 quality = 4;                      // 品质等级
+    map<string, string> properties = 5;     // 物品属性
+    int64 expire_time = 6;                  // 过期时间戳
+}
+
+// 通用资源信息
+message Resource {
+    ResourceType type = 1;                  // 资源类型
+    int64 amount = 2;                       // 数量
+    int64 max_amount = 3;                   // 最大数量
+    int64 last_update = 4;                  // 最后更新时间
+}
+
+// 通用错误信息
+message ErrorInfo {
+    ErrorCode code = 1;                     // 错误码
+    string message = 2;                     // 错误消息
+    string details = 3;                     // 详细信息
+    map<string, string> context = 4;        // 错误上下文
+}
+
+// 通用玩家信息
+message PlayerInfo {
+    string player_id = 1;                   // 玩家ID
+    string nickname = 2;                    // 昵称
+    int32 level = 3;                        // 等级
+    int64 exp = 4;                          // 经验值
+    string avatar_url = 5;                  // 头像URL
+    PlayerStatus status = 6;                // 在线状态
+    int64 last_login = 7;                   // 最后登录时间
+    string alliance_id = 8;                 // 联盟ID
+}
+
+// 通用时间范围
+message TimeRange {
+    int64 start_time = 1;                   // 开始时间戳
+    int64 end_time = 2;                     // 结束时间戳
+}
+
+// 通用分页信息
+message Pagination {
+    int32 page = 1;                         // 页码(从1开始)
+    int32 page_size = 2;                    // 每页大小
+    int32 total_count = 3;                  // 总数量
+    int32 total_pages = 4;                  // 总页数
+}
+
+// 资源类型枚举
+enum ResourceType {
+    RESOURCE_TYPE_UNKNOWN = 0;
+    RESOURCE_TYPE_GOLD = 1;                 // 金币
+    RESOURCE_TYPE_WOOD = 2;                 // 木材
+    RESOURCE_TYPE_STONE = 3;                // 石料
+    RESOURCE_TYPE_IRON = 4;                 // 铁矿
+    RESOURCE_TYPE_FOOD = 5;                 // 粮食
+    RESOURCE_TYPE_GEM = 6;                  // 宝石
+    RESOURCE_TYPE_ENERGY = 7;               // 能量
+    RESOURCE_TYPE_HONOR = 8;                // 荣誉点
+    RESOURCE_TYPE_ALLIANCE_COIN = 9;        // 联盟币
+}
+
+// 通用错误码
+enum ErrorCode {
+    ERROR_CODE_SUCCESS = 0;                 // 成功
+    ERROR_CODE_UNKNOWN = 1;                 // 未知错误
+    ERROR_CODE_INVALID_PARAM = 2;           // 参数错误
+    ERROR_CODE_NOT_FOUND = 3;               // 资源不存在
+    ERROR_CODE_PERMISSION_DENIED = 4;       // 权限不足
+    ERROR_CODE_INSUFFICIENT_RESOURCE = 5;   // 资源不足
+    ERROR_CODE_COOLDOWN_ACTIVE = 6;         // 冷却中
+    ERROR_CODE_SYSTEM_MAINTENANCE = 7;      // 系统维护
+    ERROR_CODE_VERSION_MISMATCH = 8;        // 版本不匹配
+    ERROR_CODE_RATE_LIMITED = 9;            // 请求过于频繁
+    ERROR_CODE_ACCOUNT_BANNED = 10;         // 账号被封
+}
+
+// 玩家状态枚举
+enum PlayerStatus {
+    PLAYER_STATUS_OFFLINE = 0;              // 离线
+    PLAYER_STATUS_ONLINE = 1;               // 在线
+    PLAYER_STATUS_AWAY = 2;                 // 离开
+    PLAYER_STATUS_BUSY = 3;                 // 忙碌
+    PLAYER_STATUS_IN_BATTLE = 4;            // 战斗中
+}

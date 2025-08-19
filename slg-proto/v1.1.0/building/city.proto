@@ -1,0 +1,269 @@
+syntax = "proto3";
+package slg.building.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/building;building";
+
+import "slg-proto/v1.1.0/common/types.proto";
+
+// 城市信息
+message CityInfo {
+    string city_id = 1;                      // 城市ID
+    string player_id = 2;                    // 玩家ID
+    string city_name = 3;                    // 城市名称
+    int32 city_level = 4;                    // 城市等级
+    slg.common.v1.Position position = 5;     // 城市位置
+    repeated BuildingInfo buildings = 6;     // 建筑列表
+    repeated slg.common.v1.Resource resources = 7; // 资源状况
+    CityStatus status = 8;                   // 城市状态
+    int64 last_update = 9;                   // 最后更新时间
+    
+    // v1.1.0 新增字段
+    CityTheme theme = 10;                    // 城市主题
+    int32 population = 11;                   // 人口数量
+    int32 max_population = 12;               // 最大人口
+    int32 happiness = 13;                    // 幸福度
+    repeated CityBuff buffs = 14;            // 城市增益效果
+    string alliance_id = 15;                 // 所属联盟ID
+    int32 defense_power = 16;                // 防御力
+}
+
+// 建筑信息
+message BuildingInfo {
+    string building_id = 1;                  // 建筑ID
+    string template_id = 2;                  // 建筑模板ID
+    BuildingType building_type = 3;          // 建筑类型
+    int32 building_level = 4;                // 建筑等级
+    slg.common.v1.Position position = 5;     // 建筑位置
+    BuildingStatus status = 6;               // 建筑状态
+    int64 construction_start = 7;            // 建造开始时间
+    int64 construction_end = 8;              // 建造完成时间
+    repeated ProductionQueue production = 9;  // 生产队列
+    map<string, int32> properties = 10;      // 建筑属性
+    
+    // v1.1.0 新增字段
+    repeated BuildingUpgrade upgrades = 11;  // 升级队列
+    int32 durability = 12;                   // 耐久度
+    int32 max_durability = 13;               // 最大耐久度
+    repeated string decorations = 14;        // 装饰品列表
+    BuildingEfficiency efficiency = 15;      // 建筑效率
+    repeated string workers = 16;            // 工人列表
+}
+
+// 建筑升级请求
+message BuildingUpgradeRequest {
+    string building_id = 1;                  // 建筑ID
+    string player_id = 2;                    // 玩家ID
+    bool use_speedup = 3;                    // 是否使用加速道具
+    string speedup_item_id = 4;              // 加速道具ID
+    
+    // v1.1.0 新增字段
+    bool use_auto_upgrade = 5;               // 是否自动升级
+    string upgrade_preset_id = 6;            // 升级预设ID
+}
+
+// 建筑升级响应
+message BuildingUpgradeResponse {
+    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    BuildingInfo building = 2;               // 更新后的建筑信息
+    repeated slg.common.v1.Resource cost = 3; // 消耗的资源
+    int64 completion_time = 4;               // 完成时间
+    
+    // v1.1.0 新增字段
+    repeated BuildingBonus bonuses = 5;      // 升级奖励
+    bool has_triggered_event = 6;            // 是否触发特殊事件
+}
+
+// 生产队列
+message ProductionQueue {
+    string queue_id = 1;                     // 队列ID
+    string template_id = 2;                  // 生产模板ID
+    int32 quantity = 3;                      // 生产数量
+    int64 start_time = 4;                    // 开始时间
+    int64 completion_time = 5;               // 完成时间
+    ProductionStatus status = 6;             // 生产状态
+    
+    // v1.1.0 新增字段
+    float speed_multiplier = 7;              // 生产速度倍率
+    repeated string required_workers = 8;    // 所需工人
+    map<string, int32> boost_items = 9;      // 加速道具
+}
+
+// v1.1.0 新增消息类型
+
+// 建筑升级队列
+message BuildingUpgrade {
+    string upgrade_id = 1;                   // 升级ID
+    int32 from_level = 2;                    // 起始等级
+    int32 to_level = 3;                      // 目标等级
+    int64 start_time = 4;                    // 开始时间
+    int64 completion_time = 5;               // 完成时间
+    repeated slg.common.v1.Resource cost = 6; // 升级成本
+    UpgradeStatus status = 7;                // 升级状态
+}
+
+// 建筑效率
+message BuildingEfficiency {
+    float production_efficiency = 1;         // 生产效率
+    float resource_efficiency = 2;           // 资源效率
+    float time_efficiency = 3;               // 时间效率
+    repeated EfficiencyFactor factors = 4;   // 影响因素
+    int64 last_calculated = 5;               // 最后计算时间
+}
+
+// 效率影响因素
+message EfficiencyFactor {
+    EfficiencyType factor_type = 1;          // 因素类型
+    float impact = 2;                        // 影响值(-1.0 到 1.0)
+    string description = 3;                  // 描述
+    int64 duration = 4;                      // 持续时间(0表示永久)
+}
+
+// 城市增益效果
+message CityBuff {
+    string buff_id = 1;                      // 增益ID
+    CityBuffType buff_type = 2;              // 增益类型
+    float effect_value = 3;                  // 效果值
+    int64 start_time = 4;                    // 开始时间
+    int64 end_time = 5;                      // 结束时间
+    string source = 6;                       // 来源
+    bool is_stackable = 7;                   // 是否可叠加
+}
+
+// 建筑奖励
+message BuildingBonus {
+    string bonus_id = 1;                     // 奖励ID
+    BonusType bonus_type = 2;                // 奖励类型
+    repeated slg.common.v1.Item items = 3;   // 物品奖励
+    repeated slg.common.v1.Resource resources = 4; // 资源奖励
+    string description = 5;                  // 描述
+}
+
+// 城市建造请求
+message CityConstructRequest {
+    string player_id = 1;                    // 玩家ID
+    string template_id = 2;                  // 建筑模板ID
+    slg.common.v1.Position position = 3;     // 建造位置
+    string city_id = 4;                      // 城市ID
+    bool use_instant_build = 5;              // 是否立即建造
+}
+
+// 城市建造响应
+message CityConstructResponse {
+    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    BuildingInfo building = 2;               // 新建筑信息
+    repeated slg.common.v1.Resource cost = 3; // 建造成本
+    int64 completion_time = 4;               // 完成时间
+}
+
+// 建筑拆除请求
+message BuildingDemolishRequest {
+    string building_id = 1;                  // 建筑ID
+    string player_id = 2;                    // 玩家ID
+    bool confirm_demolish = 3;               // 确认拆除
+    bool get_refund = 4;                     // 是否获得退款
+}
+
+// 建筑拆除响应
+message BuildingDemolishResponse {
+    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    repeated slg.common.v1.Resource refund = 2; // 退还资源
+    bool success = 3;                        // 是否成功
+}
+
+// 枚举定义
+enum CityStatus {
+    CITY_STATUS_UNKNOWN = 0;
+    CITY_STATUS_NORMAL = 1;                  // 正常
+    CITY_STATUS_UNDER_ATTACK = 2;            // 被攻击
+    CITY_STATUS_PROTECTED = 3;               // 受保护
+    CITY_STATUS_ABANDONED = 4;               // 已废弃
+    // v1.1.0 新增
+    CITY_STATUS_CELEBRATING = 5;            // 庆祝中
+    CITY_STATUS_DISASTER = 6;                // 灾难状态
+}
+
+enum BuildingType {
+    BUILDING_TYPE_UNKNOWN = 0;
+    BUILDING_TYPE_TOWNHALL = 1;              // 市政厅
+    BUILDING_TYPE_BARRACKS = 2;              // 兵营
+    BUILDING_TYPE_FARM = 3;                  // 农场
+    BUILDING_TYPE_SAWMILL = 4;               // 锯木厂
+    BUILDING_TYPE_QUARRY = 5;                // 采石场
+    BUILDING_TYPE_MINE = 6;                  // 矿场
+    BUILDING_TYPE_WAREHOUSE = 7;             // 仓库
+    BUILDING_TYPE_WALL = 8;                  // 城墙
+    BUILDING_TYPE_TOWER = 9;                 // 箭塔
+    // v1.1.0 新增
+    BUILDING_TYPE_MARKET = 10;               // 市场
+    BUILDING_TYPE_TEMPLE = 11;               // 神庙
+    BUILDING_TYPE_ACADEMY = 12;              // 学院
+    BUILDING_TYPE_WORKSHOP = 13;             // 工坊
+}
+
+enum BuildingStatus {
+    BUILDING_STATUS_UNKNOWN = 0;
+    BUILDING_STATUS_IDLE = 1;                // 空闲
+    BUILDING_STATUS_PRODUCING = 2;           // 生产中
+    BUILDING_STATUS_UPGRADING = 3;           // 升级中
+    BUILDING_STATUS_DAMAGED = 4;             // 损坏
+    BUILDING_STATUS_UNDER_CONSTRUCTION = 5;  // 建造中
+    // v1.1.0 新增
+    BUILDING_STATUS_MAINTENANCE = 6;         // 维护中
+    BUILDING_STATUS_BOOSTED = 7;             // 增益状态
+}
+
+enum ProductionStatus {
+    PRODUCTION_STATUS_UNKNOWN = 0;
+    PRODUCTION_STATUS_QUEUED = 1;            // 排队中
+    PRODUCTION_STATUS_PRODUCING = 2;         // 生产中
+    PRODUCTION_STATUS_COMPLETED = 3;         // 已完成
+    PRODUCTION_STATUS_CANCELLED = 4;         // 已取消
+    // v1.1.0 新增
+    PRODUCTION_STATUS_PAUSED = 5;            // 已暂停
+    PRODUCTION_STATUS_ACCELERATED = 6;       // 加速中
+}
+
+// v1.1.0 新增枚举
+
+enum CityTheme {
+    CITY_THEME_UNKNOWN = 0;
+    CITY_THEME_MEDIEVAL = 1;                 // 中世纪
+    CITY_THEME_MODERN = 2;                   // 现代
+    CITY_THEME_FANTASY = 3;                  // 奇幻
+    CITY_THEME_FUTURISTIC = 4;               // 未来
+    CITY_THEME_ORIENTAL = 5;                 // 东方
+}
+
+enum CityBuffType {
+    CITY_BUFF_TYPE_UNKNOWN = 0;
+    CITY_BUFF_TYPE_PRODUCTION = 1;           // 生产加成
+    CITY_BUFF_TYPE_DEFENSE = 2;              // 防御加成
+    CITY_BUFF_TYPE_RESOURCE = 3;             // 资源加成
+    CITY_BUFF_TYPE_EXPERIENCE = 4;           // 经验加成
+    CITY_BUFF_TYPE_HAPPINESS = 5;            // 幸福度加成
+}
+
+enum UpgradeStatus {
+    UPGRADE_STATUS_UNKNOWN = 0;
+    UPGRADE_STATUS_QUEUED = 1;               // 排队中
+    UPGRADE_STATUS_IN_PROGRESS = 2;          // 进行中
+    UPGRADE_STATUS_COMPLETED = 3;            // 已完成
+    UPGRADE_STATUS_CANCELLED = 4;            // 已取消
+}
+
+enum EfficiencyType {
+    EFFICIENCY_TYPE_UNKNOWN = 0;
+    EFFICIENCY_TYPE_WORKER_SKILL = 1;        // 工人技能
+    EFFICIENCY_TYPE_TOOL_QUALITY = 2;        // 工具质量
+    EFFICIENCY_TYPE_WEATHER = 3;             // 天气影响
+    EFFICIENCY_TYPE_HAPPINESS = 4;           // 幸福度影响
+    EFFICIENCY_TYPE_TECHNOLOGY = 5;          // 科技影响
+}
+
+enum BonusType {
+    BONUS_TYPE_UNKNOWN = 0;
+    BONUS_TYPE_COMPLETION = 1;               // 完成奖励
+    BONUS_TYPE_MILESTONE = 2;                // 里程碑奖励
+    BONUS_TYPE_FIRST_TIME = 3;               // 首次奖励
+    BONUS_TYPE_RANDOM = 4;                   // 随机奖励
+}

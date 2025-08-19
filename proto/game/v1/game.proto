@@ -1,0 +1,134 @@
+syntax = "proto3";
+package game.v1;
+
+option go_package = "GoSlgBenchmarkTest/proto/game/v1;gamev1";
+
+// 登录请求
+message LoginReq { 
+    string token = 1; 
+    string client_version = 2;
+    string device_id = 3;
+}
+
+// 登录响应
+message LoginResp { 
+    bool ok = 1; 
+    string player_id = 2; 
+    string session_id = 3;
+    int64 server_time = 4;
+}
+
+// 心跳消息
+message Heartbeat { 
+    int64 client_unix_ms = 1; 
+    int32 ping_seq = 2;
+}
+
+// 心跳响应
+message HeartbeatResp {
+    int64 server_unix_ms = 1;
+    int32 ping_seq = 2;
+    int32 rtt_ms = 3;
+}
+
+// 战斗推送（示例游戏消息）
+message BattlePush {
+    uint64 seq = 1;                // 消息序列号，用于去重和排序
+    string battle_id = 2;          // 战斗ID
+    bytes state_hash = 3;          // 状态哈希，用于一致性校验
+    repeated BattleUnit units = 4; // 战斗单位状态
+    int64 timestamp = 5;           // 服务器时间戳
+}
+
+// 战斗单位
+message BattleUnit {
+    string unit_id = 1;
+    int32 hp = 2;
+    int32 mp = 3;
+    Position position = 4;
+    UnitStatus status = 5;
+}
+
+// 位置信息
+message Position {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+// 单位状态枚举
+enum UnitStatus {
+    UNIT_STATUS_UNKNOWN = 0;
+    UNIT_STATUS_IDLE = 1;
+    UNIT_STATUS_MOVING = 2;
+    UNIT_STATUS_ATTACKING = 3;
+    UNIT_STATUS_DEAD = 4;
+}
+
+// 玩家操作请求
+message PlayerAction {
+    uint64 action_seq = 1;         // 操作序列号
+    string player_id = 2;
+    ActionType action_type = 3;
+    ActionData action_data = 4;
+    int64 client_timestamp = 5;
+}
+
+// 操作类型枚举
+enum ActionType {
+    ACTION_TYPE_UNKNOWN = 0;
+    ACTION_TYPE_MOVE = 1;
+    ACTION_TYPE_ATTACK = 2;
+    ACTION_TYPE_SKILL = 3;
+    ACTION_TYPE_CHAT = 4;
+}
+
+// 操作数据（使用oneof支持不同类型的操作）
+message ActionData {
+    oneof data {
+        MoveAction move = 1;
+        AttackAction attack = 2;
+        SkillAction skill = 3;
+        ChatAction chat = 4;
+    }
+}
+
+// 移动操作
+message MoveAction {
+    Position target_position = 1;
+    float move_speed = 2;
+}
+
+// 攻击操作
+message AttackAction {
+    string target_unit_id = 1;
+    int32 damage = 2;
+}
+
+// 技能操作
+message SkillAction {
+    int32 skill_id = 1;
+    repeated string target_unit_ids = 2;
+    Position cast_position = 3;
+}
+
+// 聊天操作
+message ChatAction {
+    string message = 1;
+    ChatChannel channel = 2;
+}
+
+// 聊天频道枚举
+enum ChatChannel {
+    CHAT_CHANNEL_UNKNOWN = 0;
+    CHAT_CHANNEL_WORLD = 1;
+    CHAT_CHANNEL_TEAM = 2;
+    CHAT_CHANNEL_PRIVATE = 3;
+}
+
+// 错误响应
+message ErrorResp {
+    int32 error_code = 1;
+    string error_message = 2;
+    string request_id = 3;
+}

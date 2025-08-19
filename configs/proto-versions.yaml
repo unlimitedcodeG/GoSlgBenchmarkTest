@@ -1,0 +1,51 @@
+# SLG游戏协议版本管理配置
+meta:
+  project: "GoSlgBenchmarkTest"
+  team: "QA Testing Framework"
+  last_updated: "2025-08-20"
+
+# 版本配置
+versions:
+  current: "v1.0.0"
+  supported:
+    - "v1.0.0"
+  deprecated: []
+  experimental: []
+
+# 兼容性测试配置
+compatibility_tests:
+  enabled: true
+  test_pairs: []
+  
+# 构建目标配置
+build_targets:
+  - version: "v1.0.0"
+    input_path: "slg-proto/v1.0.0"
+    output_path: "generated/slg/v1_0_0"
+    go_package_prefix: "GoSlgBenchmarkTest/generated/slg/v1_0_0"
+
+# 协议模块配置
+modules:
+  combat:
+    description: "战斗系统协议"
+    owner: "combat-team"
+    critical: true
+  building:
+    description: "建筑系统协议"  
+    owner: "city-team"
+    critical: true
+  alliance:
+    description: "联盟系统协议"
+    owner: "social-team"
+    critical: false
+  common:
+    description: "通用类型和错误定义"
+    owner: "platform-team"
+    critical: true
+
+# 发布策略
+release:
+  auto_generate: true
+  require_tests: true
+  require_compatibility_check: true
+  notification_webhook: ""

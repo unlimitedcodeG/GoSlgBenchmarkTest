@@ -1,0 +1,216 @@
+syntax = "proto3";
+package slg.common.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/common;common";
+
+// 通用位置信息
+message Position {
+    float x = 1;                            // X坐标
+    float y = 2;                            // Y坐标
+    float z = 3;                            // Z坐标 (可选，用于3D游戏)
+    // v1.1.0 新增
+    float rotation = 4;                     // 旋转角度
+    string zone_id = 5;                     // 区域ID
+}
+
+// 通用物品信息
+message Item {
+    string item_id = 1;                     // 物品ID
+    string template_id = 2;                 // 物品模板ID
+    int32 quantity = 3;                     // 数量
+    int32 quality = 4;                      // 品质等级
+    map<string, string> properties = 5;     // 物品属性
+    int64 expire_time = 6;                  // 过期时间戳
+    // v1.1.0 新增
+    ItemRarity rarity = 7;                  // 稀有度
+    repeated string enchantments = 8;       // 附魔效果
+    bool is_tradeable = 9;                  // 是否可交易
+    string creator_id = 10;                 // 创建者ID
+}
+
+// 通用资源信息
+message Resource {
+    ResourceType type = 1;                  // 资源类型
+    int64 amount = 2;                       // 数量
+    int64 max_amount = 3;                   // 最大数量
+    int64 last_update = 4;                  // 最后更新时间
+    // v1.1.0 新增
+    int64 production_rate = 5;              // 生产速率(每秒)
+    int64 protection_amount = 6;            // 保护资源数量
+}
+
+// 通用错误信息
+message ErrorInfo {
+    ErrorCode code = 1;                     // 错误码
+    string message = 2;                     // 错误消息
+    string details = 3;                     // 详细信息
+    map<string, string> context = 4;        // 错误上下文
+    // v1.1.0 新增
+    string trace_id = 5;                    // 追踪ID
+    int64 timestamp = 6;                    // 错误时间戳
+}
+
+// 通用玩家信息
+message PlayerInfo {
+    string player_id = 1;                   // 玩家ID
+    string nickname = 2;                    // 昵称
+    int32 level = 3;                        // 等级
+    int64 exp = 4;                          // 经验值
+    string avatar_url = 5;                  // 头像URL
+    PlayerStatus status = 6;                // 在线状态
+    int64 last_login = 7;                   // 最后登录时间
+    string alliance_id = 8;                 // 联盟ID
+    // v1.1.0 新增
+    int32 vip_level = 9;                    // VIP等级
+    string title_id = 10;                   // 当前称号ID
+    PlayerRegion region = 11;               // 所属区域
+    int32 power = 12;                       // 战力
+}
+
+// 通用时间范围
+message TimeRange {
+    int64 start_time = 1;                   // 开始时间戳
+    int64 end_time = 2;                     // 结束时间戳
+    // v1.1.0 新增
+    string timezone = 3;                    // 时区
+    bool is_repeating = 4;                  // 是否重复
+}
+
+// 通用分页信息
+message Pagination {
+    int32 page = 1;                         // 页码(从1开始)
+    int32 page_size = 2;                    // 每页大小
+    int32 total_count = 3;                  // 总数量
+    int32 total_pages = 4;                  // 总页数
+    // v1.1.0 新增
+    bool has_next = 5;                      // 是否有下一页
+    bool has_prev = 6;                      // 是否有上一页
+}
+
+// v1.1.0 新增消息类型
+
+// 通用配置信息
+message ConfigInfo {
+    string config_id = 1;                   // 配置ID
+    string config_name = 2;                 // 配置名称
+    ConfigType config_type = 3;             // 配置类型
+    map<string, string> values = 4;         // 配置值
+    int64 version = 5;                      // 配置版本
+    bool is_active = 6;                     // 是否激活
+}
+
+// 通用通知信息
+message NotificationInfo {
+    string notification_id = 1;             // 通知ID
+    NotificationType type = 2;              // 通知类型
+    string title = 3;                       // 标题
+    string content = 4;                     // 内容
+    int64 create_time = 5;                  // 创建时间
+    int64 expire_time = 6;                  // 过期时间
+    bool is_read = 7;                       // 是否已读
+    map<string, string> data = 8;           // 附加数据
+}
+
+// 通用统计信息
+message StatisticsInfo {
+    string stat_id = 1;                     // 统计ID
+    map<string, int64> counters = 2;        // 计数器
+    map<string, float> gauges = 3;          // 仪表
+    int64 period_start = 4;                 // 统计周期开始
+    int64 period_end = 5;                   // 统计周期结束
+}
+
+// 资源类型枚举
+enum ResourceType {
+    RESOURCE_TYPE_UNKNOWN = 0;
+    RESOURCE_TYPE_GOLD = 1;                 // 金币
+    RESOURCE_TYPE_WOOD = 2;                 // 木材
+    RESOURCE_TYPE_STONE = 3;                // 石料
+    RESOURCE_TYPE_IRON = 4;                 // 铁矿
+    RESOURCE_TYPE_FOOD = 5;                 // 粮食
+    RESOURCE_TYPE_GEM = 6;                  // 宝石
+    RESOURCE_TYPE_ENERGY = 7;               // 能量
+    RESOURCE_TYPE_HONOR = 8;                // 荣誉点
+    RESOURCE_TYPE_ALLIANCE_COIN = 9;        // 联盟币
+    // v1.1.0 新增
+    RESOURCE_TYPE_CRYSTAL = 10;             // 水晶
+    RESOURCE_TYPE_MANA = 11;                // 魔法值
+    RESOURCE_TYPE_PVP_COIN = 12;            // PVP币
+    RESOURCE_TYPE_ACTIVITY_POINT = 13;      // 活动点数
+}
+
+// 通用错误码
+enum ErrorCode {
+    ERROR_CODE_SUCCESS = 0;                 // 成功
+    ERROR_CODE_UNKNOWN = 1;                 // 未知错误
+    ERROR_CODE_INVALID_PARAM = 2;           // 参数错误
+    ERROR_CODE_NOT_FOUND = 3;               // 资源不存在
+    ERROR_CODE_PERMISSION_DENIED = 4;       // 权限不足
+    ERROR_CODE_INSUFFICIENT_RESOURCE = 5;   // 资源不足
+    ERROR_CODE_COOLDOWN_ACTIVE = 6;         // 冷却中
+    ERROR_CODE_SYSTEM_MAINTENANCE = 7;      // 系统维护
+    ERROR_CODE_VERSION_MISMATCH = 8;        // 版本不匹配
+    ERROR_CODE_RATE_LIMITED = 9;            // 请求过于频繁
+    ERROR_CODE_ACCOUNT_BANNED = 10;         // 账号被封
+    // v1.1.0 新增
+    ERROR_CODE_FEATURE_DISABLED = 11;       // 功能已禁用
+    ERROR_CODE_TIMEOUT = 12;                // 超时
+    ERROR_CODE_CONFLICT = 13;               // 冲突
+    ERROR_CODE_QUOTA_EXCEEDED = 14;         // 配额超出
+}
+
+// 玩家状态枚举
+enum PlayerStatus {
+    PLAYER_STATUS_OFFLINE = 0;              // 离线
+    PLAYER_STATUS_ONLINE = 1;               // 在线
+    PLAYER_STATUS_AWAY = 2;                 // 离开
+    PLAYER_STATUS_BUSY = 3;                 // 忙碌
+    PLAYER_STATUS_IN_BATTLE = 4;            // 战斗中
+    // v1.1.0 新增
+    PLAYER_STATUS_IN_ACTIVITY = 5;          // 活动中
+    PLAYER_STATUS_SPECTATING = 6;           // 观战中
+}
+
+// v1.1.0 新增枚举
+
+// 物品稀有度
+enum ItemRarity {
+    ITEM_RARITY_UNKNOWN = 0;
+    ITEM_RARITY_COMMON = 1;                 // 普通
+    ITEM_RARITY_UNCOMMON = 2;               // 不常见
+    ITEM_RARITY_RARE = 3;                   // 稀有
+    ITEM_RARITY_EPIC = 4;                   // 史诗
+    ITEM_RARITY_LEGENDARY = 5;              // 传说
+    ITEM_RARITY_MYTHIC = 6;                 // 神话
+}
+
+// 玩家区域
+enum PlayerRegion {
+    PLAYER_REGION_UNKNOWN = 0;
+    PLAYER_REGION_ASIA = 1;                 // 亚洲
+    PLAYER_REGION_EUROPE = 2;               // 欧洲
+    PLAYER_REGION_AMERICA = 3;              // 美洲
+    PLAYER_REGION_OCEANIA = 4;              // 大洋洲
+    PLAYER_REGION_AFRICA = 5;               // 非洲
+}
+
+// 配置类型
+enum ConfigType {
+    CONFIG_TYPE_UNKNOWN = 0;
+    CONFIG_TYPE_GAME_SETTING = 1;           // 游戏设置
+    CONFIG_TYPE_BALANCE = 2;                // 数值平衡
+    CONFIG_TYPE_FEATURE_TOGGLE = 3;         // 功能开关
+    CONFIG_TYPE_LOCALIZATION = 4;           // 本地化
+    CONFIG_TYPE_MONETIZATION = 5;           // 商业化
+}
+
+// 通知类型
+enum NotificationType {
+    NOTIFICATION_TYPE_UNKNOWN = 0;
+    NOTIFICATION_TYPE_SYSTEM = 1;           // 系统通知
+    NOTIFICATION_TYPE_BATTLE = 2;           // 战斗通知
+    NOTIFICATION_TYPE_GUILD = 3;            // 公会通知
+    NOTIFICATION_TYPE_FRIEND = 4;           // 好友通知
+    NOTIFICATION_TYPE_ACTIVITY = 5;         // 活动通知
+    NOTIFICATION_TYPE_MAINTENANCE = 6;      // 维护通知
+}

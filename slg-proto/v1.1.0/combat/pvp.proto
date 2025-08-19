@@ -1,0 +1,175 @@
+syntax = "proto3";
+package slg.combat.v1;
+
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/combat;combat";
+
+import "slg-proto/v1.1.0/common/types.proto";
+
+// PVP匹配请求
+message PvpMatchRequest {
+    string player_id = 1;                   // 玩家ID
+    PvpMode mode = 2;                       // PVP模式
+    int32 rating_range = 3;                 // 评分范围
+    repeated string preferred_maps = 4;      // 偏好地图
+    string team_id = 5;                     // 队伍ID(团队模式)
+}
+
+// PVP匹配响应
+message PvpMatchResponse {
+    string match_id = 1;                    // 匹配ID
+    PvpMatchResult result = 2;              // 匹配结果
+    repeated PvpPlayer players = 3;         // 玩家列表
+    string map_id = 4;                      // 地图ID
+    int64 start_time = 5;                   // 开始时间
+    int32 estimated_wait_time = 6;          // 预估等待时间(秒)
+}
+
+// PVP战斗结果
+message PvpBattleResult {
+    string match_id = 1;                    // 匹配ID
+    string winner_player_id = 2;            // 获胜玩家ID
+    string winner_team_id = 3;              // 获胜队伍ID
+    repeated PvpPlayerResult player_results = 4; // 玩家结果
+    int32 battle_duration = 5;              // 战斗时长(秒)
+    PvpEndReason end_reason = 6;            // 结束原因
+}
+
+// PVP排行榜请求
+message PvpLeaderboardRequest {
+    PvpLeaderboardType type = 1;            // 排行榜类型
+    int32 page = 2;                         // 页码
+    int32 page_size = 3;                    // 页面大小
+    string season_id = 4;                   // 赛季ID
+}
+
+// PVP排行榜响应
+message PvpLeaderboardResponse {
+    repeated PvpRankEntry entries = 1;      // 排行榜条目
+    int32 total_count = 2;                  // 总数量
+    PvpPlayerRank player_rank = 3;          // 玩家自己的排名
+    string season_id = 4;                   // 当前赛季ID
+    int64 season_end_time = 5;              // 赛季结束时间
+}
+
+// PVP赛季信息
+message PvpSeasonInfo {
+    string season_id = 1;                   // 赛季ID
+    string season_name = 2;                 // 赛季名称
+    int64 start_time = 3;                   // 开始时间
+    int64 end_time = 4;                     // 结束时间
+    PvpSeasonStatus status = 5;             // 赛季状态
+    repeated PvpReward season_rewards = 6;   // 赛季奖励
+    map<string, int32> rating_tiers = 7;    // 评分段位
+}
+
+// PVP玩家信息
+message PvpPlayer {
+    string player_id = 1;                   // 玩家ID
+    string player_name = 2;                 // 玩家名称
+    int32 rating = 3;                       // 评分
+    PvpTier tier = 4;                       // 段位
+    int32 win_count = 5;                    // 胜场数
+    int32 lose_count = 6;                   // 败场数
+    string avatar_id = 7;                   // 头像ID
+    string guild_name = 8;                  // 公会名称
+}
+
+// PVP玩家结果
+message PvpPlayerResult {
+    string player_id = 1;                   // 玩家ID
+    bool is_winner = 2;                     // 是否获胜
+    int32 rating_change = 3;                // 评分变化
+    PvpTier old_tier = 4;                   // 旧段位
+    PvpTier new_tier = 5;                   // 新段位
+    PvpReward reward = 6;                   // 奖励
+    repeated PvpAchievement achievements = 7; // 成就
+}
+
+// PVP排行榜条目
+message PvpRankEntry {
+    int32 rank = 1;                         // 排名
+    PvpPlayer player = 2;                   // 玩家信息
+    int32 points = 3;                       // 积分
+    int32 streak = 4;                       // 连胜/连败数
+}
+
+// PVP玩家排名
+message PvpPlayerRank {
+    int32 current_rank = 1;                 // 当前排名
+    int32 best_rank = 2;                    // 最佳排名
+    int32 rating = 3;                       // 当前评分
+    int32 best_rating = 4;                  // 历史最高评分
+    PvpTier tier = 5;                       // 当前段位
+}
+
+// PVP奖励
+message PvpReward {
+    int32 honor_points = 1;                 // 荣誉点数
+    int32 pvp_coins = 2;                    // PVP币
+    repeated slg.common.v1.Item items = 3;   // 物品奖励
+    string title_id = 4;                    // 称号ID
+    int32 experience = 5;                   // 经验值
+}
+
+// PVP成就
+message PvpAchievement {
+    string achievement_id = 1;              // 成就ID
+    string achievement_name = 2;            // 成就名称
+    int64 unlock_time = 3;                  // 解锁时间
+    PvpReward reward = 4;                   // 成就奖励
+}
+
+// 枚举定义
+enum PvpMode {
+    PVP_MODE_UNKNOWN = 0;
+    PVP_MODE_RANKED_1V1 = 1;               // 排位1v1
+    PVP_MODE_RANKED_3V3 = 2;               // 排位3v3
+    PVP_MODE_CASUAL_1V1 = 3;               // 休闲1v1
+    PVP_MODE_CASUAL_3V3 = 4;               // 休闲3v3
+    PVP_MODE_TOURNAMENT = 5;               // 锦标赛
+    PVP_MODE_GUILD_WAR = 6;                // 公会战
+}
+
+enum PvpMatchResult {
+    PVP_MATCH_RESULT_UNKNOWN = 0;
+    PVP_MATCH_RESULT_SUCCESS = 1;          // 匹配成功
+    PVP_MATCH_RESULT_TIMEOUT = 2;          // 匹配超时
+    PVP_MATCH_RESULT_CANCELLED = 3;        // 匹配取消
+    PVP_MATCH_RESULT_ERROR = 4;            // 匹配错误
+}
+
+enum PvpEndReason {
+    PVP_END_REASON_UNKNOWN = 0;
+    PVP_END_REASON_VICTORY = 1;            // 正常胜利
+    PVP_END_REASON_SURRENDER = 2;          // 投降
+    PVP_END_REASON_TIMEOUT = 3;            // 超时
+    PVP_END_REASON_DISCONNECT = 4;         // 断线
+    PVP_END_REASON_CHEAT = 5;              // 作弊
+}
+
+enum PvpTier {
+    PVP_TIER_UNKNOWN = 0;
+    PVP_TIER_BRONZE = 1;                   // 青铜
+    PVP_TIER_SILVER = 2;                   // 白银
+    PVP_TIER_GOLD = 3;                     // 黄金
+    PVP_TIER_PLATINUM = 4;                 // 铂金
+    PVP_TIER_DIAMOND = 5;                  // 钻石
+    PVP_TIER_MASTER = 6;                   // 大师
+    PVP_TIER_GRANDMASTER = 7;              // 宗师
+}
+
+enum PvpLeaderboardType {
+    PVP_LEADERBOARD_TYPE_UNKNOWN = 0;
+    PVP_LEADERBOARD_TYPE_RATING = 1;       // 评分排行
+    PVP_LEADERBOARD_TYPE_WIN_RATE = 2;     // 胜率排行
+    PVP_LEADERBOARD_TYPE_STREAK = 3;       // 连胜排行
+    PVP_LEADERBOARD_TYPE_GUILD = 4;        // 公会排行
+}
+
+enum PvpSeasonStatus {
+    PVP_SEASON_STATUS_UNKNOWN = 0;
+    PVP_SEASON_STATUS_UPCOMING = 1;        // 即将开始
+    PVP_SEASON_STATUS_ACTIVE = 2;          // 进行中
+    PVP_SEASON_STATUS_ENDING = 3;          // 即将结束
+    PVP_SEASON_STATUS_ENDED = 4;           // 已结束
+}
