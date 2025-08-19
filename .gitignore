@@ -20,3 +20,12 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+# Test generated JSON files
+session_demo_session_*.json
+timeline_report_demo_session_*.json
+
+# Other test artifacts
+*.test
+*.prof
+*.out
