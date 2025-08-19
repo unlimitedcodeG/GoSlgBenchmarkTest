@@ -76,10 +76,16 @@ jobs:
           go mod verify
 
       - run: go test ./... -v -race -count=1 -timeout=10m
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
 
       - run: |
           go test ./... -v -race -coverprofile=coverage.out -covermode=atomic -timeout=10m
           go tool cover -func=coverage.out | tail -1
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
 
       - uses: codecov/codecov-action@v4
         with:
@@ -103,8 +109,18 @@ jobs:
           go mod download
           go mod tidy
       - run: buf generate
+      - name: Fix generated code location
+        run: |
+          if [ -d "GoSlgBenchmarkTest/generated" ]; then
+            mkdir -p generated
+            mv GoSlgBenchmarkTest/generated/* generated/
+            rm -rf GoSlgBenchmarkTest
+          fi
       - run: |
           go test ./test -run=^$ -bench=. -benchmem -count=3 -timeout=10m | tee benchmark_results.txt
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
       - uses: actions/upload-artifact@v4
         with:
           name: benchmark-results
@@ -126,11 +142,21 @@ jobs:
           go mod download
           go mod tidy
       - run: buf generate
+      - name: Fix generated code location
+        run: |
+          if [ -d "GoSlgBenchmarkTest/generated" ]; then
+            mkdir -p generated
+            mv GoSlgBenchmarkTest/generated/* generated/
+            rm -rf GoSlgBenchmarkTest
+          fi
       - run: |
           # 运行每个模糊测试30秒
           go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s -timeout=5m
           go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s -timeout=5m
           go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s -timeout=5m
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
 
   # 多平台构建测试
   build:
@@ -151,8 +177,26 @@ jobs:
           go mod download
           go mod tidy
       - run: buf generate
+      - name: Fix generated code location
+        run: |
+          if [ -d "GoSlgBenchmarkTest/generated" ]; then
+            mkdir -p generated
+            if [ "$(uname)" = "Linux" ] || [ "$(uname)" = "Darwin" ]; then
+              mv GoSlgBenchmarkTest/generated/* generated/
+            else
+              robocopy GoSlgBenchmarkTest/generated generated /E /MOVE || exit 0
+            fi
+            rm -rf GoSlgBenchmarkTest
+          fi
+        shell: bash
       - run: go build -v ./...
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
       - run: go test -c ./test
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
 
   # 多 Go 版本测试
   go-versions:
@@ -173,4 +217,14 @@ jobs:
           go mod download
           go mod tidy
       - run: buf generate
+      - name: Fix generated code location
+        run: |
+          if [ -d "GoSlgBenchmarkTest/generated" ]; then
+            mkdir -p generated
+            mv GoSlgBenchmarkTest/generated/* generated/
+            rm -rf GoSlgBenchmarkTest
+          fi
       - run: go test ./... -v -count=1 -timeout=10m
+        env:
+          GO111MODULE: on
+          GOFLAGS: -mod=mod
