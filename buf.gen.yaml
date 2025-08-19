@@ -4,4 +4,3 @@ managed:
 plugins:
   - remote: buf.build/protocolbuffers/go
     out: generated
-    opt: paths=source_relative

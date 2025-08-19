@@ -1,5 +1,5 @@
 syntax = "proto3";
-package slg.combat.v1;
+package slg.combat.v1_0_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/combat;combat";
 
@@ -11,7 +11,7 @@ message BattleRequest {
     string player_id = 2;                    // 玩家ID
     BattleType battle_type = 3;              // 战斗类型
     repeated string unit_ids = 4;            // 参战单位ID列表
-    slg.common.v1.Position target_pos = 5;   // 目标位置
+    slg.common.v1_0_0.Position target_pos = 5;   // 目标位置
     int64 timestamp = 6;                     // 请求时间戳
 }
 
@@ -41,7 +41,7 @@ message BattleUnit {
     int32 max_hp = 4;                       // 最大血量
     int32 mp = 5;                           // 当前魔法值
     int32 max_mp = 6;                       // 最大魔法值
-    slg.common.v1.Position position = 7;     // 位置
+    slg.common.v1_0_0.Position position = 7;     // 位置
     UnitStatus status = 8;                   // 状态
     repeated UnitBuff buffs = 9;             // 增益/减益效果
     UnitStats stats = 10;                    // 单位属性
@@ -56,14 +56,14 @@ message BattleAction {
     int32 damage = 5;                        // 伤害值
     int32 healing = 6;                       // 治疗值
     repeated string effect_ids = 7;          // 触发的效果ID列表
-    slg.common.v1.Position target_pos = 8;   // 目标位置
+    slg.common.v1_0_0.Position target_pos = 8;   // 目标位置
 }
 
 // 战斗奖励
 message BattleReward {
     int32 exp = 1;                          // 经验值
     int32 gold = 2;                         // 金币
-    repeated slg.common.v1.Item items = 3;   // 物品奖励
+    repeated slg.common.v1_0_0.Item items = 3;   // 物品奖励
     int32 honor = 4;                        // 荣誉值
 }
 

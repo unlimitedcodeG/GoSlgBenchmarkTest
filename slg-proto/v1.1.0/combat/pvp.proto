@@ -1,9 +1,9 @@
 syntax = "proto3";
-package slg.combat.v1;
+package slg.combat.v1_1_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/combat;combat";
 
-import "slg-proto/v1.1.0/common/types.proto";
+import "../common/types.proto";
 
 // PVP匹配请求
 message PvpMatchRequest {
@@ -106,7 +106,7 @@ message PvpPlayerRank {
 message PvpReward {
     int32 honor_points = 1;                 // 荣誉点数
     int32 pvp_coins = 2;                    // PVP币
-    repeated slg.common.v1.Item items = 3;   // 物品奖励
+    repeated slg.common.v1_1_0.Item items = 3;   // 物品奖励
     string title_id = 4;                    // 称号ID
     int32 experience = 5;                   // 经验值
 }

@@ -347,15 +347,15 @@ func (ProductionStatus) EnumDescriptor() ([]byte, []int) {
 // 城市信息
 type CityInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CityId        string                 `protobuf:"bytes,1,opt,name=city_id,json=cityId,proto3" json:"city_id,omitempty"`                    // 城市ID
-	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`              // 玩家ID
-	CityName      string                 `protobuf:"bytes,3,opt,name=city_name,json=cityName,proto3" json:"city_name,omitempty"`              // 城市名称
-	CityLevel     int32                  `protobuf:"varint,4,opt,name=city_level,json=cityLevel,proto3" json:"city_level,omitempty"`          // 城市等级
-	Position      *common.Position       `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`                              // 城市位置
-	Buildings     []*BuildingInfo        `protobuf:"bytes,6,rep,name=buildings,proto3" json:"buildings,omitempty"`                            // 建筑列表
-	Resources     []*common.Resource     `protobuf:"bytes,7,rep,name=resources,proto3" json:"resources,omitempty"`                            // 资源状况
-	Status        CityStatus             `protobuf:"varint,8,opt,name=status,proto3,enum=slg.building.v1.CityStatus" json:"status,omitempty"` // 城市状态
-	LastUpdate    int64                  `protobuf:"varint,9,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`       // 最后更新时间
+	CityId        string                 `protobuf:"bytes,1,opt,name=city_id,json=cityId,proto3" json:"city_id,omitempty"`                        // 城市ID
+	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                  // 玩家ID
+	CityName      string                 `protobuf:"bytes,3,opt,name=city_name,json=cityName,proto3" json:"city_name,omitempty"`                  // 城市名称
+	CityLevel     int32                  `protobuf:"varint,4,opt,name=city_level,json=cityLevel,proto3" json:"city_level,omitempty"`              // 城市等级
+	Position      *common.Position       `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`                                  // 城市位置
+	Buildings     []*BuildingInfo        `protobuf:"bytes,6,rep,name=buildings,proto3" json:"buildings,omitempty"`                                // 建筑列表
+	Resources     []*common.Resource     `protobuf:"bytes,7,rep,name=resources,proto3" json:"resources,omitempty"`                                // 资源状况
+	Status        CityStatus             `protobuf:"varint,8,opt,name=status,proto3,enum=slg.building.v1_0_0.CityStatus" json:"status,omitempty"` // 城市状态
+	LastUpdate    int64                  `protobuf:"varint,9,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`           // 最后更新时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -458,10 +458,10 @@ type BuildingInfo struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	BuildingId        string                 `protobuf:"bytes,1,opt,name=building_id,json=buildingId,proto3" json:"building_id,omitempty"`                                                           // 建筑ID
 	TemplateId        string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`                                                           // 建筑模板ID
-	BuildingType      BuildingType           `protobuf:"varint,3,opt,name=building_type,json=buildingType,proto3,enum=slg.building.v1.BuildingType" json:"building_type,omitempty"`                  // 建筑类型
+	BuildingType      BuildingType           `protobuf:"varint,3,opt,name=building_type,json=buildingType,proto3,enum=slg.building.v1_0_0.BuildingType" json:"building_type,omitempty"`              // 建筑类型
 	BuildingLevel     int32                  `protobuf:"varint,4,opt,name=building_level,json=buildingLevel,proto3" json:"building_level,omitempty"`                                                 // 建筑等级
 	Position          *common.Position       `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`                                                                                 // 建筑位置
-	Status            BuildingStatus         `protobuf:"varint,6,opt,name=status,proto3,enum=slg.building.v1.BuildingStatus" json:"status,omitempty"`                                                // 建筑状态
+	Status            BuildingStatus         `protobuf:"varint,6,opt,name=status,proto3,enum=slg.building.v1_0_0.BuildingStatus" json:"status,omitempty"`                                            // 建筑状态
 	ConstructionStart int64                  `protobuf:"varint,7,opt,name=construction_start,json=constructionStart,proto3" json:"construction_start,omitempty"`                                     // 建造开始时间
 	ConstructionEnd   int64                  `protobuf:"varint,8,opt,name=construction_end,json=constructionEnd,proto3" json:"construction_end,omitempty"`                                           // 建造完成时间
 	Production        []*ProductionQueue     `protobuf:"bytes,9,rep,name=production,proto3" json:"production,omitempty"`                                                                             // 生产队列
@@ -711,13 +711,13 @@ func (x *BuildingUpgradeResponse) GetCompletionTime() int64 {
 // 生产队列项
 type ProductionQueue struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	QueueId        string                 `protobuf:"bytes,1,opt,name=queue_id,json=queueId,proto3" json:"queue_id,omitempty"`                                                           // 队列项ID
-	TemplateId     string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`                                                  // 生产模板ID
-	ProductionType ProductionType         `protobuf:"varint,3,opt,name=production_type,json=productionType,proto3,enum=slg.building.v1.ProductionType" json:"production_type,omitempty"` // 生产类型
-	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`                                                                       // 生产数量
-	StartTime      int64                  `protobuf:"varint,5,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`                                                    // 开始时间
-	CompletionTime int64                  `protobuf:"varint,6,opt,name=completion_time,json=completionTime,proto3" json:"completion_time,omitempty"`                                     // 完成时间
-	Status         ProductionStatus       `protobuf:"varint,7,opt,name=status,proto3,enum=slg.building.v1.ProductionStatus" json:"status,omitempty"`                                     // 生产状态
+	QueueId        string                 `protobuf:"bytes,1,opt,name=queue_id,json=queueId,proto3" json:"queue_id,omitempty"`                                                               // 队列项ID
+	TemplateId     string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`                                                      // 生产模板ID
+	ProductionType ProductionType         `protobuf:"varint,3,opt,name=production_type,json=productionType,proto3,enum=slg.building.v1_0_0.ProductionType" json:"production_type,omitempty"` // 生产类型
+	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`                                                                           // 生产数量
+	StartTime      int64                  `protobuf:"varint,5,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`                                                        // 开始时间
+	CompletionTime int64                  `protobuf:"varint,6,opt,name=completion_time,json=completionTime,proto3" json:"completion_time,omitempty"`                                         // 完成时间
+	Status         ProductionStatus       `protobuf:"varint,7,opt,name=status,proto3,enum=slg.building.v1_0_0.ProductionStatus" json:"status,omitempty"`                                     // 生产状态
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -804,9 +804,9 @@ func (x *ProductionQueue) GetStatus() ProductionStatus {
 // 资源收集请求
 type ResourceCollectRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BuildingId    string                 `protobuf:"bytes,1,opt,name=building_id,json=buildingId,proto3" json:"building_id,omitempty"`                                        // 建筑ID
-	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                                              // 玩家ID
-	ResourceType  common.ResourceType    `protobuf:"varint,3,opt,name=resource_type,json=resourceType,proto3,enum=slg.common.v1.ResourceType" json:"resource_type,omitempty"` // 资源类型
+	BuildingId    string                 `protobuf:"bytes,1,opt,name=building_id,json=buildingId,proto3" json:"building_id,omitempty"`                                            // 建筑ID
+	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                                                  // 玩家ID
+	ResourceType  common.ResourceType    `protobuf:"varint,3,opt,name=resource_type,json=resourceType,proto3,enum=slg.common.v1_0_0.ResourceType" json:"resource_type,omitempty"` // 资源类型
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -927,36 +927,36 @@ var File_slg_proto_v1_0_0_building_city_proto protoreflect.FileDescriptor
 
 const file_slg_proto_v1_0_0_building_city_proto_rawDesc = "" +
 	"\n" +
-	"$slg-proto/v1.0.0/building/city.proto\x12\x0fslg.building.v1\x1a#slg-proto/v1.0.0/common/types.proto\"\xfb\x02\n" +
+	"$slg-proto/v1.0.0/building/city.proto\x12\x13slg.building.v1_0_0\x1a#slg-proto/v1.0.0/common/types.proto\"\x8b\x03\n" +
 	"\bCityInfo\x12\x17\n" +
 	"\acity_id\x18\x01 \x01(\tR\x06cityId\x12\x1b\n" +
 	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12\x1b\n" +
 	"\tcity_name\x18\x03 \x01(\tR\bcityName\x12\x1d\n" +
 	"\n" +
-	"city_level\x18\x04 \x01(\x05R\tcityLevel\x123\n" +
-	"\bposition\x18\x05 \x01(\v2\x17.slg.common.v1.PositionR\bposition\x12;\n" +
-	"\tbuildings\x18\x06 \x03(\v2\x1d.slg.building.v1.BuildingInfoR\tbuildings\x125\n" +
-	"\tresources\x18\a \x03(\v2\x17.slg.common.v1.ResourceR\tresources\x123\n" +
-	"\x06status\x18\b \x01(\x0e2\x1b.slg.building.v1.CityStatusR\x06status\x12\x1f\n" +
+	"city_level\x18\x04 \x01(\x05R\tcityLevel\x127\n" +
+	"\bposition\x18\x05 \x01(\v2\x1b.slg.common.v1_0_0.PositionR\bposition\x12?\n" +
+	"\tbuildings\x18\x06 \x03(\v2!.slg.building.v1_0_0.BuildingInfoR\tbuildings\x129\n" +
+	"\tresources\x18\a \x03(\v2\x1b.slg.common.v1_0_0.ResourceR\tresources\x127\n" +
+	"\x06status\x18\b \x01(\x0e2\x1f.slg.building.v1_0_0.CityStatusR\x06status\x12\x1f\n" +
 	"\vlast_update\x18\t \x01(\x03R\n" +
-	"lastUpdate\"\xd3\x04\n" +
+	"lastUpdate\"\xe7\x04\n" +
 	"\fBuildingInfo\x12\x1f\n" +
 	"\vbuilding_id\x18\x01 \x01(\tR\n" +
 	"buildingId\x12\x1f\n" +
 	"\vtemplate_id\x18\x02 \x01(\tR\n" +
-	"templateId\x12B\n" +
-	"\rbuilding_type\x18\x03 \x01(\x0e2\x1d.slg.building.v1.BuildingTypeR\fbuildingType\x12%\n" +
-	"\x0ebuilding_level\x18\x04 \x01(\x05R\rbuildingLevel\x123\n" +
-	"\bposition\x18\x05 \x01(\v2\x17.slg.common.v1.PositionR\bposition\x127\n" +
-	"\x06status\x18\x06 \x01(\x0e2\x1f.slg.building.v1.BuildingStatusR\x06status\x12-\n" +
+	"templateId\x12F\n" +
+	"\rbuilding_type\x18\x03 \x01(\x0e2!.slg.building.v1_0_0.BuildingTypeR\fbuildingType\x12%\n" +
+	"\x0ebuilding_level\x18\x04 \x01(\x05R\rbuildingLevel\x127\n" +
+	"\bposition\x18\x05 \x01(\v2\x1b.slg.common.v1_0_0.PositionR\bposition\x12;\n" +
+	"\x06status\x18\x06 \x01(\x0e2#.slg.building.v1_0_0.BuildingStatusR\x06status\x12-\n" +
 	"\x12construction_start\x18\a \x01(\x03R\x11constructionStart\x12)\n" +
-	"\x10construction_end\x18\b \x01(\x03R\x0fconstructionEnd\x12@\n" +
+	"\x10construction_end\x18\b \x01(\x03R\x0fconstructionEnd\x12D\n" +
 	"\n" +
-	"production\x18\t \x03(\v2 .slg.building.v1.ProductionQueueR\n" +
-	"production\x12M\n" +
+	"production\x18\t \x03(\v2$.slg.building.v1_0_0.ProductionQueueR\n" +
+	"production\x12Q\n" +
 	"\n" +
 	"properties\x18\n" +
-	" \x03(\v2-.slg.building.v1.BuildingInfo.PropertiesEntryR\n" +
+	" \x03(\v21.slg.building.v1_0_0.BuildingInfo.PropertiesEntryR\n" +
 	"properties\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -967,31 +967,31 @@ const file_slg_proto_v1_0_0_building_city_proto_rawDesc = "" +
 	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12\x1f\n" +
 	"\vuse_speedup\x18\x03 \x01(\bR\n" +
 	"useSpeedup\x12&\n" +
-	"\x0fspeedup_item_id\x18\x04 \x01(\tR\rspeedupItemId\"\xda\x01\n" +
-	"\x17BuildingUpgradeResponse\x12.\n" +
-	"\x05error\x18\x01 \x01(\v2\x18.slg.common.v1.ErrorInfoR\x05error\x129\n" +
-	"\bbuilding\x18\x02 \x01(\v2\x1d.slg.building.v1.BuildingInfoR\bbuilding\x12+\n" +
-	"\x04cost\x18\x03 \x03(\v2\x17.slg.common.v1.ResourceR\x04cost\x12'\n" +
-	"\x0fcompletion_time\x18\x04 \x01(\x03R\x0ecompletionTime\"\xb6\x02\n" +
+	"\x0fspeedup_item_id\x18\x04 \x01(\tR\rspeedupItemId\"\xe6\x01\n" +
+	"\x17BuildingUpgradeResponse\x122\n" +
+	"\x05error\x18\x01 \x01(\v2\x1c.slg.common.v1_0_0.ErrorInfoR\x05error\x12=\n" +
+	"\bbuilding\x18\x02 \x01(\v2!.slg.building.v1_0_0.BuildingInfoR\bbuilding\x12/\n" +
+	"\x04cost\x18\x03 \x03(\v2\x1b.slg.common.v1_0_0.ResourceR\x04cost\x12'\n" +
+	"\x0fcompletion_time\x18\x04 \x01(\x03R\x0ecompletionTime\"\xbe\x02\n" +
 	"\x0fProductionQueue\x12\x19\n" +
 	"\bqueue_id\x18\x01 \x01(\tR\aqueueId\x12\x1f\n" +
 	"\vtemplate_id\x18\x02 \x01(\tR\n" +
-	"templateId\x12H\n" +
-	"\x0fproduction_type\x18\x03 \x01(\x0e2\x1f.slg.building.v1.ProductionTypeR\x0eproductionType\x12\x1a\n" +
+	"templateId\x12L\n" +
+	"\x0fproduction_type\x18\x03 \x01(\x0e2#.slg.building.v1_0_0.ProductionTypeR\x0eproductionType\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x05 \x01(\x03R\tstartTime\x12'\n" +
-	"\x0fcompletion_time\x18\x06 \x01(\x03R\x0ecompletionTime\x129\n" +
-	"\x06status\x18\a \x01(\x0e2!.slg.building.v1.ProductionStatusR\x06status\"\x98\x01\n" +
+	"\x0fcompletion_time\x18\x06 \x01(\x03R\x0ecompletionTime\x12=\n" +
+	"\x06status\x18\a \x01(\x0e2%.slg.building.v1_0_0.ProductionStatusR\x06status\"\x9c\x01\n" +
 	"\x16ResourceCollectRequest\x12\x1f\n" +
 	"\vbuilding_id\x18\x01 \x01(\tR\n" +
 	"buildingId\x12\x1b\n" +
-	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12@\n" +
-	"\rresource_type\x18\x03 \x01(\x0e2\x1b.slg.common.v1.ResourceTypeR\fresourceType\"\xbb\x01\n" +
-	"\x17ResourceCollectResponse\x12.\n" +
-	"\x05error\x18\x01 \x01(\v2\x18.slg.common.v1.ErrorInfoR\x05error\x125\n" +
-	"\tcollected\x18\x02 \x03(\v2\x17.slg.common.v1.ResourceR\tcollected\x129\n" +
-	"\bbuilding\x18\x03 \x01(\v2\x1d.slg.building.v1.BuildingInfoR\bbuilding*\xa5\x03\n" +
+	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12D\n" +
+	"\rresource_type\x18\x03 \x01(\x0e2\x1f.slg.common.v1_0_0.ResourceTypeR\fresourceType\"\xc7\x01\n" +
+	"\x17ResourceCollectResponse\x122\n" +
+	"\x05error\x18\x01 \x01(\v2\x1c.slg.common.v1_0_0.ErrorInfoR\x05error\x129\n" +
+	"\tcollected\x18\x02 \x03(\v2\x1b.slg.common.v1_0_0.ResourceR\tcollected\x12=\n" +
+	"\bbuilding\x18\x03 \x01(\v2!.slg.building.v1_0_0.BuildingInfoR\bbuilding*\xa5\x03\n" +
 	"\fBuildingType\x12\x19\n" +
 	"\x15BUILDING_TYPE_UNKNOWN\x10\x00\x12\x1b\n" +
 	"\x17BUILDING_TYPE_CITY_HALL\x10\x01\x12\x1a\n" +
@@ -1054,43 +1054,43 @@ func file_slg_proto_v1_0_0_building_city_proto_rawDescGZIP() []byte {
 var file_slg_proto_v1_0_0_building_city_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_slg_proto_v1_0_0_building_city_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_slg_proto_v1_0_0_building_city_proto_goTypes = []any{
-	(BuildingType)(0),               // 0: slg.building.v1.BuildingType
-	(BuildingStatus)(0),             // 1: slg.building.v1.BuildingStatus
-	(CityStatus)(0),                 // 2: slg.building.v1.CityStatus
-	(ProductionType)(0),             // 3: slg.building.v1.ProductionType
-	(ProductionStatus)(0),           // 4: slg.building.v1.ProductionStatus
-	(*CityInfo)(nil),                // 5: slg.building.v1.CityInfo
-	(*BuildingInfo)(nil),            // 6: slg.building.v1.BuildingInfo
-	(*BuildingUpgradeRequest)(nil),  // 7: slg.building.v1.BuildingUpgradeRequest
-	(*BuildingUpgradeResponse)(nil), // 8: slg.building.v1.BuildingUpgradeResponse
-	(*ProductionQueue)(nil),         // 9: slg.building.v1.ProductionQueue
-	(*ResourceCollectRequest)(nil),  // 10: slg.building.v1.ResourceCollectRequest
-	(*ResourceCollectResponse)(nil), // 11: slg.building.v1.ResourceCollectResponse
-	nil,                             // 12: slg.building.v1.BuildingInfo.PropertiesEntry
-	(*common.Position)(nil),         // 13: slg.common.v1.Position
-	(*common.Resource)(nil),         // 14: slg.common.v1.Resource
-	(*common.ErrorInfo)(nil),        // 15: slg.common.v1.ErrorInfo
-	(common.ResourceType)(0),        // 16: slg.common.v1.ResourceType
+	(BuildingType)(0),               // 0: slg.building.v1_0_0.BuildingType
+	(BuildingStatus)(0),             // 1: slg.building.v1_0_0.BuildingStatus
+	(CityStatus)(0),                 // 2: slg.building.v1_0_0.CityStatus
+	(ProductionType)(0),             // 3: slg.building.v1_0_0.ProductionType
+	(ProductionStatus)(0),           // 4: slg.building.v1_0_0.ProductionStatus
+	(*CityInfo)(nil),                // 5: slg.building.v1_0_0.CityInfo
+	(*BuildingInfo)(nil),            // 6: slg.building.v1_0_0.BuildingInfo
+	(*BuildingUpgradeRequest)(nil),  // 7: slg.building.v1_0_0.BuildingUpgradeRequest
+	(*BuildingUpgradeResponse)(nil), // 8: slg.building.v1_0_0.BuildingUpgradeResponse
+	(*ProductionQueue)(nil),         // 9: slg.building.v1_0_0.ProductionQueue
+	(*ResourceCollectRequest)(nil),  // 10: slg.building.v1_0_0.ResourceCollectRequest
+	(*ResourceCollectResponse)(nil), // 11: slg.building.v1_0_0.ResourceCollectResponse
+	nil,                             // 12: slg.building.v1_0_0.BuildingInfo.PropertiesEntry
+	(*common.Position)(nil),         // 13: slg.common.v1_0_0.Position
+	(*common.Resource)(nil),         // 14: slg.common.v1_0_0.Resource
+	(*common.ErrorInfo)(nil),        // 15: slg.common.v1_0_0.ErrorInfo
+	(common.ResourceType)(0),        // 16: slg.common.v1_0_0.ResourceType
 }
 var file_slg_proto_v1_0_0_building_city_proto_depIdxs = []int32{
-	13, // 0: slg.building.v1.CityInfo.position:type_name -> slg.common.v1.Position
-	6,  // 1: slg.building.v1.CityInfo.buildings:type_name -> slg.building.v1.BuildingInfo
-	14, // 2: slg.building.v1.CityInfo.resources:type_name -> slg.common.v1.Resource
-	2,  // 3: slg.building.v1.CityInfo.status:type_name -> slg.building.v1.CityStatus
-	0,  // 4: slg.building.v1.BuildingInfo.building_type:type_name -> slg.building.v1.BuildingType
-	13, // 5: slg.building.v1.BuildingInfo.position:type_name -> slg.common.v1.Position
-	1,  // 6: slg.building.v1.BuildingInfo.status:type_name -> slg.building.v1.BuildingStatus
-	9,  // 7: slg.building.v1.BuildingInfo.production:type_name -> slg.building.v1.ProductionQueue
-	12, // 8: slg.building.v1.BuildingInfo.properties:type_name -> slg.building.v1.BuildingInfo.PropertiesEntry
-	15, // 9: slg.building.v1.BuildingUpgradeResponse.error:type_name -> slg.common.v1.ErrorInfo
-	6,  // 10: slg.building.v1.BuildingUpgradeResponse.building:type_name -> slg.building.v1.BuildingInfo
-	14, // 11: slg.building.v1.BuildingUpgradeResponse.cost:type_name -> slg.common.v1.Resource
-	3,  // 12: slg.building.v1.ProductionQueue.production_type:type_name -> slg.building.v1.ProductionType
-	4,  // 13: slg.building.v1.ProductionQueue.status:type_name -> slg.building.v1.ProductionStatus
-	16, // 14: slg.building.v1.ResourceCollectRequest.resource_type:type_name -> slg.common.v1.ResourceType
-	15, // 15: slg.building.v1.ResourceCollectResponse.error:type_name -> slg.common.v1.ErrorInfo
-	14, // 16: slg.building.v1.ResourceCollectResponse.collected:type_name -> slg.common.v1.Resource
-	6,  // 17: slg.building.v1.ResourceCollectResponse.building:type_name -> slg.building.v1.BuildingInfo
+	13, // 0: slg.building.v1_0_0.CityInfo.position:type_name -> slg.common.v1_0_0.Position
+	6,  // 1: slg.building.v1_0_0.CityInfo.buildings:type_name -> slg.building.v1_0_0.BuildingInfo
+	14, // 2: slg.building.v1_0_0.CityInfo.resources:type_name -> slg.common.v1_0_0.Resource
+	2,  // 3: slg.building.v1_0_0.CityInfo.status:type_name -> slg.building.v1_0_0.CityStatus
+	0,  // 4: slg.building.v1_0_0.BuildingInfo.building_type:type_name -> slg.building.v1_0_0.BuildingType
+	13, // 5: slg.building.v1_0_0.BuildingInfo.position:type_name -> slg.common.v1_0_0.Position
+	1,  // 6: slg.building.v1_0_0.BuildingInfo.status:type_name -> slg.building.v1_0_0.BuildingStatus
+	9,  // 7: slg.building.v1_0_0.BuildingInfo.production:type_name -> slg.building.v1_0_0.ProductionQueue
+	12, // 8: slg.building.v1_0_0.BuildingInfo.properties:type_name -> slg.building.v1_0_0.BuildingInfo.PropertiesEntry
+	15, // 9: slg.building.v1_0_0.BuildingUpgradeResponse.error:type_name -> slg.common.v1_0_0.ErrorInfo
+	6,  // 10: slg.building.v1_0_0.BuildingUpgradeResponse.building:type_name -> slg.building.v1_0_0.BuildingInfo
+	14, // 11: slg.building.v1_0_0.BuildingUpgradeResponse.cost:type_name -> slg.common.v1_0_0.Resource
+	3,  // 12: slg.building.v1_0_0.ProductionQueue.production_type:type_name -> slg.building.v1_0_0.ProductionType
+	4,  // 13: slg.building.v1_0_0.ProductionQueue.status:type_name -> slg.building.v1_0_0.ProductionStatus
+	16, // 14: slg.building.v1_0_0.ResourceCollectRequest.resource_type:type_name -> slg.common.v1_0_0.ResourceType
+	15, // 15: slg.building.v1_0_0.ResourceCollectResponse.error:type_name -> slg.common.v1_0_0.ErrorInfo
+	14, // 16: slg.building.v1_0_0.ResourceCollectResponse.collected:type_name -> slg.common.v1_0_0.Resource
+	6,  // 17: slg.building.v1_0_0.ResourceCollectResponse.building:type_name -> slg.building.v1_0_0.BuildingInfo
 	18, // [18:18] is the sub-list for method output_type
 	18, // [18:18] is the sub-list for method input_type
 	18, // [18:18] is the sub-list for extension type_name

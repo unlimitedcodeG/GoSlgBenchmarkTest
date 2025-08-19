@@ -1,5 +1,5 @@
 syntax = "proto3";
-package slg.building.v1;
+package slg.building.v1_0_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/building;building";
 
@@ -11,9 +11,9 @@ message CityInfo {
     string player_id = 2;                    // 玩家ID
     string city_name = 3;                    // 城市名称
     int32 city_level = 4;                    // 城市等级
-    slg.common.v1.Position position = 5;     // 城市位置
+    slg.common.v1_0_0.Position position = 5;     // 城市位置
     repeated BuildingInfo buildings = 6;     // 建筑列表
-    repeated slg.common.v1.Resource resources = 7; // 资源状况
+    repeated slg.common.v1_0_0.Resource resources = 7; // 资源状况
     CityStatus status = 8;                   // 城市状态
     int64 last_update = 9;                   // 最后更新时间
 }
@@ -24,7 +24,7 @@ message BuildingInfo {
     string template_id = 2;                  // 建筑模板ID
     BuildingType building_type = 3;          // 建筑类型
     int32 building_level = 4;                // 建筑等级
-    slg.common.v1.Position position = 5;     // 建筑位置
+    slg.common.v1_0_0.Position position = 5;     // 建筑位置
     BuildingStatus status = 6;               // 建筑状态
     int64 construction_start = 7;            // 建造开始时间
     int64 construction_end = 8;              // 建造完成时间
@@ -42,9 +42,9 @@ message BuildingUpgradeRequest {
 
 // 建筑升级响应
 message BuildingUpgradeResponse {
-    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    slg.common.v1_0_0.ErrorInfo error = 1;       // 错误信息
     BuildingInfo building = 2;               // 更新后的建筑信息
-    repeated slg.common.v1.Resource cost = 3; // 消耗的资源
+    repeated slg.common.v1_0_0.Resource cost = 3; // 消耗的资源
     int64 completion_time = 4;               // 完成时间
 }
 
@@ -63,13 +63,13 @@ message ProductionQueue {
 message ResourceCollectRequest {
     string building_id = 1;                  // 建筑ID
     string player_id = 2;                    // 玩家ID
-    slg.common.v1.ResourceType resource_type = 3; // 资源类型
+    slg.common.v1_0_0.ResourceType resource_type = 3; // 资源类型
 }
 
 // 资源收集响应
 message ResourceCollectResponse {
-    slg.common.v1.ErrorInfo error = 1;       // 错误信息
-    repeated slg.common.v1.Resource collected = 2; // 收集到的资源
+    slg.common.v1_0_0.ErrorInfo error = 1;       // 错误信息
+    repeated slg.common.v1_0_0.Resource collected = 2; // 收集到的资源
     BuildingInfo building = 3;               // 更新后的建筑信息
 }
 

@@ -380,12 +380,12 @@ func (BuffType) EnumDescriptor() ([]byte, []int) {
 // 战斗请求
 type BattleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`                                      // 战斗ID
-	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                                      // 玩家ID
-	BattleType    BattleType             `protobuf:"varint,3,opt,name=battle_type,json=battleType,proto3,enum=slg.combat.v1.BattleType" json:"battle_type,omitempty"` // 战斗类型
-	UnitIds       []string               `protobuf:"bytes,4,rep,name=unit_ids,json=unitIds,proto3" json:"unit_ids,omitempty"`                                         // 参战单位ID列表
-	TargetPos     *common.Position       `protobuf:"bytes,5,opt,name=target_pos,json=targetPos,proto3" json:"target_pos,omitempty"`                                   // 目标位置
-	Timestamp     int64                  `protobuf:"varint,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                                                   // 请求时间戳
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`                                          // 战斗ID
+	PlayerId      string                 `protobuf:"bytes,2,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                                          // 玩家ID
+	BattleType    BattleType             `protobuf:"varint,3,opt,name=battle_type,json=battleType,proto3,enum=slg.combat.v1_0_0.BattleType" json:"battle_type,omitempty"` // 战斗类型
+	UnitIds       []string               `protobuf:"bytes,4,rep,name=unit_ids,json=unitIds,proto3" json:"unit_ids,omitempty"`                                             // 参战单位ID列表
+	TargetPos     *common.Position       `protobuf:"bytes,5,opt,name=target_pos,json=targetPos,proto3" json:"target_pos,omitempty"`                                       // 目标位置
+	Timestamp     int64                  `protobuf:"varint,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                                                       // 请求时间戳
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -465,11 +465,11 @@ func (x *BattleRequest) GetTimestamp() int64 {
 // 战斗响应
 type BattleResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`              // 战斗ID
-	Result        BattleResult           `protobuf:"varint,2,opt,name=result,proto3,enum=slg.combat.v1.BattleResult" json:"result,omitempty"` // 战斗结果
-	BattleUnits   []*BattleUnit          `protobuf:"bytes,3,rep,name=battle_units,json=battleUnits,proto3" json:"battle_units,omitempty"`     // 战斗单位状态
-	Reward        *BattleReward          `protobuf:"bytes,4,opt,name=reward,proto3" json:"reward,omitempty"`                                  // 战斗奖励
-	DurationMs    int32                  `protobuf:"varint,5,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`       // 战斗持续时间(毫秒)
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`                  // 战斗ID
+	Result        BattleResult           `protobuf:"varint,2,opt,name=result,proto3,enum=slg.combat.v1_0_0.BattleResult" json:"result,omitempty"` // 战斗结果
+	BattleUnits   []*BattleUnit          `protobuf:"bytes,3,rep,name=battle_units,json=battleUnits,proto3" json:"battle_units,omitempty"`         // 战斗单位状态
+	Reward        *BattleReward          `protobuf:"bytes,4,opt,name=reward,proto3" json:"reward,omitempty"`                                      // 战斗奖励
+	DurationMs    int32                  `protobuf:"varint,5,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`           // 战斗持续时间(毫秒)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -542,11 +542,11 @@ func (x *BattleResponse) GetDurationMs() int32 {
 // 战斗状态推送
 type BattleStatePush struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`           // 战斗ID
-	FrameSeq      uint64                 `protobuf:"varint,2,opt,name=frame_seq,json=frameSeq,proto3" json:"frame_seq,omitempty"`          // 帧序列号
-	Actions       []*BattleAction        `protobuf:"bytes,3,rep,name=actions,proto3" json:"actions,omitempty"`                             // 本帧动作列表
-	Phase         BattlePhase            `protobuf:"varint,4,opt,name=phase,proto3,enum=slg.combat.v1.BattlePhase" json:"phase,omitempty"` // 战斗阶段
-	Timestamp     int64                  `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                        // 服务器时间戳
+	BattleId      string                 `protobuf:"bytes,1,opt,name=battle_id,json=battleId,proto3" json:"battle_id,omitempty"`               // 战斗ID
+	FrameSeq      uint64                 `protobuf:"varint,2,opt,name=frame_seq,json=frameSeq,proto3" json:"frame_seq,omitempty"`              // 帧序列号
+	Actions       []*BattleAction        `protobuf:"bytes,3,rep,name=actions,proto3" json:"actions,omitempty"`                                 // 本帧动作列表
+	Phase         BattlePhase            `protobuf:"varint,4,opt,name=phase,proto3,enum=slg.combat.v1_0_0.BattlePhase" json:"phase,omitempty"` // 战斗阶段
+	Timestamp     int64                  `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                            // 服务器时间戳
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -619,16 +619,16 @@ func (x *BattleStatePush) GetTimestamp() int64 {
 // 战斗单位
 type BattleUnit struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UnitId        string                 `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`                  // 单位ID
-	TemplateId    string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`      // 模板ID
-	Hp            int32                  `protobuf:"varint,3,opt,name=hp,proto3" json:"hp,omitempty"`                                       // 当前血量
-	MaxHp         int32                  `protobuf:"varint,4,opt,name=max_hp,json=maxHp,proto3" json:"max_hp,omitempty"`                    // 最大血量
-	Mp            int32                  `protobuf:"varint,5,opt,name=mp,proto3" json:"mp,omitempty"`                                       // 当前魔法值
-	MaxMp         int32                  `protobuf:"varint,6,opt,name=max_mp,json=maxMp,proto3" json:"max_mp,omitempty"`                    // 最大魔法值
-	Position      *common.Position       `protobuf:"bytes,7,opt,name=position,proto3" json:"position,omitempty"`                            // 位置
-	Status        UnitStatus             `protobuf:"varint,8,opt,name=status,proto3,enum=slg.combat.v1.UnitStatus" json:"status,omitempty"` // 状态
-	Buffs         []*UnitBuff            `protobuf:"bytes,9,rep,name=buffs,proto3" json:"buffs,omitempty"`                                  // 增益/减益效果
-	Stats         *UnitStats             `protobuf:"bytes,10,opt,name=stats,proto3" json:"stats,omitempty"`                                 // 单位属性
+	UnitId        string                 `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`                      // 单位ID
+	TemplateId    string                 `protobuf:"bytes,2,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`          // 模板ID
+	Hp            int32                  `protobuf:"varint,3,opt,name=hp,proto3" json:"hp,omitempty"`                                           // 当前血量
+	MaxHp         int32                  `protobuf:"varint,4,opt,name=max_hp,json=maxHp,proto3" json:"max_hp,omitempty"`                        // 最大血量
+	Mp            int32                  `protobuf:"varint,5,opt,name=mp,proto3" json:"mp,omitempty"`                                           // 当前魔法值
+	MaxMp         int32                  `protobuf:"varint,6,opt,name=max_mp,json=maxMp,proto3" json:"max_mp,omitempty"`                        // 最大魔法值
+	Position      *common.Position       `protobuf:"bytes,7,opt,name=position,proto3" json:"position,omitempty"`                                // 位置
+	Status        UnitStatus             `protobuf:"varint,8,opt,name=status,proto3,enum=slg.combat.v1_0_0.UnitStatus" json:"status,omitempty"` // 状态
+	Buffs         []*UnitBuff            `protobuf:"bytes,9,rep,name=buffs,proto3" json:"buffs,omitempty"`                                      // 增益/减益效果
+	Stats         *UnitStats             `protobuf:"bytes,10,opt,name=stats,proto3" json:"stats,omitempty"`                                     // 单位属性
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -736,14 +736,14 @@ func (x *BattleUnit) GetStats() *UnitStats {
 // 战斗动作
 type BattleAction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ActionId      string                 `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`                                      // 动作ID
-	ActionType    ActionType             `protobuf:"varint,2,opt,name=action_type,json=actionType,proto3,enum=slg.combat.v1.ActionType" json:"action_type,omitempty"` // 动作类型
-	SourceUnitId  string                 `protobuf:"bytes,3,opt,name=source_unit_id,json=sourceUnitId,proto3" json:"source_unit_id,omitempty"`                        // 发起单位ID
-	TargetUnitIds []string               `protobuf:"bytes,4,rep,name=target_unit_ids,json=targetUnitIds,proto3" json:"target_unit_ids,omitempty"`                     // 目标单位ID列表
-	Damage        int32                  `protobuf:"varint,5,opt,name=damage,proto3" json:"damage,omitempty"`                                                         // 伤害值
-	Healing       int32                  `protobuf:"varint,6,opt,name=healing,proto3" json:"healing,omitempty"`                                                       // 治疗值
-	EffectIds     []string               `protobuf:"bytes,7,rep,name=effect_ids,json=effectIds,proto3" json:"effect_ids,omitempty"`                                   // 触发的效果ID列表
-	TargetPos     *common.Position       `protobuf:"bytes,8,opt,name=target_pos,json=targetPos,proto3" json:"target_pos,omitempty"`                                   // 目标位置
+	ActionId      string                 `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`                                          // 动作ID
+	ActionType    ActionType             `protobuf:"varint,2,opt,name=action_type,json=actionType,proto3,enum=slg.combat.v1_0_0.ActionType" json:"action_type,omitempty"` // 动作类型
+	SourceUnitId  string                 `protobuf:"bytes,3,opt,name=source_unit_id,json=sourceUnitId,proto3" json:"source_unit_id,omitempty"`                            // 发起单位ID
+	TargetUnitIds []string               `protobuf:"bytes,4,rep,name=target_unit_ids,json=targetUnitIds,proto3" json:"target_unit_ids,omitempty"`                         // 目标单位ID列表
+	Damage        int32                  `protobuf:"varint,5,opt,name=damage,proto3" json:"damage,omitempty"`                                                             // 伤害值
+	Healing       int32                  `protobuf:"varint,6,opt,name=healing,proto3" json:"healing,omitempty"`                                                           // 治疗值
+	EffectIds     []string               `protobuf:"bytes,7,rep,name=effect_ids,json=effectIds,proto3" json:"effect_ids,omitempty"`                                       // 触发的效果ID列表
+	TargetPos     *common.Position       `protobuf:"bytes,8,opt,name=target_pos,json=targetPos,proto3" json:"target_pos,omitempty"`                                       // 目标位置
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -907,7 +907,7 @@ func (x *BattleReward) GetHonor() int32 {
 type UnitBuff struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BuffId        string                 `protobuf:"bytes,1,opt,name=buff_id,json=buffId,proto3" json:"buff_id,omitempty"`                                                                                              // 效果ID
-	BuffType      BuffType               `protobuf:"varint,2,opt,name=buff_type,json=buffType,proto3,enum=slg.combat.v1.BuffType" json:"buff_type,omitempty"`                                                           // 效果类型
+	BuffType      BuffType               `protobuf:"varint,2,opt,name=buff_type,json=buffType,proto3,enum=slg.combat.v1_0_0.BuffType" json:"buff_type,omitempty"`                                                       // 效果类型
 	Duration      int32                  `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`                                                                                                       // 持续时间(秒)
 	StackCount    int32                  `protobuf:"varint,4,opt,name=stack_count,json=stackCount,proto3" json:"stack_count,omitempty"`                                                                                 // 叠加层数
 	EffectValues  map[string]int32       `protobuf:"bytes,5,rep,name=effect_values,json=effectValues,proto3" json:"effect_values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"` // 效果数值
@@ -1077,29 +1077,29 @@ var File_slg_proto_v1_0_0_combat_battle_proto protoreflect.FileDescriptor
 
 const file_slg_proto_v1_0_0_combat_battle_proto_rawDesc = "" +
 	"\n" +
-	"$slg-proto/v1.0.0/combat/battle.proto\x12\rslg.combat.v1\x1a#slg-proto/v1.0.0/common/types.proto\"\xf6\x01\n" +
+	"$slg-proto/v1.0.0/combat/battle.proto\x12\x11slg.combat.v1_0_0\x1a#slg-proto/v1.0.0/common/types.proto\"\xfe\x01\n" +
 	"\rBattleRequest\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
-	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12:\n" +
-	"\vbattle_type\x18\x03 \x01(\x0e2\x19.slg.combat.v1.BattleTypeR\n" +
+	"\tplayer_id\x18\x02 \x01(\tR\bplayerId\x12>\n" +
+	"\vbattle_type\x18\x03 \x01(\x0e2\x1d.slg.combat.v1_0_0.BattleTypeR\n" +
 	"battleType\x12\x19\n" +
-	"\bunit_ids\x18\x04 \x03(\tR\aunitIds\x126\n" +
+	"\bunit_ids\x18\x04 \x03(\tR\aunitIds\x12:\n" +
 	"\n" +
-	"target_pos\x18\x05 \x01(\v2\x17.slg.common.v1.PositionR\ttargetPos\x12\x1c\n" +
-	"\ttimestamp\x18\x06 \x01(\x03R\ttimestamp\"\xf6\x01\n" +
+	"target_pos\x18\x05 \x01(\v2\x1b.slg.common.v1_0_0.PositionR\ttargetPos\x12\x1c\n" +
+	"\ttimestamp\x18\x06 \x01(\x03R\ttimestamp\"\x82\x02\n" +
 	"\x0eBattleResponse\x12\x1b\n" +
-	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x123\n" +
-	"\x06result\x18\x02 \x01(\x0e2\x1b.slg.combat.v1.BattleResultR\x06result\x12<\n" +
-	"\fbattle_units\x18\x03 \x03(\v2\x19.slg.combat.v1.BattleUnitR\vbattleUnits\x123\n" +
-	"\x06reward\x18\x04 \x01(\v2\x1b.slg.combat.v1.BattleRewardR\x06reward\x12\x1f\n" +
+	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x127\n" +
+	"\x06result\x18\x02 \x01(\x0e2\x1f.slg.combat.v1_0_0.BattleResultR\x06result\x12@\n" +
+	"\fbattle_units\x18\x03 \x03(\v2\x1d.slg.combat.v1_0_0.BattleUnitR\vbattleUnits\x127\n" +
+	"\x06reward\x18\x04 \x01(\v2\x1f.slg.combat.v1_0_0.BattleRewardR\x06reward\x12\x1f\n" +
 	"\vduration_ms\x18\x05 \x01(\x05R\n" +
-	"durationMs\"\xd2\x01\n" +
+	"durationMs\"\xda\x01\n" +
 	"\x0fBattleStatePush\x12\x1b\n" +
 	"\tbattle_id\x18\x01 \x01(\tR\bbattleId\x12\x1b\n" +
-	"\tframe_seq\x18\x02 \x01(\x04R\bframeSeq\x125\n" +
-	"\aactions\x18\x03 \x03(\v2\x1b.slg.combat.v1.BattleActionR\aactions\x120\n" +
-	"\x05phase\x18\x04 \x01(\x0e2\x1a.slg.combat.v1.BattlePhaseR\x05phase\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"\xdb\x02\n" +
+	"\tframe_seq\x18\x02 \x01(\x04R\bframeSeq\x129\n" +
+	"\aactions\x18\x03 \x03(\v2\x1f.slg.combat.v1_0_0.BattleActionR\aactions\x124\n" +
+	"\x05phase\x18\x04 \x01(\x0e2\x1e.slg.combat.v1_0_0.BattlePhaseR\x05phase\x12\x1c\n" +
+	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"\xeb\x02\n" +
 	"\n" +
 	"BattleUnit\x12\x17\n" +
 	"\aunit_id\x18\x01 \x01(\tR\x06unitId\x12\x1f\n" +
@@ -1108,36 +1108,36 @@ const file_slg_proto_v1_0_0_combat_battle_proto_rawDesc = "" +
 	"\x02hp\x18\x03 \x01(\x05R\x02hp\x12\x15\n" +
 	"\x06max_hp\x18\x04 \x01(\x05R\x05maxHp\x12\x0e\n" +
 	"\x02mp\x18\x05 \x01(\x05R\x02mp\x12\x15\n" +
-	"\x06max_mp\x18\x06 \x01(\x05R\x05maxMp\x123\n" +
-	"\bposition\x18\a \x01(\v2\x17.slg.common.v1.PositionR\bposition\x121\n" +
-	"\x06status\x18\b \x01(\x0e2\x19.slg.combat.v1.UnitStatusR\x06status\x12-\n" +
-	"\x05buffs\x18\t \x03(\v2\x17.slg.combat.v1.UnitBuffR\x05buffs\x12.\n" +
+	"\x06max_mp\x18\x06 \x01(\x05R\x05maxMp\x127\n" +
+	"\bposition\x18\a \x01(\v2\x1b.slg.common.v1_0_0.PositionR\bposition\x125\n" +
+	"\x06status\x18\b \x01(\x0e2\x1d.slg.combat.v1_0_0.UnitStatusR\x06status\x121\n" +
+	"\x05buffs\x18\t \x03(\v2\x1b.slg.combat.v1_0_0.UnitBuffR\x05buffs\x122\n" +
 	"\x05stats\x18\n" +
-	" \x01(\v2\x18.slg.combat.v1.UnitStatsR\x05stats\"\xbe\x02\n" +
+	" \x01(\v2\x1c.slg.combat.v1_0_0.UnitStatsR\x05stats\"\xc6\x02\n" +
 	"\fBattleAction\x12\x1b\n" +
-	"\taction_id\x18\x01 \x01(\tR\bactionId\x12:\n" +
-	"\vaction_type\x18\x02 \x01(\x0e2\x19.slg.combat.v1.ActionTypeR\n" +
+	"\taction_id\x18\x01 \x01(\tR\bactionId\x12>\n" +
+	"\vaction_type\x18\x02 \x01(\x0e2\x1d.slg.combat.v1_0_0.ActionTypeR\n" +
 	"actionType\x12$\n" +
 	"\x0esource_unit_id\x18\x03 \x01(\tR\fsourceUnitId\x12&\n" +
 	"\x0ftarget_unit_ids\x18\x04 \x03(\tR\rtargetUnitIds\x12\x16\n" +
 	"\x06damage\x18\x05 \x01(\x05R\x06damage\x12\x18\n" +
 	"\ahealing\x18\x06 \x01(\x05R\ahealing\x12\x1d\n" +
 	"\n" +
-	"effect_ids\x18\a \x03(\tR\teffectIds\x126\n" +
+	"effect_ids\x18\a \x03(\tR\teffectIds\x12:\n" +
 	"\n" +
-	"target_pos\x18\b \x01(\v2\x17.slg.common.v1.PositionR\ttargetPos\"u\n" +
+	"target_pos\x18\b \x01(\v2\x1b.slg.common.v1_0_0.PositionR\ttargetPos\"y\n" +
 	"\fBattleReward\x12\x10\n" +
 	"\x03exp\x18\x01 \x01(\x05R\x03exp\x12\x12\n" +
-	"\x04gold\x18\x02 \x01(\x05R\x04gold\x12)\n" +
-	"\x05items\x18\x03 \x03(\v2\x13.slg.common.v1.ItemR\x05items\x12\x14\n" +
-	"\x05honor\x18\x04 \x01(\x05R\x05honor\"\xa7\x02\n" +
+	"\x04gold\x18\x02 \x01(\x05R\x04gold\x12-\n" +
+	"\x05items\x18\x03 \x03(\v2\x17.slg.common.v1_0_0.ItemR\x05items\x12\x14\n" +
+	"\x05honor\x18\x04 \x01(\x05R\x05honor\"\xaf\x02\n" +
 	"\bUnitBuff\x12\x17\n" +
-	"\abuff_id\x18\x01 \x01(\tR\x06buffId\x124\n" +
-	"\tbuff_type\x18\x02 \x01(\x0e2\x17.slg.combat.v1.BuffTypeR\bbuffType\x12\x1a\n" +
+	"\abuff_id\x18\x01 \x01(\tR\x06buffId\x128\n" +
+	"\tbuff_type\x18\x02 \x01(\x0e2\x1b.slg.combat.v1_0_0.BuffTypeR\bbuffType\x12\x1a\n" +
 	"\bduration\x18\x03 \x01(\x05R\bduration\x12\x1f\n" +
 	"\vstack_count\x18\x04 \x01(\x05R\n" +
-	"stackCount\x12N\n" +
-	"\reffect_values\x18\x05 \x03(\v2).slg.combat.v1.UnitBuff.EffectValuesEntryR\feffectValues\x1a?\n" +
+	"stackCount\x12R\n" +
+	"\reffect_values\x18\x05 \x03(\v2-.slg.combat.v1_0_0.UnitBuff.EffectValuesEntryR\feffectValues\x1a?\n" +
 	"\x11EffectValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\"\xd3\x01\n" +
@@ -1212,41 +1212,41 @@ func file_slg_proto_v1_0_0_combat_battle_proto_rawDescGZIP() []byte {
 var file_slg_proto_v1_0_0_combat_battle_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_slg_proto_v1_0_0_combat_battle_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_slg_proto_v1_0_0_combat_battle_proto_goTypes = []any{
-	(BattleType)(0),         // 0: slg.combat.v1.BattleType
-	(BattleResult)(0),       // 1: slg.combat.v1.BattleResult
-	(BattlePhase)(0),        // 2: slg.combat.v1.BattlePhase
-	(UnitStatus)(0),         // 3: slg.combat.v1.UnitStatus
-	(ActionType)(0),         // 4: slg.combat.v1.ActionType
-	(BuffType)(0),           // 5: slg.combat.v1.BuffType
-	(*BattleRequest)(nil),   // 6: slg.combat.v1.BattleRequest
-	(*BattleResponse)(nil),  // 7: slg.combat.v1.BattleResponse
-	(*BattleStatePush)(nil), // 8: slg.combat.v1.BattleStatePush
-	(*BattleUnit)(nil),      // 9: slg.combat.v1.BattleUnit
-	(*BattleAction)(nil),    // 10: slg.combat.v1.BattleAction
-	(*BattleReward)(nil),    // 11: slg.combat.v1.BattleReward
-	(*UnitBuff)(nil),        // 12: slg.combat.v1.UnitBuff
-	(*UnitStats)(nil),       // 13: slg.combat.v1.UnitStats
-	nil,                     // 14: slg.combat.v1.UnitBuff.EffectValuesEntry
-	(*common.Position)(nil), // 15: slg.common.v1.Position
-	(*common.Item)(nil),     // 16: slg.common.v1.Item
+	(BattleType)(0),         // 0: slg.combat.v1_0_0.BattleType
+	(BattleResult)(0),       // 1: slg.combat.v1_0_0.BattleResult
+	(BattlePhase)(0),        // 2: slg.combat.v1_0_0.BattlePhase
+	(UnitStatus)(0),         // 3: slg.combat.v1_0_0.UnitStatus
+	(ActionType)(0),         // 4: slg.combat.v1_0_0.ActionType
+	(BuffType)(0),           // 5: slg.combat.v1_0_0.BuffType
+	(*BattleRequest)(nil),   // 6: slg.combat.v1_0_0.BattleRequest
+	(*BattleResponse)(nil),  // 7: slg.combat.v1_0_0.BattleResponse
+	(*BattleStatePush)(nil), // 8: slg.combat.v1_0_0.BattleStatePush
+	(*BattleUnit)(nil),      // 9: slg.combat.v1_0_0.BattleUnit
+	(*BattleAction)(nil),    // 10: slg.combat.v1_0_0.BattleAction
+	(*BattleReward)(nil),    // 11: slg.combat.v1_0_0.BattleReward
+	(*UnitBuff)(nil),        // 12: slg.combat.v1_0_0.UnitBuff
+	(*UnitStats)(nil),       // 13: slg.combat.v1_0_0.UnitStats
+	nil,                     // 14: slg.combat.v1_0_0.UnitBuff.EffectValuesEntry
+	(*common.Position)(nil), // 15: slg.common.v1_0_0.Position
+	(*common.Item)(nil),     // 16: slg.common.v1_0_0.Item
 }
 var file_slg_proto_v1_0_0_combat_battle_proto_depIdxs = []int32{
-	0,  // 0: slg.combat.v1.BattleRequest.battle_type:type_name -> slg.combat.v1.BattleType
-	15, // 1: slg.combat.v1.BattleRequest.target_pos:type_name -> slg.common.v1.Position
-	1,  // 2: slg.combat.v1.BattleResponse.result:type_name -> slg.combat.v1.BattleResult
-	9,  // 3: slg.combat.v1.BattleResponse.battle_units:type_name -> slg.combat.v1.BattleUnit
-	11, // 4: slg.combat.v1.BattleResponse.reward:type_name -> slg.combat.v1.BattleReward
-	10, // 5: slg.combat.v1.BattleStatePush.actions:type_name -> slg.combat.v1.BattleAction
-	2,  // 6: slg.combat.v1.BattleStatePush.phase:type_name -> slg.combat.v1.BattlePhase
-	15, // 7: slg.combat.v1.BattleUnit.position:type_name -> slg.common.v1.Position
-	3,  // 8: slg.combat.v1.BattleUnit.status:type_name -> slg.combat.v1.UnitStatus
-	12, // 9: slg.combat.v1.BattleUnit.buffs:type_name -> slg.combat.v1.UnitBuff
-	13, // 10: slg.combat.v1.BattleUnit.stats:type_name -> slg.combat.v1.UnitStats
-	4,  // 11: slg.combat.v1.BattleAction.action_type:type_name -> slg.combat.v1.ActionType
-	15, // 12: slg.combat.v1.BattleAction.target_pos:type_name -> slg.common.v1.Position
-	16, // 13: slg.combat.v1.BattleReward.items:type_name -> slg.common.v1.Item
-	5,  // 14: slg.combat.v1.UnitBuff.buff_type:type_name -> slg.combat.v1.BuffType
-	14, // 15: slg.combat.v1.UnitBuff.effect_values:type_name -> slg.combat.v1.UnitBuff.EffectValuesEntry
+	0,  // 0: slg.combat.v1_0_0.BattleRequest.battle_type:type_name -> slg.combat.v1_0_0.BattleType
+	15, // 1: slg.combat.v1_0_0.BattleRequest.target_pos:type_name -> slg.common.v1_0_0.Position
+	1,  // 2: slg.combat.v1_0_0.BattleResponse.result:type_name -> slg.combat.v1_0_0.BattleResult
+	9,  // 3: slg.combat.v1_0_0.BattleResponse.battle_units:type_name -> slg.combat.v1_0_0.BattleUnit
+	11, // 4: slg.combat.v1_0_0.BattleResponse.reward:type_name -> slg.combat.v1_0_0.BattleReward
+	10, // 5: slg.combat.v1_0_0.BattleStatePush.actions:type_name -> slg.combat.v1_0_0.BattleAction
+	2,  // 6: slg.combat.v1_0_0.BattleStatePush.phase:type_name -> slg.combat.v1_0_0.BattlePhase
+	15, // 7: slg.combat.v1_0_0.BattleUnit.position:type_name -> slg.common.v1_0_0.Position
+	3,  // 8: slg.combat.v1_0_0.BattleUnit.status:type_name -> slg.combat.v1_0_0.UnitStatus
+	12, // 9: slg.combat.v1_0_0.BattleUnit.buffs:type_name -> slg.combat.v1_0_0.UnitBuff
+	13, // 10: slg.combat.v1_0_0.BattleUnit.stats:type_name -> slg.combat.v1_0_0.UnitStats
+	4,  // 11: slg.combat.v1_0_0.BattleAction.action_type:type_name -> slg.combat.v1_0_0.ActionType
+	15, // 12: slg.combat.v1_0_0.BattleAction.target_pos:type_name -> slg.common.v1_0_0.Position
+	16, // 13: slg.combat.v1_0_0.BattleReward.items:type_name -> slg.common.v1_0_0.Item
+	5,  // 14: slg.combat.v1_0_0.UnitBuff.buff_type:type_name -> slg.combat.v1_0_0.BuffType
+	14, // 15: slg.combat.v1_0_0.UnitBuff.effect_values:type_name -> slg.combat.v1_0_0.UnitBuff.EffectValuesEntry
 	16, // [16:16] is the sub-list for method output_type
 	16, // [16:16] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name

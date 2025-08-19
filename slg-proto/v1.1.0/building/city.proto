@@ -1,9 +1,9 @@
 syntax = "proto3";
-package slg.building.v1;
+package slg.building.v1_1_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/building;building";
 
-import "slg-proto/v1.1.0/common/types.proto";
+import "../common/types.proto";
 
 // 城市信息
 message CityInfo {
@@ -11,9 +11,9 @@ message CityInfo {
     string player_id = 2;                    // 玩家ID
     string city_name = 3;                    // 城市名称
     int32 city_level = 4;                    // 城市等级
-    slg.common.v1.Position position = 5;     // 城市位置
+    slg.common.v1_1_0.Position position = 5;     // 城市位置
     repeated BuildingInfo buildings = 6;     // 建筑列表
-    repeated slg.common.v1.Resource resources = 7; // 资源状况
+    repeated slg.common.v1_1_0.Resource resources = 7; // 资源状况
     CityStatus status = 8;                   // 城市状态
     int64 last_update = 9;                   // 最后更新时间
     
@@ -33,7 +33,7 @@ message BuildingInfo {
     string template_id = 2;                  // 建筑模板ID
     BuildingType building_type = 3;          // 建筑类型
     int32 building_level = 4;                // 建筑等级
-    slg.common.v1.Position position = 5;     // 建筑位置
+    slg.common.v1_1_0.Position position = 5;     // 建筑位置
     BuildingStatus status = 6;               // 建筑状态
     int64 construction_start = 7;            // 建造开始时间
     int64 construction_end = 8;              // 建造完成时间
@@ -63,9 +63,9 @@ message BuildingUpgradeRequest {
 
 // 建筑升级响应
 message BuildingUpgradeResponse {
-    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    slg.common.v1_1_0.ErrorInfo error = 1;       // 错误信息
     BuildingInfo building = 2;               // 更新后的建筑信息
-    repeated slg.common.v1.Resource cost = 3; // 消耗的资源
+    repeated slg.common.v1_1_0.Resource cost = 3; // 消耗的资源
     int64 completion_time = 4;               // 完成时间
     
     // v1.1.0 新增字段
@@ -97,7 +97,7 @@ message BuildingUpgrade {
     int32 to_level = 3;                      // 目标等级
     int64 start_time = 4;                    // 开始时间
     int64 completion_time = 5;               // 完成时间
-    repeated slg.common.v1.Resource cost = 6; // 升级成本
+    repeated slg.common.v1_1_0.Resource cost = 6; // 升级成本
     UpgradeStatus status = 7;                // 升级状态
 }
 
@@ -133,8 +133,8 @@ message CityBuff {
 message BuildingBonus {
     string bonus_id = 1;                     // 奖励ID
     BonusType bonus_type = 2;                // 奖励类型
-    repeated slg.common.v1.Item items = 3;   // 物品奖励
-    repeated slg.common.v1.Resource resources = 4; // 资源奖励
+    repeated slg.common.v1_1_0.Item items = 3;   // 物品奖励
+    repeated slg.common.v1_1_0.Resource resources = 4; // 资源奖励
     string description = 5;                  // 描述
 }
 
@@ -142,16 +142,16 @@ message BuildingBonus {
 message CityConstructRequest {
     string player_id = 1;                    // 玩家ID
     string template_id = 2;                  // 建筑模板ID
-    slg.common.v1.Position position = 3;     // 建造位置
+    slg.common.v1_1_0.Position position = 3;     // 建造位置
     string city_id = 4;                      // 城市ID
     bool use_instant_build = 5;              // 是否立即建造
 }
 
 // 城市建造响应
 message CityConstructResponse {
-    slg.common.v1.ErrorInfo error = 1;       // 错误信息
+    slg.common.v1_1_0.ErrorInfo error = 1;       // 错误信息
     BuildingInfo building = 2;               // 新建筑信息
-    repeated slg.common.v1.Resource cost = 3; // 建造成本
+    repeated slg.common.v1_1_0.Resource cost = 3; // 建造成本
     int64 completion_time = 4;               // 完成时间
 }
 
@@ -165,8 +165,8 @@ message BuildingDemolishRequest {
 
 // 建筑拆除响应
 message BuildingDemolishResponse {
-    slg.common.v1.ErrorInfo error = 1;       // 错误信息
-    repeated slg.common.v1.Resource refund = 2; // 退还资源
+    slg.common.v1_1_0.ErrorInfo error = 1;       // 错误信息
+    repeated slg.common.v1_1_0.Resource refund = 2; // 退还资源
     bool success = 3;                        // 是否成功
 }
 

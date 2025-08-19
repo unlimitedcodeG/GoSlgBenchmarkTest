@@ -371,10 +371,10 @@ func (x *Item) GetExpireTime() int64 {
 // 通用资源信息
 type Resource struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          ResourceType           `protobuf:"varint,1,opt,name=type,proto3,enum=slg.common.v1.ResourceType" json:"type,omitempty"` // 资源类型
-	Amount        int64                  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`                             // 数量
-	MaxAmount     int64                  `protobuf:"varint,3,opt,name=max_amount,json=maxAmount,proto3" json:"max_amount,omitempty"`      // 最大数量
-	LastUpdate    int64                  `protobuf:"varint,4,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`   // 最后更新时间
+	Type          ResourceType           `protobuf:"varint,1,opt,name=type,proto3,enum=slg.common.v1_0_0.ResourceType" json:"type,omitempty"` // 资源类型
+	Amount        int64                  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`                                 // 数量
+	MaxAmount     int64                  `protobuf:"varint,3,opt,name=max_amount,json=maxAmount,proto3" json:"max_amount,omitempty"`          // 最大数量
+	LastUpdate    int64                  `protobuf:"varint,4,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`       // 最后更新时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -440,7 +440,7 @@ func (x *Resource) GetLastUpdate() int64 {
 // 通用错误信息
 type ErrorInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          ErrorCode              `protobuf:"varint,1,opt,name=code,proto3,enum=slg.common.v1.ErrorCode" json:"code,omitempty"`                                                   // 错误码
+	Code          ErrorCode              `protobuf:"varint,1,opt,name=code,proto3,enum=slg.common.v1_0_0.ErrorCode" json:"code,omitempty"`                                               // 错误码
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`                                                                           // 错误消息
 	Details       string                 `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`                                                                           // 详细信息
 	Context       map[string]string      `protobuf:"bytes,4,rep,name=context,proto3" json:"context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 错误上下文
@@ -509,14 +509,14 @@ func (x *ErrorInfo) GetContext() map[string]string {
 // 通用玩家信息
 type PlayerInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlayerId      string                 `protobuf:"bytes,1,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`              // 玩家ID
-	Nickname      string                 `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`                              // 昵称
-	Level         int32                  `protobuf:"varint,3,opt,name=level,proto3" json:"level,omitempty"`                                   // 等级
-	Exp           int64                  `protobuf:"varint,4,opt,name=exp,proto3" json:"exp,omitempty"`                                       // 经验值
-	AvatarUrl     string                 `protobuf:"bytes,5,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`           // 头像URL
-	Status        PlayerStatus           `protobuf:"varint,6,opt,name=status,proto3,enum=slg.common.v1.PlayerStatus" json:"status,omitempty"` // 在线状态
-	LastLogin     int64                  `protobuf:"varint,7,opt,name=last_login,json=lastLogin,proto3" json:"last_login,omitempty"`          // 最后登录时间
-	AllianceId    string                 `protobuf:"bytes,8,opt,name=alliance_id,json=allianceId,proto3" json:"alliance_id,omitempty"`        // 联盟ID
+	PlayerId      string                 `protobuf:"bytes,1,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`                  // 玩家ID
+	Nickname      string                 `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`                                  // 昵称
+	Level         int32                  `protobuf:"varint,3,opt,name=level,proto3" json:"level,omitempty"`                                       // 等级
+	Exp           int64                  `protobuf:"varint,4,opt,name=exp,proto3" json:"exp,omitempty"`                                           // 经验值
+	AvatarUrl     string                 `protobuf:"bytes,5,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`               // 头像URL
+	Status        PlayerStatus           `protobuf:"varint,6,opt,name=status,proto3,enum=slg.common.v1_0_0.PlayerStatus" json:"status,omitempty"` // 在线状态
+	LastLogin     int64                  `protobuf:"varint,7,opt,name=last_login,json=lastLogin,proto3" json:"last_login,omitempty"`              // 最后登录时间
+	AllianceId    string                 `protobuf:"bytes,8,opt,name=alliance_id,json=allianceId,proto3" json:"alliance_id,omitempty"`            // 联盟ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -733,40 +733,40 @@ var File_slg_proto_v1_0_0_common_types_proto protoreflect.FileDescriptor
 
 const file_slg_proto_v1_0_0_common_types_proto_rawDesc = "" +
 	"\n" +
-	"#slg-proto/v1.0.0/common/types.proto\x12\rslg.common.v1\"4\n" +
+	"#slg-proto/v1.0.0/common/types.proto\x12\x11slg.common.v1_0_0\"4\n" +
 	"\bPosition\x12\f\n" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x02 \x01(\x02R\x01y\x12\f\n" +
-	"\x01z\x18\x03 \x01(\x02R\x01z\"\x9b\x02\n" +
+	"\x01z\x18\x03 \x01(\x02R\x01z\"\x9f\x02\n" +
 	"\x04Item\x12\x17\n" +
 	"\aitem_id\x18\x01 \x01(\tR\x06itemId\x12\x1f\n" +
 	"\vtemplate_id\x18\x02 \x01(\tR\n" +
 	"templateId\x12\x1a\n" +
 	"\bquantity\x18\x03 \x01(\x05R\bquantity\x12\x18\n" +
-	"\aquality\x18\x04 \x01(\x05R\aquality\x12C\n" +
+	"\aquality\x18\x04 \x01(\x05R\aquality\x12G\n" +
 	"\n" +
-	"properties\x18\x05 \x03(\v2#.slg.common.v1.Item.PropertiesEntryR\n" +
+	"properties\x18\x05 \x03(\v2'.slg.common.v1_0_0.Item.PropertiesEntryR\n" +
 	"properties\x12\x1f\n" +
 	"\vexpire_time\x18\x06 \x01(\x03R\n" +
 	"expireTime\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x93\x01\n" +
-	"\bResource\x12/\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1b.slg.common.v1.ResourceTypeR\x04type\x12\x16\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x97\x01\n" +
+	"\bResource\x123\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1f.slg.common.v1_0_0.ResourceTypeR\x04type\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x03R\x06amount\x12\x1d\n" +
 	"\n" +
 	"max_amount\x18\x03 \x01(\x03R\tmaxAmount\x12\x1f\n" +
 	"\vlast_update\x18\x04 \x01(\x03R\n" +
-	"lastUpdate\"\xea\x01\n" +
-	"\tErrorInfo\x12,\n" +
-	"\x04code\x18\x01 \x01(\x0e2\x18.slg.common.v1.ErrorCodeR\x04code\x12\x18\n" +
+	"lastUpdate\"\xf2\x01\n" +
+	"\tErrorInfo\x120\n" +
+	"\x04code\x18\x01 \x01(\x0e2\x1c.slg.common.v1_0_0.ErrorCodeR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x18\n" +
-	"\adetails\x18\x03 \x01(\tR\adetails\x12?\n" +
-	"\acontext\x18\x04 \x03(\v2%.slg.common.v1.ErrorInfo.ContextEntryR\acontext\x1a:\n" +
+	"\adetails\x18\x03 \x01(\tR\adetails\x12C\n" +
+	"\acontext\x18\x04 \x03(\v2).slg.common.v1_0_0.ErrorInfo.ContextEntryR\acontext\x1a:\n" +
 	"\fContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x81\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x85\x02\n" +
 	"\n" +
 	"PlayerInfo\x12\x1b\n" +
 	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\x12\x1a\n" +
@@ -774,8 +774,8 @@ const file_slg_proto_v1_0_0_common_types_proto_rawDesc = "" +
 	"\x05level\x18\x03 \x01(\x05R\x05level\x12\x10\n" +
 	"\x03exp\x18\x04 \x01(\x03R\x03exp\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x05 \x01(\tR\tavatarUrl\x123\n" +
-	"\x06status\x18\x06 \x01(\x0e2\x1b.slg.common.v1.PlayerStatusR\x06status\x12\x1d\n" +
+	"avatar_url\x18\x05 \x01(\tR\tavatarUrl\x127\n" +
+	"\x06status\x18\x06 \x01(\x0e2\x1f.slg.common.v1_0_0.PlayerStatusR\x06status\x12\x1d\n" +
 	"\n" +
 	"last_login\x18\a \x01(\x03R\tlastLogin\x12\x1f\n" +
 	"\valliance_id\x18\b \x01(\tR\n" +
@@ -838,25 +838,25 @@ func file_slg_proto_v1_0_0_common_types_proto_rawDescGZIP() []byte {
 var file_slg_proto_v1_0_0_common_types_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_slg_proto_v1_0_0_common_types_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_slg_proto_v1_0_0_common_types_proto_goTypes = []any{
-	(ResourceType)(0),  // 0: slg.common.v1.ResourceType
-	(ErrorCode)(0),     // 1: slg.common.v1.ErrorCode
-	(PlayerStatus)(0),  // 2: slg.common.v1.PlayerStatus
-	(*Position)(nil),   // 3: slg.common.v1.Position
-	(*Item)(nil),       // 4: slg.common.v1.Item
-	(*Resource)(nil),   // 5: slg.common.v1.Resource
-	(*ErrorInfo)(nil),  // 6: slg.common.v1.ErrorInfo
-	(*PlayerInfo)(nil), // 7: slg.common.v1.PlayerInfo
-	(*TimeRange)(nil),  // 8: slg.common.v1.TimeRange
-	(*Pagination)(nil), // 9: slg.common.v1.Pagination
-	nil,                // 10: slg.common.v1.Item.PropertiesEntry
-	nil,                // 11: slg.common.v1.ErrorInfo.ContextEntry
+	(ResourceType)(0),  // 0: slg.common.v1_0_0.ResourceType
+	(ErrorCode)(0),     // 1: slg.common.v1_0_0.ErrorCode
+	(PlayerStatus)(0),  // 2: slg.common.v1_0_0.PlayerStatus
+	(*Position)(nil),   // 3: slg.common.v1_0_0.Position
+	(*Item)(nil),       // 4: slg.common.v1_0_0.Item
+	(*Resource)(nil),   // 5: slg.common.v1_0_0.Resource
+	(*ErrorInfo)(nil),  // 6: slg.common.v1_0_0.ErrorInfo
+	(*PlayerInfo)(nil), // 7: slg.common.v1_0_0.PlayerInfo
+	(*TimeRange)(nil),  // 8: slg.common.v1_0_0.TimeRange
+	(*Pagination)(nil), // 9: slg.common.v1_0_0.Pagination
+	nil,                // 10: slg.common.v1_0_0.Item.PropertiesEntry
+	nil,                // 11: slg.common.v1_0_0.ErrorInfo.ContextEntry
 }
 var file_slg_proto_v1_0_0_common_types_proto_depIdxs = []int32{
-	10, // 0: slg.common.v1.Item.properties:type_name -> slg.common.v1.Item.PropertiesEntry
-	0,  // 1: slg.common.v1.Resource.type:type_name -> slg.common.v1.ResourceType
-	1,  // 2: slg.common.v1.ErrorInfo.code:type_name -> slg.common.v1.ErrorCode
-	11, // 3: slg.common.v1.ErrorInfo.context:type_name -> slg.common.v1.ErrorInfo.ContextEntry
-	2,  // 4: slg.common.v1.PlayerInfo.status:type_name -> slg.common.v1.PlayerStatus
+	10, // 0: slg.common.v1_0_0.Item.properties:type_name -> slg.common.v1_0_0.Item.PropertiesEntry
+	0,  // 1: slg.common.v1_0_0.Resource.type:type_name -> slg.common.v1_0_0.ResourceType
+	1,  // 2: slg.common.v1_0_0.ErrorInfo.code:type_name -> slg.common.v1_0_0.ErrorCode
+	11, // 3: slg.common.v1_0_0.ErrorInfo.context:type_name -> slg.common.v1_0_0.ErrorInfo.ContextEntry
+	2,  // 4: slg.common.v1_0_0.PlayerInfo.status:type_name -> slg.common.v1_0_0.PlayerStatus
 	5,  // [5:5] is the sub-list for method output_type
 	5,  // [5:5] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name

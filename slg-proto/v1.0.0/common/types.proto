@@ -1,5 +1,5 @@
 syntax = "proto3";
-package slg.common.v1;
+package slg.common.v1_0_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/common;common";
 

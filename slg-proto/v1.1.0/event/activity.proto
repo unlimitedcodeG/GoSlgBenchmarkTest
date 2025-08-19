@@ -1,9 +1,9 @@
 syntax = "proto3";
-package slg.event.v1;
+package slg.event.v1_1_0;
 
 option go_package = "GoSlgBenchmarkTest/generated/slg/v1_1_0/event;event";
 
-import "slg-proto/v1.1.0/common/types.proto";
+import "../common/types.proto";
 
 // 活动信息请求
 message ActivityInfoRequest {
@@ -121,7 +121,7 @@ message ActivityReward {
     string reward_id = 1;                   // 奖励ID
     string reward_name = 2;                 // 奖励名称
     ActivityRewardType reward_type = 3;     // 奖励类型
-    repeated slg.common.v1.Item items = 4;  // 物品奖励
+    repeated slg.common.v1_1_0.Item items = 4;  // 物品奖励
     int32 experience = 5;                   // 经验奖励
     int32 gold = 6;                         // 金币奖励
     string title_id = 7;                    // 称号ID
