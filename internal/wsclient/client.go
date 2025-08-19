@@ -114,6 +114,7 @@ type Client struct {
 
 	// 重连控制
 	reconnectCount atomic.Int32
+	reconnects     atomic.Int32 // 重连次数统计
 
 	// 帧解码器
 	frameDecoder *protocol.FrameDecoder
@@ -540,6 +541,7 @@ func (c *Client) doReconnect() {
 		log.Printf("Reconnected successfully")
 		c.setState(StateConnected)
 		c.reconnectCount.Store(0) // 重置重连计数
+		c.incrReconnect()         // 增加重连成功计数
 	}
 }
 
@@ -565,12 +567,33 @@ func (c *Client) compareAndSwapState(oldState, newState ClientState) bool {
 	return swapped
 }
 
+// Reconnects 获取重连次数（线程安全）
+func (c *Client) Reconnects() int {
+	return int(c.reconnects.Load())
+}
+
+// incrReconnect 增加重连次数（线程安全）
+func (c *Client) incrReconnect() {
+	c.reconnects.Add(1)
+}
+
+// setLastSeq 设置最后序列号（线程安全）
+func (c *Client) setLastSeq(v uint64) {
+	c.lastSeq.Store(v)
+}
+
+// getLastSeq 获取最后序列号（线程安全）
+func (c *Client) getLastSeq() uint64 {
+	return c.lastSeq.Load()
+}
+
 // GetStats 获取客户端统计信息
 func (c *Client) GetStats() map[string]interface{} {
 	return map[string]interface{}{
 		"state":           c.getState().String(),
 		"last_seq":        c.lastSeq.Load(),
 		"reconnect_count": c.reconnectCount.Load(),
+		"reconnects":      c.reconnects.Load(),
 		"avg_rtt_ms":      time.Duration(c.avgRTT.Load()).Milliseconds(),
 	}
 }

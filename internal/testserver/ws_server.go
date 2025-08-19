@@ -63,8 +63,16 @@ type Connection struct {
 	Stats    *ConnectionStats
 
 	// 控制标志
-	stopChan chan struct{}
-	mu       sync.RWMutex
+	stopChan  chan struct{}
+	closeOnce sync.Once
+	mu        sync.RWMutex
+}
+
+// safeClose 安全关闭连接的stopChan
+func (c *Connection) safeClose() {
+	c.closeOnce.Do(func() {
+		close(c.stopChan)
+	})
 }
 
 // Server 测试用WebSocket服务器
@@ -327,7 +335,7 @@ func (s *Server) handleLogin(conn *Connection) bool {
 // messageReadLoop 消息读取循环
 func (s *Server) messageReadLoop(conn *Connection) {
 	defer func() {
-		close(conn.stopChan)
+		conn.safeClose()
 	}()
 
 	conn.Conn.SetReadLimit(512 * 1024) // 512KB限制
@@ -501,6 +509,11 @@ func (s *Server) broadcastMessage(opcode uint16, message proto.Message) {
 	s.connections.Range(func(key, value interface{}) bool {
 		conn := value.(*Connection)
 
+		// 只向已认证的连接推送消息
+		if conn.PlayerID == "" {
+			return true // 跳过未认证的连接
+		}
+
 		conn.mu.Lock()
 		conn.Conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
 		err := conn.Conn.WriteMessage(websocket.BinaryMessage, frame)
@@ -536,7 +549,7 @@ func (s *Server) closeConnection(conn *Connection, reason string) {
 	select {
 	case <-conn.stopChan:
 	default:
-		close(conn.stopChan)
+		conn.safeClose()
 	}
 
 	log.Printf("Connection closed: %s, reason: %s", conn.ID, reason)

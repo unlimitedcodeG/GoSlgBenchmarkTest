@@ -81,6 +81,9 @@ type SessionReplayer struct {
 	cancel   context.CancelFunc
 	pauseCh  chan struct{}
 	resumeCh chan struct{}
+	stopCh   chan struct{}
+	stopOnce sync.Once
+	wg       sync.WaitGroup
 }
 
 // NewSessionReplayer 创建新的会话回放器
@@ -107,6 +110,7 @@ func NewSessionReplayer(session *Session, config *ReplayConfig) *SessionReplayer
 		cancel:   cancel,
 		pauseCh:  make(chan struct{}),
 		resumeCh: make(chan struct{}),
+		stopCh:   make(chan struct{}),
 	}
 
 	return replayer
@@ -133,7 +137,12 @@ func (r *SessionReplayer) Play() error {
 	r.mu.Unlock()
 
 	// 启动回放协程
-	go r.replayLoop()
+	r.wg.Add(1)
+	go func() {
+		defer r.wg.Done()
+		defer r.stopOnce.Do(func() { close(r.stopCh) })
+		r.replayLoop()
+	}()
 
 	return nil
 }
@@ -187,19 +196,33 @@ func (r *SessionReplayer) Resume() error {
 
 // Stop 停止回放
 func (r *SessionReplayer) Stop() error {
+	r.mu.Lock()
 	if !r.isPlaying {
+		r.mu.Unlock()
 		return nil
 	}
-
-	r.mu.Lock()
+	
 	r.isPlaying = false
 	r.isPaused = false
 	r.stats.EndTime = time.Now()
 	r.stats.Duration = r.stats.EndTime.Sub(r.stats.StartTime)
 	r.mu.Unlock()
 
+	r.stopOnce.Do(func() { close(r.stopCh) })
 	r.cancel()
 	return nil
+}
+
+// Wait 等待回放完成
+func (r *SessionReplayer) Wait() {
+	r.wg.Wait()
+}
+
+// ReplayedEvents 获取已回放事件数量
+func (r *SessionReplayer) ReplayedEvents() int {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.stats.ReplayedEvents
 }
 
 // GetStats 获取回放统计
@@ -236,7 +259,11 @@ func (r *SessionReplayer) replayLoop() {
 		}
 
 		// 检查是否需要暂停
-		if r.isPaused {
+		r.mu.RLock()
+		paused := r.isPaused
+		r.mu.RUnlock()
+		
+		if paused {
 			select {
 			case <-r.resumeCh:
 				r.mu.Lock()
@@ -244,12 +271,16 @@ func (r *SessionReplayer) replayLoop() {
 				r.mu.Unlock()
 			case <-r.ctx.Done():
 				return
+			case <-r.stopCh:
+				return
 			}
 		}
 
 		// 应用事件过滤器
 		if !r.shouldReplayEvent(event) {
+			r.mu.Lock()
 			r.stats.SkippedEvents++
+			r.mu.Unlock()
 			continue
 		}
 
@@ -272,7 +303,9 @@ func (r *SessionReplayer) replayLoop() {
 				r.Pause()
 			}
 		} else {
+			r.mu.Lock()
 			r.stats.ReplayedEvents++
+			r.mu.Unlock()
 		}
 
 		// 更新统计

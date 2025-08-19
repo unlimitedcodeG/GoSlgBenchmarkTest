@@ -52,9 +52,8 @@ func TestReconnectAndSequenceMonotonic(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	var mu sync.Mutex
-	var receivedSeqs []uint64
-	var reconnectCount int
+	// 用channel收集序列号，避免数据竞争
+	seqCh := make(chan uint64, 1024)
 
 	config := wsclient.DefaultClientConfig("ws://127.0.0.1:18081/ws", "test-token")
 	config.ReconnectInterval = 500 * time.Millisecond
@@ -66,18 +65,17 @@ func TestReconnectAndSequenceMonotonic(t *testing.T) {
 	client.SetPushHandler(func(opcode uint16, message proto.Message) {
 		if opcode == protocol.OpBattlePush {
 			if battlePush, ok := message.(*gamev1.BattlePush); ok {
-				mu.Lock()
-				receivedSeqs = append(receivedSeqs, battlePush.Seq)
-				mu.Unlock()
+				select {
+				case seqCh <- battlePush.Seq:
+				default: // 防阻塞
+				}
 			}
 		}
 	})
 
-	// 设置状态变化处理器
+	// 设置状态变化处理器 - 使用client的原子接口
 	client.SetStateChangeHandler(func(oldState, newState wsclient.ClientState) {
-		if newState == wsclient.StateConnected && oldState == wsclient.StateReconnecting {
-			reconnectCount++
-		}
+		// 重连计数由client内部原子管理，这里不需要再单独计数
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -96,11 +94,12 @@ func TestReconnectAndSequenceMonotonic(t *testing.T) {
 
 	client.Close()
 
-	// 验证结果
-	mu.Lock()
-	seqs := make([]uint64, len(receivedSeqs))
-	copy(seqs, receivedSeqs)
-	mu.Unlock()
+	// 从channel收集所有序列号
+	close(seqCh)
+	var seqs []uint64
+	for seq := range seqCh {
+		seqs = append(seqs, seq)
+	}
 
 	require.Greater(t, len(seqs), 0, "Should receive at least one message")
 
@@ -112,7 +111,7 @@ func TestReconnectAndSequenceMonotonic(t *testing.T) {
 	}
 
 	t.Logf("Received %d messages with monotonic sequences", len(seqs))
-	t.Logf("Reconnect count: %d", reconnectCount)
+	t.Logf("Reconnect count: %d", client.Reconnects())
 }
 
 // TestHeartbeatAndRTT 测试心跳和RTT统计

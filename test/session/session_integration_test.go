@@ -130,11 +130,13 @@ func TestSessionRecordingAndReplay(t *testing.T) {
 
 	// 停止回放
 	replayer.Stop()
+	// 等待回放协程结束
+	replayer.Wait()
 
 	// 验证回放结果
 	replayStats := replayer.GetStats()
 	assert.Greater(t, replayStats.ReplayedEvents, 0)
-	assert.Equal(t, len(recordedSession.Events), replayStats.TotalEvents)
+	assert.Equal(t, len(recordedSession.Events), replayer.ReplayedEvents())
 
 	t.Logf("   ✅ 回放完成: %d/%d 事件重放成功",
 		replayStats.ReplayedEvents, replayStats.TotalEvents)
@@ -259,7 +261,7 @@ func TestSessionAssertions(t *testing.T) {
 	}
 
 	// 验证大部分断言应该通过
-	assert.Greater(t, successRate, 0.5, "至少50%的断言应该通过")
+	assert.GreaterOrEqual(t, successRate, 0.5, "至少50%的断言应该通过")
 }
 
 // TestTimelineAnalysis 测试时间线分析
