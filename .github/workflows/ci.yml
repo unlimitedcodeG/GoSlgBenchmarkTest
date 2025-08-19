@@ -57,7 +57,7 @@ jobs:
         run: |
           if [ -d "GoSlgBenchmarkTest/generated" ]; then
             mkdir -p generated
-            mv GoSlgBenchmarkTest/generated/* generated/
+            cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
           if [ -d "generated/slg/v1_0_0/GoSlgBenchmarkTest" ]; then
@@ -113,7 +113,7 @@ jobs:
         run: |
           if [ -d "GoSlgBenchmarkTest/generated" ]; then
             mkdir -p generated
-            mv GoSlgBenchmarkTest/generated/* generated/
+            cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
       - run: |
@@ -146,7 +146,7 @@ jobs:
         run: |
           if [ -d "GoSlgBenchmarkTest/generated" ]; then
             mkdir -p generated
-            mv GoSlgBenchmarkTest/generated/* generated/
+            cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
       - run: |
@@ -181,11 +181,7 @@ jobs:
         run: |
           if [ -d "GoSlgBenchmarkTest/generated" ]; then
             mkdir -p generated
-            if [ "$(uname)" = "Linux" ] || [ "$(uname)" = "Darwin" ]; then
-              mv GoSlgBenchmarkTest/generated/* generated/
-            else
-              robocopy GoSlgBenchmarkTest/generated generated /E /MOVE || exit 0
-            fi
+            cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
         shell: bash
@@ -221,7 +217,7 @@ jobs:
         run: |
           if [ -d "GoSlgBenchmarkTest/generated" ]; then
             mkdir -p generated
-            mv GoSlgBenchmarkTest/generated/* generated/
+            cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
       - run: go test ./... -v -count=1 -timeout=10m
