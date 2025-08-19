@@ -13,13 +13,13 @@ import (
 	"GoSlgBenchmarkTest/internal/wsclient"
 
 	// SLG v1.0.0 协议
-	v1_0_0_combat "GoSlgBenchmarkTest/generated/slg/v1_0_0/GoSlgBenchmarkTest/generated/slg/v1_0_0/combat"
-	v1_0_0_common "GoSlgBenchmarkTest/generated/slg/v1_0_0/GoSlgBenchmarkTest/generated/slg/v1_0_0/common"
+	v1_0_0_combat "GoSlgBenchmarkTest/generated/slg/v1_0_0/combat"
+	v1_0_0_common "GoSlgBenchmarkTest/generated/slg/v1_0_0/common"
 
 	// SLG v1.1.0 协议
-	v1_1_0_combat "GoSlgBenchmarkTest/generated/slg/v1_1_0/GoSlgBenchmarkTest/generated/slg/v1_1_0/combat"
-	v1_1_0_common "GoSlgBenchmarkTest/generated/slg/v1_1_0/GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
-	v1_1_0_event "GoSlgBenchmarkTest/generated/slg/v1_1_0/GoSlgBenchmarkTest/generated/slg/v1_1_0/event"
+	v1_1_0_combat "GoSlgBenchmarkTest/generated/slg/v1_1_0/combat"
+	v1_1_0_common "GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
+	v1_1_0_event "GoSlgBenchmarkTest/generated/slg/v1_1_0/event"
 )
 
 // TestSLGProtocolVersionCompatibility 测试SLG协议版本兼容性

@@ -47,13 +47,19 @@ jobs:
         run: |
           rm -rf generated/slg/v1_0_0/GoSlgBenchmarkTest
           rm -rf generated/slg/v1_1_0/GoSlgBenchmarkTest
+          rm -rf GoSlgBenchmarkTest/generated
 
       # 用 buf 生成（需 repo 根有 buf.yaml / buf.gen.yaml）
       - run: buf generate
 
-      # 验证生成的代码
-      - name: Verify generated code
+      # 验证生成的代码并移动到正确位置
+      - name: Fix generated code location
         run: |
+          if [ -d "GoSlgBenchmarkTest/generated" ]; then
+            mkdir -p generated
+            mv GoSlgBenchmarkTest/generated/* generated/
+            rm -rf GoSlgBenchmarkTest
+          fi
           if [ -d "generated/slg/v1_0_0/GoSlgBenchmarkTest" ]; then
             echo "Error: Duplicate package paths detected"
             exit 1
@@ -63,6 +69,7 @@ jobs:
       - name: Basic code checks
         env:
           GO111MODULE: on
+          GOFLAGS: -mod=mod
         run: |
           go fmt ./...
           go vet ./...

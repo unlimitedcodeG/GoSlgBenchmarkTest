@@ -1,7 +1,7 @@
 syntax = "proto3";
 package slg.combat.v1_0_0;
 
-option go_package = "slg/v1_0_0/combat;combat";
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/combat;combat";
 
 import "v1.0.0/common/types.proto";
 

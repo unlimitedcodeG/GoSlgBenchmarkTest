@@ -7,10 +7,10 @@
 package combat
 
 import (
+	common "GoSlgBenchmarkTest/generated/slg/v1_0_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	common "slg/v1_0_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -1195,8 +1195,8 @@ const file_v1_0_0_combat_battle_proto_rawDesc = "" +
 	"\x16BUFF_TYPE_DEFENSE_DOWN\x10\x05\x12\x18\n" +
 	"\x14BUFF_TYPE_SPEED_DOWN\x10\x06\x12\x14\n" +
 	"\x10BUFF_TYPE_POISON\x10\a\x12\x1a\n" +
-	"\x16BUFF_TYPE_REGENERATION\x10\bB\x9c\x01\n" +
-	"\x15com.slg.combat.v1_0_0B\vBattleProtoP\x01Z\x18slg/v1_0_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V100\xca\x02\x0fSlg\\Combat\\V100\xe2\x02\x1bSlg\\Combat\\V100\\GPBMetadata\xea\x02\x11Slg::Combat::V100b\x06proto3"
+	"\x16BUFF_TYPE_REGENERATION\x10\bB\xb9\x01\n" +
+	"\x15com.slg.combat.v1_0_0B\vBattleProtoP\x01Z5GoSlgBenchmarkTest/generated/slg/v1_0_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V100\xca\x02\x0fSlg\\Combat\\V100\xe2\x02\x1bSlg\\Combat\\V100\\GPBMetadata\xea\x02\x11Slg::Combat::V100b\x06proto3"
 
 var (
 	file_v1_0_0_combat_battle_proto_rawDescOnce sync.Once
