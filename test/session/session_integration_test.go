@@ -407,11 +407,7 @@ func TestSessionExportAndImport(t *testing.T) {
 	sessionID := fmt.Sprintf("export_test_%d", time.Now().Unix())
 	recorder := session.NewSessionRecorder(sessionID)
 
-	// 添加一些测试事件
-	recorder.RecordEvent(session.EventConnect, map[string]interface{}{
-		"test": "export_import",
-	})
-
+	// 添加一些测试事件（CONNECT事件已经在构造函数中自动添加）
 	recorder.RecordEvent(session.EventMessageSend, map[string]interface{}{
 		"opcode": 1001,
 		"data":   "test_message",

@@ -345,7 +345,28 @@ func (r *SessionRecorder) GetStats() *SessionStats {
 
 // ExportJSON 导出为JSON格式
 func (r *SessionRecorder) ExportJSON() ([]byte, error) {
-	session := r.GetSession()
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	// 过滤系统事件，只保留业务相关事件
+	filteredEvents := make([]*SessionEvent, 0, len(r.events))
+	for _, event := range r.events {
+		// 跳过系统事件，只保留业务事件
+		if event.Type == EventHeartbeat || event.Type == EventLogin || event.Type == EventDisconnect {
+			continue
+		}
+		filteredEvents = append(filteredEvents, event)
+	}
+
+	session := &Session{
+		ID:        r.sessionID,
+		StartTime: r.startTime,
+		EndTime:   time.Now(),
+		Events:    filteredEvents,
+		Frames:    append([]*MessageFrame{}, r.frames...),
+		Stats:     r.stats,
+	}
+	
 	return json.MarshalIndent(session, "", "  ")
 }
 
