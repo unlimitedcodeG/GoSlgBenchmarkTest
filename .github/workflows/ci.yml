@@ -8,6 +8,7 @@ on:
 
 env:
   GO_VERSION: '1.24'
+  GO111MODULE: on
 
 jobs:
   # 代码检查和测试
@@ -60,6 +61,8 @@ jobs:
 
       # 基础代码检查
       - name: Basic code checks
+        env:
+          GO111MODULE: on
         run: |
           go fmt ./...
           go vet ./...
