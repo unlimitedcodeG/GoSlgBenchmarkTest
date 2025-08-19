@@ -7,10 +7,10 @@
 package event
 
 import (
+	common "GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	common "slg/v1_1_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -1950,8 +1950,8 @@ const file_v1_1_0_event_activity_proto_rawDesc = "" +
 	"\x1cACTIVITY_RESULT_NOT_ELIGIBLE\x10\x03\x12%\n" +
 	"!ACTIVITY_RESULT_ALREADY_COMPLETED\x10\x04\x12\x1f\n" +
 	"\x1bACTIVITY_RESULT_NOT_STARTED\x10\x05\x12\x19\n" +
-	"\x15ACTIVITY_RESULT_ENDED\x10\x06B\x97\x01\n" +
-	"\x14com.slg.event.v1_1_0B\rActivityProtoP\x01Z\x16slg/v1_1_0/event;event\xa2\x02\x03SEV\xaa\x02\x0eSlg.Event.V110\xca\x02\x0eSlg\\Event\\V110\xe2\x02\x1aSlg\\Event\\V110\\GPBMetadata\xea\x02\x10Slg::Event::V110b\x06proto3"
+	"\x15ACTIVITY_RESULT_ENDED\x10\x06B\xb4\x01\n" +
+	"\x14com.slg.event.v1_1_0B\rActivityProtoP\x01Z3GoSlgBenchmarkTest/generated/slg/v1_1_0/event;event\xa2\x02\x03SEV\xaa\x02\x0eSlg.Event.V110\xca\x02\x0eSlg\\Event\\V110\xe2\x02\x1aSlg\\Event\\V110\\GPBMetadata\xea\x02\x10Slg::Event::V110b\x06proto3"
 
 var (
 	file_v1_1_0_event_activity_proto_rawDescOnce sync.Once

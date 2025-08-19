@@ -1,5 +1,5 @@
 # 修复 proto 文件中的 go_package 选项，使其生成正确的 Go 导入路径
-Write-Host "Fixing go_package options to generate correct Go import paths..." -ForegroundColor Blue
+Write-Host "Fixing go_package options to generate correct Go import paths for CI..." -ForegroundColor Blue
 
 # 修复 v1.0.0 文件
 $files_v1_0_0 = @(
@@ -55,5 +55,5 @@ foreach ($file in $files_v1_1_0) {
     }
 }
 
-Write-Host "go_package options fixed to generate correct Go import paths!" -ForegroundColor Green
+Write-Host "go_package options fixed for CI!" -ForegroundColor Green
 Write-Host "Now you can regenerate the Go code with: buf generate" -ForegroundColor Cyan 

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package slg.building.v1_0_0;
 
-option go_package = "slg/v1_0_0/building;building";
+option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/building;building";
 
 import "v1.0.0/common/types.proto";
 

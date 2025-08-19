@@ -90,8 +90,8 @@ jobs:
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
       - run: |
-          go install github.com/cenkalti/backoff/v4@latest
-          go install gopkg.in/yaml.v3@latest
+          go mod download
+          go mod tidy
       - run: buf generate
       - run: |
           go test ./test -run=^$ -bench=. -benchmem -count=3 -timeout=10m | tee benchmark_results.txt
@@ -113,8 +113,8 @@ jobs:
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
       - run: |
-          go install github.com/cenkalti/backoff/v4@latest
-          go install gopkg.in/yaml.v3@latest
+          go mod download
+          go mod tidy
       - run: buf generate
       - run: |
           # 运行每个模糊测试30秒
@@ -138,8 +138,8 @@ jobs:
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
       - run: |
-          go install github.com/cenkalti/backoff/v4@latest
-          go install gopkg.in/yaml.v3@latest
+          go mod download
+          go mod tidy
       - run: buf generate
       - run: go build -v ./...
       - run: go test -c ./test
@@ -160,7 +160,7 @@ jobs:
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
       - run: |
-          go install github.com/cenkalti/backoff/v4@latest
-          go install gopkg.in/yaml.v3@latest
+          go mod download
+          go mod tidy
       - run: buf generate
       - run: go test ./... -v -count=1 -timeout=10m
