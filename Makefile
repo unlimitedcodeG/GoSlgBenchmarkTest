@@ -1,7 +1,7 @@
 # Go Unity长连接+Protobuf测试项目 Makefile
 # 项目: GoSlgBenchmarkTest
 
-.PHONY: help proto test test-race test-short fuzz bench clean install-deps lint format run-server run-client deps-check tools-install
+.PHONY: help proto test test-race test-short fuzz bench clean install-deps lint format run-server run-client deps-check tools-install ci-prepare ci-test ci-lint
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -34,6 +34,11 @@ help: ## 显示帮助信息
 	@echo "  $(COLOR_YELLOW)generate-slg-proto$(COLOR_RESET)   生成SLG协议代码 VERSION=v1.0.0"
 	@echo "  $(COLOR_YELLOW)validate-slg-proto$(COLOR_RESET)   验证SLG协议 VERSION=v1.0.0"
 	@echo "  $(COLOR_YELLOW)list-slg-versions$(COLOR_RESET)    列出所有SLG协议版本"
+	@echo ""
+	@echo "$(COLOR_GREEN)CI 相关命令:$(COLOR_RESET)"
+	@echo "  $(COLOR_YELLOW)ci-prepare$(COLOR_RESET)          准备CI环境"
+	@echo "  $(COLOR_YELLOW)ci-test$(COLOR_RESET)             运行CI测试"
+	@echo "  $(COLOR_YELLOW)ci-lint$(COLOR_RESET)             运行CI代码检查"
 
 # 安装工具依赖
 tools-install: ## 安装必要的工具
@@ -102,56 +107,49 @@ test-short: proto ## 运行短测试
 	go test ./... -v -short -count=1
 	@echo "$(COLOR_GREEN)短测试完成$(COLOR_RESET)"
 
-# 运行测试并生成覆盖率报告
-test-coverage: proto ## 运行测试并生成覆盖率报告
-	@echo "$(COLOR_BLUE)运行测试覆盖率分析...$(COLOR_RESET)"
-	@mkdir -p $(COVERAGE_DIR)
-	go test ./... -v -race -coverprofile=$(COVERAGE_DIR)/coverage.out -covermode=atomic
-	go tool cover -html=$(COVERAGE_DIR)/coverage.out -o $(COVERAGE_DIR)/coverage.html
-	go tool cover -func=$(COVERAGE_DIR)/coverage.out | tail -1
-	@echo "$(COLOR_GREEN)覆盖率报告生成完成: $(COVERAGE_DIR)/coverage.html$(COLOR_RESET)"
+# 运行基准测试
+bench: proto ## 运行基准测试
+	@echo "$(COLOR_BLUE)运行基准测试...$(COLOR_RESET)"
+	go test ./test -run=^$ -bench=. -benchmem -count=3
+	@echo "$(COLOR_GREEN)基准测试完成$(COLOR_RESET)"
 
 # 运行模糊测试
 fuzz: proto ## 运行模糊测试
 	@echo "$(COLOR_BLUE)运行模糊测试...$(COLOR_RESET)"
-	@echo "$(COLOR_YELLOW)测试BattlePush反序列化...$(COLOR_RESET)"
-	go test ./test -run=^$$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s
-	@echo "$(COLOR_YELLOW)测试Frame解码...$(COLOR_RESET)"
-	go test ./test -run=^$$ -fuzz=FuzzFrameDecode -fuzztime=30s
+	go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s
+	go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s
+	go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s
 	@echo "$(COLOR_GREEN)模糊测试完成$(COLOR_RESET)"
 
-# 运行基准测试
-bench: proto ## 运行基准测试
-	@echo "$(COLOR_BLUE)运行基准测试...$(COLOR_RESET)"
-	@mkdir -p $(BUILD_DIR)
-	go test ./test -run=^$$ -bench=. -benchmem -count=3 | tee $(BUILD_DIR)/benchmark.txt
-	@echo "$(COLOR_GREEN)基准测试完成，结果保存到: $(BUILD_DIR)/benchmark.txt$(COLOR_RESET)"
+# 清理构建文件
+clean: ## 清理构建文件
+	@echo "$(COLOR_BLUE)清理构建文件...$(COLOR_RESET)"
+	rm -rf $(BUILD_DIR)
+	rm -rf $(COVERAGE_DIR)
+	rm -rf generated/slg/v1_0_0/GoSlgBenchmarkTest
+	rm -rf generated/slg/v1_1_0/GoSlgBenchmarkTest
+	go clean -cache -testcache
+	@echo "$(COLOR_GREEN)清理完成$(COLOR_RESET)"
 
-# 运行性能分析
-profile: proto ## 运行性能分析
-	@echo "$(COLOR_BLUE)运行CPU性能分析...$(COLOR_RESET)"
-	@mkdir -p $(BUILD_DIR)
-	go test ./test -run=^$$ -bench=BenchmarkConcurrentClients -cpuprofile=$(BUILD_DIR)/cpu.prof -memprofile=$(BUILD_DIR)/mem.prof
-	@echo "$(COLOR_GREEN)性能分析完成:$(COLOR_RESET)"
-	@echo "  CPU分析: go tool pprof $(BUILD_DIR)/cpu.prof"
-	@echo "  内存分析: go tool pprof $(BUILD_DIR)/mem.prof"
+# CI 准备
+ci-prepare: ## 准备CI环境
+	@echo "$(COLOR_BLUE)准备CI环境...$(COLOR_RESET)"
+	go mod download
+	@echo "$(COLOR_GREEN)CI环境准备完成$(COLOR_RESET)"
 
-# 构建测试服务器
-build-server: proto ## 构建测试服务器
-	@echo "$(COLOR_BLUE)构建测试服务器...$(COLOR_RESET)"
-	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/test-server ./cmd/server
-	@echo "$(COLOR_GREEN)测试服务器构建完成: $(BUILD_DIR)/test-server$(COLOR_RESET)"
+# CI 测试
+ci-test: ci-prepare ## 运行CI测试
+	@echo "$(COLOR_BLUE)运行CI测试...$(COLOR_RESET)"
+	buf generate
+	go test ./... -v -race -count=1 -timeout=10m
+	go test ./... -v -race -coverprofile=coverage.out -covermode=atomic -timeout=10m
+	@echo "$(COLOR_GREEN)CI测试完成$(COLOR_RESET)"
 
-# 构建客户端工具
-build-client: proto ## 构建客户端工具
-	@echo "$(COLOR_BLUE)构建客户端工具...$(COLOR_RESET)"
-	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/test-client ./cmd/client
-	@echo "$(COLOR_GREEN)客户端工具构建完成: $(BUILD_DIR)/test-client$(COLOR_RESET)"
-
-# 构建所有二进制文件
-build-all: build-server build-client ## 构建所有二进制文件
+# CI 代码检查
+ci-lint: ci-prepare ## 运行CI代码检查
+	@echo "$(COLOR_BLUE)运行CI代码检查...$(COLOR_RESET)"
+	golangci-lint run ./...
+	@echo "$(COLOR_GREEN)CI代码检查完成$(COLOR_RESET)"
 
 # 运行测试服务器
 run-server: build-server ## 运行测试服务器
@@ -202,15 +200,6 @@ quick: proto test-short lint ## 快速检查（短测试 + 代码检查）
 # 发布准备
 release-check: verify test-coverage bench ## 发布前检查
 	@echo "$(COLOR_GREEN)发布检查完成!$(COLOR_RESET)"
-
-# 清理构建文件
-clean: ## 清理构建文件和缓存
-	@echo "$(COLOR_BLUE)清理构建文件...$(COLOR_RESET)"
-	go clean -cache -testcache -modcache
-	rm -rf $(BUILD_DIR)
-	rm -rf $(COVERAGE_DIR)
-	rm -rf testdata/*.bin
-	@echo "$(COLOR_GREEN)清理完成$(COLOR_RESET)"
 
 # 显示项目状态
 status: ## 显示项目状态
