@@ -3,7 +3,7 @@ package slg.combat.v1_1_0;
 
 option go_package = "slg/v1_1_0/combat;combat";
 
-import "slg-proto/v1.1.0/common/types.proto";
+import "v1.1.0/common/types.proto";
 
 // PVP匹配请求
 message PvpMatchRequest {
@@ -20,8 +20,8 @@ message PvpMatchResponse {
     PvpMatchResult result = 2;              // 匹配结果
     repeated PvpPlayer players = 3;         // 玩家列表
     string map_id = 4;                      // 地图ID
-    int64 start_time = 5;                   // 开始时�?
-    int32 estimated_wait_time = 6;          // 预估等待时间(�?
+    int64 start_time = 5;                   // 开始时�?
+    int32 estimated_wait_time = 6;          // 预估等待时间(�?
 }
 
 // PVP战斗结果
@@ -30,23 +30,23 @@ message PvpBattleResult {
     string winner_player_id = 2;            // 获胜玩家ID
     string winner_team_id = 3;              // 获胜队伍ID
     repeated PvpPlayerResult player_results = 4; // 玩家结果
-    int32 battle_duration = 5;              // 战斗时长(�?
+    int32 battle_duration = 5;              // 战斗时长(�?
     PvpEndReason end_reason = 6;            // 结束原因
 }
 
-// PVP排行榜请�?
+// PVP排行榜请�?
 message PvpLeaderboardRequest {
-    PvpLeaderboardType type = 1;            // 排行榜类�?
+    PvpLeaderboardType type = 1;            // 排行榜类�?
     int32 page = 2;                         // 页码
     int32 page_size = 3;                    // 页面大小
     string season_id = 4;                   // 赛季ID
 }
 
-// PVP排行榜响�?
+// PVP排行榜响�?
 message PvpLeaderboardResponse {
-    repeated PvpRankEntry entries = 1;      // 排行榜条�?
-    int32 total_count = 2;                  // 总数�?
-    PvpPlayerRank player_rank = 3;          // 玩家自己的排�?
+    repeated PvpRankEntry entries = 1;      // 排行榜条�?
+    int32 total_count = 2;                  // 总数�?
+    PvpPlayerRank player_rank = 3;          // 玩家自己的排�?
     string season_id = 4;                   // 当前赛季ID
     int64 season_end_time = 5;              // 赛季结束时间
 }
@@ -55,9 +55,9 @@ message PvpLeaderboardResponse {
 message PvpSeasonInfo {
     string season_id = 1;                   // 赛季ID
     string season_name = 2;                 // 赛季名称
-    int64 start_time = 3;                   // 开始时�?
+    int64 start_time = 3;                   // 开始时�?
     int64 end_time = 4;                     // 结束时间
-    PvpSeasonStatus status = 5;             // 赛季状�?
+    PvpSeasonStatus status = 5;             // 赛季状�?
     repeated PvpReward season_rewards = 6;   // 赛季奖励
     map<string, int32> rating_tiers = 7;    // 评分段位
 }
@@ -68,8 +68,8 @@ message PvpPlayer {
     string player_name = 2;                 // 玩家名称
     int32 rating = 3;                       // 评分
     PvpTier tier = 4;                       // 段位
-    int32 win_count = 5;                    // 胜场�?
-    int32 lose_count = 6;                   // 败场�?
+    int32 win_count = 5;                    // 胜场�?
+    int32 lose_count = 6;                   // 败场�?
     string avatar_id = 7;                   // 头像ID
     string guild_name = 8;                  // 公会名称
 }
@@ -79,36 +79,36 @@ message PvpPlayerResult {
     string player_id = 1;                   // 玩家ID
     bool is_winner = 2;                     // 是否获胜
     int32 rating_change = 3;                // 评分变化
-    PvpTier old_tier = 4;                   // 旧段�?
-    PvpTier new_tier = 5;                   // 新段�?
+    PvpTier old_tier = 4;                   // 旧段�?
+    PvpTier new_tier = 5;                   // 新段�?
     PvpReward reward = 6;                   // 奖励
     repeated PvpAchievement achievements = 7; // 成就
 }
 
-// PVP排行榜条�?
+// PVP排行榜条�?
 message PvpRankEntry {
     int32 rank = 1;                         // 排名
     PvpPlayer player = 2;                   // 玩家信息
     int32 points = 3;                       // 积分
-    int32 streak = 4;                       // 连胜/连败�?
+    int32 streak = 4;                       // 连胜/连败�?
 }
 
 // PVP玩家排名
 message PvpPlayerRank {
     int32 current_rank = 1;                 // 当前排名
-    int32 best_rank = 2;                    // 最佳排�?
+    int32 best_rank = 2;                    // 最佳排�?
     int32 rating = 3;                       // 当前评分
-    int32 best_rating = 4;                  // 历史最高评�?
+    int32 best_rating = 4;                  // 历史最高评�?
     PvpTier tier = 5;                       // 当前段位
 }
 
 // PVP奖励
 message PvpReward {
     int32 honor_points = 1;                 // 荣誉点数
-    int32 pvp_coins = 2;                    // PVP�?
+    int32 pvp_coins = 2;                    // PVP�?
     repeated slg.common.v1_1_0.Item items = 3;   // 物品奖励
     string title_id = 4;                    // 称号ID
-    int32 experience = 5;                   // 经验�?
+    int32 experience = 5;                   // 经验�?
 }
 
 // PVP成就
@@ -126,8 +126,8 @@ enum PvpMode {
     PVP_MODE_RANKED_3V3 = 2;               // 排位3v3
     PVP_MODE_CASUAL_1V1 = 3;               // 休闲1v1
     PVP_MODE_CASUAL_3V3 = 4;               // 休闲3v3
-    PVP_MODE_TOURNAMENT = 5;               // 锦标�?
-    PVP_MODE_GUILD_WAR = 6;                // 公会�?
+    PVP_MODE_TOURNAMENT = 5;               // 锦标�?
+    PVP_MODE_GUILD_WAR = 6;                // 公会�?
 }
 
 enum PvpMatchResult {
@@ -168,8 +168,8 @@ enum PvpLeaderboardType {
 
 enum PvpSeasonStatus {
     PVP_SEASON_STATUS_UNKNOWN = 0;
-    PVP_SEASON_STATUS_UPCOMING = 1;        // 即将开�?
-    PVP_SEASON_STATUS_ACTIVE = 2;          // 进行�?
+    PVP_SEASON_STATUS_UPCOMING = 1;        // 即将开�?
+    PVP_SEASON_STATUS_ACTIVE = 2;          // 进行�?
     PVP_SEASON_STATUS_ENDING = 3;          // 即将结束
-    PVP_SEASON_STATUS_ENDED = 4;           // 已结�?
+    PVP_SEASON_STATUS_ENDED = 4;           // 已结�?
 }

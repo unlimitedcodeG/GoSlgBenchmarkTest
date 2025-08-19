@@ -3,19 +3,19 @@ package slg.event.v1_1_0;
 
 option go_package = "slg/v1_1_0/event;event";
 
-import "slg-proto/v1.1.0/common/types.proto";
+import "v1.1.0/common/types.proto";
 
 // 活动信息请求
 message ActivityInfoRequest {
     string player_id = 1;                   // 玩家ID
-    repeated string activity_ids = 2;       // 指定活动ID列表(空表示所�?
-    bool include_ended = 3;                 // 是否包含已结束活�?
+    repeated string activity_ids = 2;       // 指定活动ID列表(空表示所�?
+    bool include_ended = 3;                 // 是否包含已结束活�?
 }
 
 // 活动信息响应
 message ActivityInfoResponse {
     repeated Activity activities = 1;        // 活动列表
-    int64 server_time = 2;                  // 服务器时�?
+    int64 server_time = 2;                  // 服务器时�?
 }
 
 // 参与活动请求
@@ -34,7 +34,7 @@ message ParticipateActivityResponse {
     string next_stage_id = 4;               // 下一阶段ID
 }
 
-// 活动排行榜请�?
+// 活动排行榜请�?
 message ActivityLeaderboardRequest {
     string activity_id = 1;                 // 活动ID
     string stage_id = 2;                    // 阶段ID
@@ -43,11 +43,11 @@ message ActivityLeaderboardRequest {
     int32 page_size = 5;                    // 页面大小
 }
 
-// 活动排行榜响�?
+// 活动排行榜响�?
 message ActivityLeaderboardResponse {
-    repeated ActivityRankEntry entries = 1; // 排行榜条�?
+    repeated ActivityRankEntry entries = 1; // 排行榜条�?
     ActivityPlayerRank player_rank = 2;     // 玩家排名
-    int32 total_count = 3;                  // 总参与人�?
+    int32 total_count = 3;                  // 总参与人�?
 }
 
 // 活动奖励领取请求
@@ -59,7 +59,7 @@ message ClaimActivityRewardRequest {
 
 // 活动奖励领取响应
 message ClaimActivityRewardResponse {
-    repeated ActivityReward rewards = 1;    // 领取的奖�?
+    repeated ActivityReward rewards = 1;    // 领取的奖�?
     ActivityProgress progress = 2;          // 更新后的进度
 }
 
@@ -69,8 +69,8 @@ message Activity {
     string activity_name = 2;               // 活动名称
     string description = 3;                 // 活动描述
     ActivityType activity_type = 4;         // 活动类型
-    ActivityStatus status = 5;              // 活动状�?
-    int64 start_time = 6;                   // 开始时�?
+    ActivityStatus status = 5;              // 活动状�?
+    int64 start_time = 6;                   // 开始时�?
     int64 end_time = 7;                     // 结束时间
     repeated ActivityStage stages = 8;      // 活动阶段
     repeated ActivityReward rewards = 9;    // 活动奖励
@@ -84,7 +84,7 @@ message ActivityStage {
     string stage_id = 1;                    // 阶段ID
     string stage_name = 2;                  // 阶段名称
     string description = 3;                 // 阶段描述
-    int64 start_time = 4;                   // 开始时�?
+    int64 start_time = 4;                   // 开始时�?
     int64 end_time = 5;                     // 结束时间
     repeated ActivityTask tasks = 6;        // 阶段任务
     ActivityStageType stage_type = 7;       // 阶段类型
@@ -99,8 +99,8 @@ message ActivityTask {
     ActivityTaskType task_type = 4;         // 任务类型
     map<string, int32> targets = 5;         // 任务目标
     ActivityReward reward = 6;              // 任务奖励
-    bool is_repeatable = 7;                 // 是否可重�?
-    int32 max_count = 8;                    // 最大完成次�?
+    bool is_repeatable = 7;                 // 是否可重�?
+    int32 max_count = 8;                    // 最大完成次�?
 }
 
 // 活动进度
@@ -110,10 +110,10 @@ message ActivityProgress {
     string current_stage_id = 3;            // 当前阶段ID
     map<string, int32> task_progress = 4;   // 任务进度
     map<string, int32> stage_progress = 5;  // 阶段进度
-    repeated string completed_tasks = 6;    // 已完成任�?
-    repeated string claimed_rewards = 7;    // 已领取奖�?
-    int32 total_score = 8;                  // 总积�?
-    int64 last_update_time = 9;             // 最后更新时�?
+    repeated string completed_tasks = 6;    // 已完成任�?
+    repeated string claimed_rewards = 7;    // 已领取奖�?
+    int32 total_score = 8;                  // 总积�?
+    int64 last_update_time = 9;             // 最后更新时�?
 }
 
 // 活动奖励
@@ -126,19 +126,19 @@ message ActivityReward {
     int32 gold = 6;                         // 金币奖励
     string title_id = 7;                    // 称号ID
     map<string, int32> resources = 8;       // 资源奖励
-    bool is_claimed = 9;                    // 是否已领�?
+    bool is_claimed = 9;                    // 是否已领�?
 }
 
 // 活动条件
 message ActivityCondition {
-    int32 min_level = 1;                    // 最低等�?
+    int32 min_level = 1;                    // 最低等�?
     repeated string required_quests = 2;    // 前置任务
-    repeated string required_items = 3;     // 需要物�?
+    repeated string required_items = 3;     // 需要物�?
     bool vip_only = 4;                      // 仅VIP
     repeated string forbidden_stages = 5;   // 禁止阶段
 }
 
-// 活动排行榜条�?
+// 活动排行榜条�?
 message ActivityRankEntry {
     int32 rank = 1;                         // 排名
     string player_id = 2;                   // 玩家ID
@@ -153,8 +153,8 @@ message ActivityRankEntry {
 message ActivityPlayerRank {
     int32 current_rank = 1;                 // 当前排名
     int32 score = 2;                        // 当前积分
-    int32 percentage = 3;                   // 排名百分�?
-    bool is_eligible_for_reward = 4;        // 是否有奖励资�?
+    int32 percentage = 3;                   // 排名百分�?
+    bool is_eligible_for_reward = 4;        // 是否有奖励资�?
 }
 
 // 枚举定义
@@ -172,11 +172,11 @@ enum ActivityType {
 
 enum ActivityStatus {
     ACTIVITY_STATUS_UNKNOWN = 0;
-    ACTIVITY_STATUS_UPCOMING = 1;           // 即将开�?
-    ACTIVITY_STATUS_ACTIVE = 2;             // 进行�?
+    ACTIVITY_STATUS_UPCOMING = 1;           // 即将开�?
+    ACTIVITY_STATUS_ACTIVE = 2;             // 进行�?
     ACTIVITY_STATUS_PAUSED = 3;             // 暂停
-    ACTIVITY_STATUS_ENDED = 4;              // 已结�?
-    ACTIVITY_STATUS_CANCELLED = 5;          // 已取�?
+    ACTIVITY_STATUS_ENDED = 4;              // 已结�?
+    ACTIVITY_STATUS_CANCELLED = 5;          // 已取�?
 }
 
 enum ActivityStageType {
@@ -192,7 +192,7 @@ enum ActivityTaskType {
     ACTIVITY_TASK_TYPE_KILL_MONSTER = 1;    // 击杀怪物
     ACTIVITY_TASK_TYPE_COLLECT_ITEM = 2;    // 收集物品
     ACTIVITY_TASK_TYPE_WIN_BATTLE = 3;      // 获胜战斗
-    ACTIVITY_TASK_TYPE_SPEND_RESOURCE = 4;  // 消耗资�?
+    ACTIVITY_TASK_TYPE_SPEND_RESOURCE = 4;  // 消耗资�?
     ACTIVITY_TASK_TYPE_LOGIN_DAYS = 5;      // 连续登录
     ACTIVITY_TASK_TYPE_GUILD_DONATE = 6;    // 公会捐献
     ACTIVITY_TASK_TYPE_PVP_WIN = 7;         // PVP胜利
@@ -200,7 +200,7 @@ enum ActivityTaskType {
 
 enum ActivityRewardType {
     ACTIVITY_REWARD_TYPE_UNKNOWN = 0;
-    ACTIVITY_REWARD_TYPE_MILESTONE = 1;     // 里程碑奖�?
+    ACTIVITY_REWARD_TYPE_MILESTONE = 1;     // 里程碑奖�?
     ACTIVITY_REWARD_TYPE_RANKING = 2;       // 排行奖励
     ACTIVITY_REWARD_TYPE_PARTICIPATION = 3; // 参与奖励
     ACTIVITY_REWARD_TYPE_COMPLETION = 4;    // 完成奖励
@@ -219,8 +219,8 @@ enum ActivityResult {
     ACTIVITY_RESULT_UNKNOWN = 0;
     ACTIVITY_RESULT_SUCCESS = 1;            // 成功
     ACTIVITY_RESULT_FAILED = 2;             // 失败
-    ACTIVITY_RESULT_NOT_ELIGIBLE = 3;       // 不符合条�?
-    ACTIVITY_RESULT_ALREADY_COMPLETED = 4;  // 已完�?
-    ACTIVITY_RESULT_NOT_STARTED = 5;        // 未开�?
-    ACTIVITY_RESULT_ENDED = 6;              // 已结�?
+    ACTIVITY_RESULT_NOT_ELIGIBLE = 3;       // 不符合条�?
+    ACTIVITY_RESULT_ALREADY_COMPLETED = 4;  // 已完�?
+    ACTIVITY_RESULT_NOT_STARTED = 5;        // 未开�?
+    ACTIVITY_RESULT_ENDED = 6;              // 已结�?
 }

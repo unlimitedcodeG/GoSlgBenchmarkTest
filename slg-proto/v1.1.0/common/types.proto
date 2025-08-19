@@ -1,5 +1,5 @@
 syntax = "proto3";
-package slg.common.v1;
+package slg.common.v1_1_0;
 
 option go_package = "slg/v1_1_0/common;common";
 
@@ -19,12 +19,12 @@ message Item {
     string template_id = 2;                 // 物品模板ID
     int32 quantity = 3;                     // 数量
     int32 quality = 4;                      // 品质等级
-    map<string, string> properties = 5;     // 物品属�?
-    int64 expire_time = 6;                  // 过期时间�?
+    map<string, string> properties = 5;     // 物品属�?
+    int64 expire_time = 6;                  // 过期时间�?
     // v1.1.0 新增
     ItemRarity rarity = 7;                  // 稀有度
     repeated string enchantments = 8;       // 附魔效果
-    bool is_tradeable = 9;                  // 是否可交�?
+    bool is_tradeable = 9;                  // 是否可交�?
     string creator_id = 10;                 // 创建者ID
 }
 
@@ -32,8 +32,8 @@ message Item {
 message Resource {
     ResourceType type = 1;                  // 资源类型
     int64 amount = 2;                       // 数量
-    int64 max_amount = 3;                   // 最大数�?
-    int64 last_update = 4;                  // 最后更新时�?
+    int64 max_amount = 3;                   // 最大数�?
+    int64 last_update = 4;                  // 最后更新时�?
     // v1.1.0 新增
     int64 production_rate = 5;              // 生产速率(每秒)
     int64 protection_amount = 6;            // 保护资源数量
@@ -41,13 +41,13 @@ message Resource {
 
 // 通用错误信息
 message ErrorInfo {
-    ErrorCode code = 1;                     // 错误�?
+    ErrorCode code = 1;                     // 错误�?
     string message = 2;                     // 错误消息
     string details = 3;                     // 详细信息
-    map<string, string> context = 4;        // 错误上下�?
+    map<string, string> context = 4;        // 错误上下�?
     // v1.1.0 新增
     string trace_id = 5;                    // 追踪ID
-    int64 timestamp = 6;                    // 错误时间�?
+    int64 timestamp = 6;                    // 错误时间�?
 }
 
 // 通用玩家信息
@@ -55,22 +55,22 @@ message PlayerInfo {
     string player_id = 1;                   // 玩家ID
     string nickname = 2;                    // 昵称
     int32 level = 3;                        // 等级
-    int64 exp = 4;                          // 经验�?
+    int64 exp = 4;                          // 经验�?
     string avatar_url = 5;                  // 头像URL
-    PlayerStatus status = 6;                // 在线状�?
-    int64 last_login = 7;                   // 最后登录时�?
+    PlayerStatus status = 6;                // 在线状�?
+    int64 last_login = 7;                   // 最后登录时�?
     string alliance_id = 8;                 // 联盟ID
     // v1.1.0 新增
     int32 vip_level = 9;                    // VIP等级
     string title_id = 10;                   // 当前称号ID
-    PlayerRegion region = 11;               // 所属区�?
+    PlayerRegion region = 11;               // 所属区�?
     int32 power = 12;                       // 战力
 }
 
 // 通用时间范围
 message TimeRange {
     int64 start_time = 1;                   // 开始时间戳
-    int64 end_time = 2;                     // 结束时间�?
+    int64 end_time = 2;                     // 结束时间�?
     // v1.1.0 新增
     string timezone = 3;                    // 时区
     bool is_repeating = 4;                  // 是否重复
@@ -78,13 +78,13 @@ message TimeRange {
 
 // 通用分页信息
 message Pagination {
-    int32 page = 1;                         // 页码(�?开�?
+    int32 page = 1;                         // 页码(�?开�?
     int32 page_size = 2;                    // 每页大小
-    int32 total_count = 3;                  // 总数�?
-    int32 total_pages = 4;                  // 总页�?
+    int32 total_count = 3;                  // 总数�?
+    int32 total_pages = 4;                  // 总页�?
     // v1.1.0 新增
-    bool has_next = 5;                      // 是否有下一�?
-    bool has_prev = 6;                      // 是否有上一�?
+    bool has_next = 5;                      // 是否有下一�?
+    bool has_prev = 6;                      // 是否有上一�?
 }
 
 // v1.1.0 新增消息类型
@@ -94,9 +94,9 @@ message ConfigInfo {
     string config_id = 1;                   // 配置ID
     string config_name = 2;                 // 配置名称
     ConfigType config_type = 3;             // 配置类型
-    map<string, string> values = 4;         // 配置�?
+    map<string, string> values = 4;         // 配置�?
     int64 version = 5;                      // 配置版本
-    bool is_active = 6;                     // 是否激�?
+    bool is_active = 6;                     // 是否激�?
 }
 
 // 通用通知信息
@@ -114,9 +114,9 @@ message NotificationInfo {
 // 通用统计信息
 message StatisticsInfo {
     string stat_id = 1;                     // 统计ID
-    map<string, int64> counters = 2;        // 计数�?
+    map<string, int64> counters = 2;        // 计数�?
     map<string, float> gauges = 3;          // 仪表
-    int64 period_start = 4;                 // 统计周期开�?
+    int64 period_start = 4;                 // 统计周期开�?
     int64 period_end = 5;                   // 统计周期结束
 }
 
@@ -130,45 +130,45 @@ enum ResourceType {
     RESOURCE_TYPE_FOOD = 5;                 // 粮食
     RESOURCE_TYPE_GEM = 6;                  // 宝石
     RESOURCE_TYPE_ENERGY = 7;               // 能量
-    RESOURCE_TYPE_HONOR = 8;                // 荣誉�?
-    RESOURCE_TYPE_ALLIANCE_COIN = 9;        // 联盟�?
+    RESOURCE_TYPE_HONOR = 8;                // 荣誉�?
+    RESOURCE_TYPE_ALLIANCE_COIN = 9;        // 联盟�?
     // v1.1.0 新增
     RESOURCE_TYPE_CRYSTAL = 10;             // 水晶
-    RESOURCE_TYPE_MANA = 11;                // 魔法�?
-    RESOURCE_TYPE_PVP_COIN = 12;            // PVP�?
+    RESOURCE_TYPE_MANA = 11;                // 魔法�?
+    RESOURCE_TYPE_PVP_COIN = 12;            // PVP�?
     RESOURCE_TYPE_ACTIVITY_POINT = 13;      // 活动点数
 }
 
-// 通用错误�?
+// 通用错误�?
 enum ErrorCode {
     ERROR_CODE_SUCCESS = 0;                 // 成功
     ERROR_CODE_UNKNOWN = 1;                 // 未知错误
     ERROR_CODE_INVALID_PARAM = 2;           // 参数错误
-    ERROR_CODE_NOT_FOUND = 3;               // 资源不存�?
+    ERROR_CODE_NOT_FOUND = 3;               // 资源不存�?
     ERROR_CODE_PERMISSION_DENIED = 4;       // 权限不足
     ERROR_CODE_INSUFFICIENT_RESOURCE = 5;   // 资源不足
-    ERROR_CODE_COOLDOWN_ACTIVE = 6;         // 冷却�?
+    ERROR_CODE_COOLDOWN_ACTIVE = 6;         // 冷却�?
     ERROR_CODE_SYSTEM_MAINTENANCE = 7;      // 系统维护
-    ERROR_CODE_VERSION_MISMATCH = 8;        // 版本不匹�?
+    ERROR_CODE_VERSION_MISMATCH = 8;        // 版本不匹�?
     ERROR_CODE_RATE_LIMITED = 9;            // 请求过于频繁
     ERROR_CODE_ACCOUNT_BANNED = 10;         // 账号被封
     // v1.1.0 新增
-    ERROR_CODE_FEATURE_DISABLED = 11;       // 功能已禁�?
+    ERROR_CODE_FEATURE_DISABLED = 11;       // 功能已禁�?
     ERROR_CODE_TIMEOUT = 12;                // 超时
     ERROR_CODE_CONFLICT = 13;               // 冲突
     ERROR_CODE_QUOTA_EXCEEDED = 14;         // 配额超出
 }
 
-// 玩家状态枚�?
+// 玩家状态枚�?
 enum PlayerStatus {
     PLAYER_STATUS_OFFLINE = 0;              // 离线
     PLAYER_STATUS_ONLINE = 1;               // 在线
     PLAYER_STATUS_AWAY = 2;                 // 离开
     PLAYER_STATUS_BUSY = 3;                 // 忙碌
-    PLAYER_STATUS_IN_BATTLE = 4;            // 战斗�?
+    PLAYER_STATUS_IN_BATTLE = 4;            // 战斗�?
     // v1.1.0 新增
-    PLAYER_STATUS_IN_ACTIVITY = 5;          // 活动�?
-    PLAYER_STATUS_SPECTATING = 6;           // 观战�?
+    PLAYER_STATUS_IN_ACTIVITY = 5;          // 活动�?
+    PLAYER_STATUS_SPECTATING = 6;           // 观战�?
 }
 
 // v1.1.0 新增枚举
@@ -176,9 +176,9 @@ enum PlayerStatus {
 // 物品稀有度
 enum ItemRarity {
     ITEM_RARITY_UNKNOWN = 0;
-    ITEM_RARITY_COMMON = 1;                 // 普�?
-    ITEM_RARITY_UNCOMMON = 2;               // 不常�?
-    ITEM_RARITY_RARE = 3;                   // 稀�?
+    ITEM_RARITY_COMMON = 1;                 // 普�?
+    ITEM_RARITY_UNCOMMON = 2;               // 不常�?
+    ITEM_RARITY_RARE = 3;                   // 稀�?
     ITEM_RARITY_EPIC = 4;                   // 史诗
     ITEM_RARITY_LEGENDARY = 5;              // 传说
     ITEM_RARITY_MYTHIC = 6;                 // 神话
@@ -190,7 +190,7 @@ enum PlayerRegion {
     PLAYER_REGION_ASIA = 1;                 // 亚洲
     PLAYER_REGION_EUROPE = 2;               // 欧洲
     PLAYER_REGION_AMERICA = 3;              // 美洲
-    PLAYER_REGION_OCEANIA = 4;              // 大洋�?
+    PLAYER_REGION_OCEANIA = 4;              // 大洋�?
     PLAYER_REGION_AFRICA = 5;               // 非洲
 }
 
@@ -198,10 +198,10 @@ enum PlayerRegion {
 enum ConfigType {
     CONFIG_TYPE_UNKNOWN = 0;
     CONFIG_TYPE_GAME_SETTING = 1;           // 游戏设置
-    CONFIG_TYPE_BALANCE = 2;                // 数值平�?
-    CONFIG_TYPE_FEATURE_TOGGLE = 3;         // 功能开�?
-    CONFIG_TYPE_LOCALIZATION = 4;           // 本地�?
-    CONFIG_TYPE_MONETIZATION = 5;           // 商业�?
+    CONFIG_TYPE_BALANCE = 2;                // 数值平�?
+    CONFIG_TYPE_FEATURE_TOGGLE = 3;         // 功能开�?
+    CONFIG_TYPE_LOCALIZATION = 4;           // 本地�?
+    CONFIG_TYPE_MONETIZATION = 5;           // 商业�?
 }
 
 // 通知类型
