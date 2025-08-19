@@ -7,11 +7,12 @@ on:
     branches: [ master, main, develop ]
 
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.24'
 
 jobs:
-  test:
-    name: Test
+  # 代码质量检查
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +21,44 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      # buf 自带 toolchain，避免“protoc not found”
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - run: go mod download
+
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangcici-lint@latest
+
+      - name: Run linting
+        run: golangci-lint run ./...
+
+      - name: Check formatting
+        run: |
+          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+            echo "Code is not formatted. Please run 'go fmt ./...'"
+            gofmt -s -l .
+            exit 1
+          fi
+
+  # 代码检查和测试
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      # buf 自带 toolchain，避免"protoc not found"
       - uses: bufbuild/buf-setup-action@v1
 
       - uses: actions/cache@v4
@@ -34,13 +72,27 @@ jobs:
 
       - run: go mod download
 
+      # 清理旧的生成文件
+      - name: Clean generated files
+        run: |
+          rm -rf generated/slg/v1_0_0/GoSlgBenchmarkTest
+          rm -rf generated/slg/v1_1_0/GoSlgBenchmarkTest
+
       # 用 buf 生成（需 repo 根有 buf.yaml / buf.gen.yaml）
       - run: buf generate
 
-      - run: go test ./... -v -race -count=1
+      # 验证生成的代码
+      - name: Verify generated code
+        run: |
+          if [ -d "generated/slg/v1_0_0/GoSlgBenchmarkTest" ]; then
+            echo "Error: Duplicate package paths detected"
+            exit 1
+          fi
+
+      - run: go test ./... -v -race -count=1 -timeout=10m
 
       - run: |
-          go test ./... -v -race -coverprofile=coverage.out -covermode=atomic
+          go test ./... -v -race -coverprofile=coverage.out -covermode=atomic -timeout=10m
           go tool cover -func=coverage.out | tail -1
 
       - uses: codecov/codecov-action@v4
@@ -49,6 +101,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
 
+  # 基准测试
   benchmark:
     name: Benchmark
     runs-on: ubuntu-latest
@@ -62,12 +115,13 @@ jobs:
       - run: go mod download
       - run: buf generate
       - run: |
-          go test ./test -run=^$ -bench=. -benchmem -count=3 | tee benchmark_results.txt
+          go test ./test -run=^$ -bench=. -benchmem -count=3 -timeout=10m | tee benchmark_results.txt
       - uses: actions/upload-artifact@v4
         with:
           name: benchmark-results
           path: benchmark_results.txt
 
+  # 模糊测试
   fuzz:
     name: Fuzz Test
     runs-on: ubuntu-latest
@@ -81,10 +135,12 @@ jobs:
       - run: go mod download
       - run: buf generate
       - run: |
-          go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s
-          go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s
-          go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s
+          # 运行每个模糊测试30秒
+          go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s -timeout=5m
 
+  # 多平台构建测试
   build:
     name: Build
     runs-on: ${{ matrix.os }}
@@ -102,3 +158,36 @@ jobs:
       - run: buf generate
       - run: go build -v ./...
       - run: go test -c ./test
+
+  # 多 Go 版本测试
+  go-versions:
+    name: Go Versions
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      matrix:
+        go-version: ['1.22', '1.23', '1.24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      - uses: bufbuild/buf-setup-action@v1
+      - run: go mod download
+      - run: buf generate
+      - run: go test ./... -v -count=1 -timeout=10m
+
+  # 安全检查
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go mod download
+      - run: go list -m all | nancy sleuth
+      - run: go vet ./...
+      - run: go mod verify
