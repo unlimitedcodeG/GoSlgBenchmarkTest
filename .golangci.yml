@@ -1,5 +1,5 @@
 run:
-  timeout: 5m
+  timeout: 10m
   go: "1.24"
 
 linters:
@@ -26,11 +26,9 @@ linters:
     - noctx
     - nolintlint
     - prealloc
-    - structcheck
     - typecheck
     - unconvert
     - unparam
-    - varcheck
     - whitespace
 
 issues:
