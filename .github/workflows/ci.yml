@@ -35,11 +35,11 @@ jobs:
 
       - run: go mod download
 
-      # 安装缺失的依赖
-      - name: Install missing dependencies
+      # 下载并整理依赖
+      - name: Download and tidy dependencies
         run: |
-          go install github.com/cenkalti/backoff/v4@latest
-          go install gopkg.in/yaml.v3@latest
+          go mod download
+          go mod tidy
 
       # 清理旧的生成文件
       - name: Clean generated files
