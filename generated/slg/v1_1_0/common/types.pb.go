@@ -1614,9 +1614,9 @@ const file_v1_1_0_common_types_proto_rawDesc = "" +
 	"\x17NOTIFICATION_TYPE_GUILD\x10\x03\x12\x1c\n" +
 	"\x18NOTIFICATION_TYPE_FRIEND\x10\x04\x12\x1e\n" +
 	"\x1aNOTIFICATION_TYPE_ACTIVITY\x10\x05\x12!\n" +
-	"\x1dNOTIFICATION_TYPE_MAINTENANCE\x10\x06B\xb8\x01\n" +
+	"\x1dNOTIFICATION_TYPE_MAINTENANCE\x10\x06B\x9b\x01\n" +
 	"\x15com.slg.common.v1_1_0B\n" +
-	"TypesProtoP\x01Z5GoSlgBenchmarkTest/generated/slg/v1_1_0/common;common\xa2\x02\x03SCV\xaa\x02\x0fSlg.Common.V110\xca\x02\x0fSlg\\Common\\V110\xe2\x02\x1bSlg\\Common\\V110\\GPBMetadata\xea\x02\x11Slg::Common::V110b\x06proto3"
+	"TypesProtoP\x01Z\x18slg/v1_1_0/common;common\xa2\x02\x03SCV\xaa\x02\x0fSlg.Common.V110\xca\x02\x0fSlg\\Common\\V110\xe2\x02\x1bSlg\\Common\\V110\\GPBMetadata\xea\x02\x11Slg::Common::V110b\x06proto3"
 
 var (
 	file_v1_1_0_common_types_proto_rawDescOnce sync.Once

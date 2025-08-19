@@ -7,10 +7,10 @@
 package building
 
 import (
-	common "GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	common "slg/v1_1_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -2105,8 +2105,8 @@ const file_v1_1_0_building_city_proto_rawDesc = "" +
 	"\x15BONUS_TYPE_COMPLETION\x10\x01\x12\x18\n" +
 	"\x14BONUS_TYPE_MILESTONE\x10\x02\x12\x19\n" +
 	"\x15BONUS_TYPE_FIRST_TIME\x10\x03\x12\x15\n" +
-	"\x11BONUS_TYPE_RANDOM\x10\x04B\xc5\x01\n" +
-	"\x17com.slg.building.v1_1_0B\tCityProtoP\x01Z9GoSlgBenchmarkTest/generated/slg/v1_1_0/building;building\xa2\x02\x03SBV\xaa\x02\x11Slg.Building.V110\xca\x02\x11Slg\\Building\\V110\xe2\x02\x1dSlg\\Building\\V110\\GPBMetadata\xea\x02\x13Slg::Building::V110b\x06proto3"
+	"\x11BONUS_TYPE_RANDOM\x10\x04B\xa8\x01\n" +
+	"\x17com.slg.building.v1_1_0B\tCityProtoP\x01Z\x1cslg/v1_1_0/building;building\xa2\x02\x03SBV\xaa\x02\x11Slg.Building.V110\xca\x02\x11Slg\\Building\\V110\xe2\x02\x1dSlg\\Building\\V110\\GPBMetadata\xea\x02\x13Slg::Building::V110b\x06proto3"
 
 var (
 	file_v1_1_0_building_city_proto_rawDescOnce sync.Once

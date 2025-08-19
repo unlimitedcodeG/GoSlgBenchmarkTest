@@ -821,9 +821,9 @@ const file_v1_0_0_common_types_proto_rawDesc = "" +
 	"\x14PLAYER_STATUS_ONLINE\x10\x01\x12\x16\n" +
 	"\x12PLAYER_STATUS_AWAY\x10\x02\x12\x16\n" +
 	"\x12PLAYER_STATUS_BUSY\x10\x03\x12\x1b\n" +
-	"\x17PLAYER_STATUS_IN_BATTLE\x10\x04B\xb8\x01\n" +
+	"\x17PLAYER_STATUS_IN_BATTLE\x10\x04B\x9b\x01\n" +
 	"\x15com.slg.common.v1_0_0B\n" +
-	"TypesProtoP\x01Z5GoSlgBenchmarkTest/generated/slg/v1_0_0/common;common\xa2\x02\x03SCV\xaa\x02\x0fSlg.Common.V100\xca\x02\x0fSlg\\Common\\V100\xe2\x02\x1bSlg\\Common\\V100\\GPBMetadata\xea\x02\x11Slg::Common::V100b\x06proto3"
+	"TypesProtoP\x01Z\x18slg/v1_0_0/common;common\xa2\x02\x03SCV\xaa\x02\x0fSlg.Common.V100\xca\x02\x0fSlg\\Common\\V100\xe2\x02\x1bSlg\\Common\\V100\\GPBMetadata\xea\x02\x11Slg::Common::V100b\x06proto3"
 
 var (
 	file_v1_0_0_common_types_proto_rawDescOnce sync.Once

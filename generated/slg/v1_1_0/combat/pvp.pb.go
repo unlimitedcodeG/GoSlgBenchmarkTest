@@ -7,10 +7,10 @@
 package combat
 
 import (
-	common "GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	common "slg/v1_1_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -1483,8 +1483,8 @@ const file_v1_1_0_combat_pvp_proto_rawDesc = "" +
 	"\x1aPVP_SEASON_STATUS_UPCOMING\x10\x01\x12\x1c\n" +
 	"\x18PVP_SEASON_STATUS_ACTIVE\x10\x02\x12\x1c\n" +
 	"\x18PVP_SEASON_STATUS_ENDING\x10\x03\x12\x1b\n" +
-	"\x17PVP_SEASON_STATUS_ENDED\x10\x04B\xb6\x01\n" +
-	"\x15com.slg.combat.v1_1_0B\bPvpProtoP\x01Z5GoSlgBenchmarkTest/generated/slg/v1_1_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V110\xca\x02\x0fSlg\\Combat\\V110\xe2\x02\x1bSlg\\Combat\\V110\\GPBMetadata\xea\x02\x11Slg::Combat::V110b\x06proto3"
+	"\x17PVP_SEASON_STATUS_ENDED\x10\x04B\x99\x01\n" +
+	"\x15com.slg.combat.v1_1_0B\bPvpProtoP\x01Z\x18slg/v1_1_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V110\xca\x02\x0fSlg\\Combat\\V110\xe2\x02\x1bSlg\\Combat\\V110\\GPBMetadata\xea\x02\x11Slg::Combat::V110b\x06proto3"
 
 var (
 	file_v1_1_0_combat_pvp_proto_rawDescOnce sync.Once

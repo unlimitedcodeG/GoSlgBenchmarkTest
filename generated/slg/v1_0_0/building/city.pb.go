@@ -7,10 +7,10 @@
 package building
 
 import (
-	common "GoSlgBenchmarkTest/generated/slg/v1_0_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	common "slg/v1_0_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -1037,8 +1037,8 @@ const file_v1_0_0_building_city_proto_rawDesc = "" +
 	"\x1bPRODUCTION_STATUS_PRODUCING\x10\x02\x12\x1f\n" +
 	"\x1bPRODUCTION_STATUS_COMPLETED\x10\x03\x12\x1f\n" +
 	"\x1bPRODUCTION_STATUS_CANCELLED\x10\x04\x12\x1c\n" +
-	"\x18PRODUCTION_STATUS_PAUSED\x10\x05B\xc5\x01\n" +
-	"\x17com.slg.building.v1_0_0B\tCityProtoP\x01Z9GoSlgBenchmarkTest/generated/slg/v1_0_0/building;building\xa2\x02\x03SBV\xaa\x02\x11Slg.Building.V100\xca\x02\x11Slg\\Building\\V100\xe2\x02\x1dSlg\\Building\\V100\\GPBMetadata\xea\x02\x13Slg::Building::V100b\x06proto3"
+	"\x18PRODUCTION_STATUS_PAUSED\x10\x05B\xa8\x01\n" +
+	"\x17com.slg.building.v1_0_0B\tCityProtoP\x01Z\x1cslg/v1_0_0/building;building\xa2\x02\x03SBV\xaa\x02\x11Slg.Building.V100\xca\x02\x11Slg\\Building\\V100\xe2\x02\x1dSlg\\Building\\V100\\GPBMetadata\xea\x02\x13Slg::Building::V100b\x06proto3"
 
 var (
 	file_v1_0_0_building_city_proto_rawDescOnce sync.Once

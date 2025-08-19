@@ -7,10 +7,10 @@
 package combat
 
 import (
-	common "GoSlgBenchmarkTest/generated/slg/v1_1_0/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	common "slg/v1_1_0/common"
 	sync "sync"
 	unsafe "unsafe"
 )
@@ -1810,8 +1810,8 @@ const file_v1_1_0_combat_battle_proto_rawDesc = "" +
 	"\x1aENVIRONMENT_TYPE_FIRE_RAIN\x10\x01\x12\x1e\n" +
 	"\x1aENVIRONMENT_TYPE_ICE_STORM\x10\x02\x12#\n" +
 	"\x1fENVIRONMENT_TYPE_HEALING_SPRING\x10\x03\x12 \n" +
-	"\x1cENVIRONMENT_TYPE_MAGIC_FIELD\x10\x04B\xb9\x01\n" +
-	"\x15com.slg.combat.v1_1_0B\vBattleProtoP\x01Z5GoSlgBenchmarkTest/generated/slg/v1_1_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V110\xca\x02\x0fSlg\\Combat\\V110\xe2\x02\x1bSlg\\Combat\\V110\\GPBMetadata\xea\x02\x11Slg::Combat::V110b\x06proto3"
+	"\x1cENVIRONMENT_TYPE_MAGIC_FIELD\x10\x04B\x9c\x01\n" +
+	"\x15com.slg.combat.v1_1_0B\vBattleProtoP\x01Z\x18slg/v1_1_0/combat;combat\xa2\x02\x03SCV\xaa\x02\x0fSlg.Combat.V110\xca\x02\x0fSlg\\Combat\\V110\xe2\x02\x1bSlg\\Combat\\V110\\GPBMetadata\xea\x02\x11Slg::Combat::V110b\x06proto3"
 
 var (
 	file_v1_1_0_combat_battle_proto_rawDescOnce sync.Once
