@@ -1,7 +1,7 @@
 syntax = "proto3";
 package slg.combat.v1_0_0;
 
-option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/combat;combat";
+option go_package = "slg/v1_0_0/combat;combat";
 
 import "slg-proto/v1.0.0/common/types.proto";
 
@@ -12,19 +12,19 @@ message BattleRequest {
     BattleType battle_type = 3;              // 战斗类型
     repeated string unit_ids = 4;            // 参战单位ID列表
     slg.common.v1_0_0.Position target_pos = 5;   // 目标位置
-    int64 timestamp = 6;                     // 请求时间戳
+    int64 timestamp = 6;                     // 请求时间�?
 }
 
 // 战斗响应
 message BattleResponse {
     string battle_id = 1;                    // 战斗ID
     BattleResult result = 2;                 // 战斗结果
-    repeated BattleUnit battle_units = 3;    // 战斗单位状态
+    repeated BattleUnit battle_units = 3;    // 战斗单位状�?
     BattleReward reward = 4;                 // 战斗奖励
     int32 duration_ms = 5;                   // 战斗持续时间(毫秒)
 }
 
-// 战斗状态推送
+// 战斗状态推�?
 message BattleStatePush {
     string battle_id = 1;                    // 战斗ID
     uint64 frame_seq = 2;                    // 帧序列号
@@ -37,14 +37,14 @@ message BattleStatePush {
 message BattleUnit {
     string unit_id = 1;                      // 单位ID
     string template_id = 2;                  // 模板ID
-    int32 hp = 3;                           // 当前血量
-    int32 max_hp = 4;                       // 最大血量
-    int32 mp = 5;                           // 当前魔法值
-    int32 max_mp = 6;                       // 最大魔法值
+    int32 hp = 3;                           // 当前血�?
+    int32 max_hp = 4;                       // 最大血�?
+    int32 mp = 5;                           // 当前魔法�?
+    int32 max_mp = 6;                       // 最大魔法�?
     slg.common.v1_0_0.Position position = 7;     // 位置
-    UnitStatus status = 8;                   // 状态
+    UnitStatus status = 8;                   // 状�?
     repeated UnitBuff buffs = 9;             // 增益/减益效果
-    UnitStats stats = 10;                    // 单位属性
+    UnitStats stats = 10;                    // 单位属�?
 }
 
 // 战斗动作
@@ -53,38 +53,38 @@ message BattleAction {
     ActionType action_type = 2;              // 动作类型
     string source_unit_id = 3;               // 发起单位ID
     repeated string target_unit_ids = 4;     // 目标单位ID列表
-    int32 damage = 5;                        // 伤害值
-    int32 healing = 6;                       // 治疗值
+    int32 damage = 5;                        // 伤害�?
+    int32 healing = 6;                       // 治疗�?
     repeated string effect_ids = 7;          // 触发的效果ID列表
     slg.common.v1_0_0.Position target_pos = 8;   // 目标位置
 }
 
 // 战斗奖励
 message BattleReward {
-    int32 exp = 1;                          // 经验值
+    int32 exp = 1;                          // 经验�?
     int32 gold = 2;                         // 金币
     repeated slg.common.v1_0_0.Item items = 3;   // 物品奖励
-    int32 honor = 4;                        // 荣誉值
+    int32 honor = 4;                        // 荣誉�?
 }
 
 // 单位增益/减益效果
 message UnitBuff {
     string buff_id = 1;                     // 效果ID
     BuffType buff_type = 2;                 // 效果类型
-    int32 duration = 3;                     // 持续时间(秒)
+    int32 duration = 3;                     // 持续时间(�?
     int32 stack_count = 4;                  // 叠加层数
-    map<string, int32> effect_values = 5;   // 效果数值
+    map<string, int32> effect_values = 5;   // 效果数�?
 }
 
-// 单位属性
+// 单位属�?
 message UnitStats {
-    int32 attack = 1;                       // 攻击力
-    int32 defense = 2;                      // 防御力
+    int32 attack = 1;                       // 攻击�?
+    int32 defense = 2;                      // 防御�?
     int32 speed = 3;                        // 速度
-    int32 critical_rate = 4;                // 暴击率(千分比)
-    int32 critical_damage = 5;              // 暴击伤害(千分比)
-    int32 accuracy = 6;                     // 命中率(千分比)
-    int32 dodge = 7;                        // 闪避率(千分比)
+    int32 critical_rate = 4;                // 暴击�?千分�?
+    int32 critical_damage = 5;              // 暴击伤害(千分�?
+    int32 accuracy = 6;                     // 命中�?千分�?
+    int32 dodge = 7;                        // 闪避�?千分�?
 }
 
 // 枚举定义
@@ -92,8 +92,8 @@ enum BattleType {
     BATTLE_TYPE_UNKNOWN = 0;
     BATTLE_TYPE_PVE = 1;                    // PVE战斗
     BATTLE_TYPE_PVP = 2;                    // PVP战斗
-    BATTLE_TYPE_GUILD_WAR = 3;              // 公会战
-    BATTLE_TYPE_ARENA = 4;                  // 竞技场
+    BATTLE_TYPE_GUILD_WAR = 3;              // 公会�?
+    BATTLE_TYPE_ARENA = 4;                  // 竞技�?
     BATTLE_TYPE_RAID = 5;                   // 团队副本
 }
 
@@ -115,9 +115,9 @@ enum BattlePhase {
 enum UnitStatus {
     UNIT_STATUS_UNKNOWN = 0;
     UNIT_STATUS_IDLE = 1;                   // 待机
-    UNIT_STATUS_MOVING = 2;                 // 移动中
-    UNIT_STATUS_ATTACKING = 3;              // 攻击中
-    UNIT_STATUS_CASTING = 4;                // 施法中
+    UNIT_STATUS_MOVING = 2;                 // 移动�?
+    UNIT_STATUS_ATTACKING = 3;              // 攻击�?
+    UNIT_STATUS_CASTING = 4;                // 施法�?
     UNIT_STATUS_STUNNED = 5;                // 晕眩
     UNIT_STATUS_DEAD = 6;                   // 死亡
 }
@@ -125,8 +125,8 @@ enum UnitStatus {
 enum ActionType {
     ACTION_TYPE_UNKNOWN = 0;
     ACTION_TYPE_MOVE = 1;                   // 移动
-    ACTION_TYPE_ATTACK = 2;                 // 普通攻击
-    ACTION_TYPE_SKILL = 3;                  // 技能攻击
+    ACTION_TYPE_ATTACK = 2;                 // 普通攻�?
+    ACTION_TYPE_SKILL = 3;                  // 技能攻�?
     ACTION_TYPE_HEAL = 4;                   // 治疗
     ACTION_TYPE_BUFF = 5;                   // 增益
     ACTION_TYPE_DEBUFF = 6;                 // 减益
@@ -134,11 +134,11 @@ enum ActionType {
 
 enum BuffType {
     BUFF_TYPE_UNKNOWN = 0;
-    BUFF_TYPE_ATTACK_UP = 1;                // 攻击力提升
-    BUFF_TYPE_DEFENSE_UP = 2;               // 防御力提升
+    BUFF_TYPE_ATTACK_UP = 1;                // 攻击力提�?
+    BUFF_TYPE_DEFENSE_UP = 2;               // 防御力提�?
     BUFF_TYPE_SPEED_UP = 3;                 // 速度提升
-    BUFF_TYPE_ATTACK_DOWN = 4;              // 攻击力降低
-    BUFF_TYPE_DEFENSE_DOWN = 5;             // 防御力降低
+    BUFF_TYPE_ATTACK_DOWN = 4;              // 攻击力降�?
+    BUFF_TYPE_DEFENSE_DOWN = 5;             // 防御力降�?
     BUFF_TYPE_SPEED_DOWN = 6;               // 速度降低
     BUFF_TYPE_POISON = 7;                   // 中毒
     BUFF_TYPE_REGENERATION = 8;             // 回复

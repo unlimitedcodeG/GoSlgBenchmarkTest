@@ -1,7 +1,7 @@
 syntax = "proto3";
 package slg.building.v1_0_0;
 
-option go_package = "GoSlgBenchmarkTest/generated/slg/v1_0_0/building;building";
+option go_package = "slg/v1_0_0/building;building";
 
 import "slg-proto/v1.0.0/common/types.proto";
 
@@ -14,8 +14,8 @@ message CityInfo {
     slg.common.v1_0_0.Position position = 5;     // 城市位置
     repeated BuildingInfo buildings = 6;     // 建筑列表
     repeated slg.common.v1_0_0.Resource resources = 7; // 资源状况
-    CityStatus status = 8;                   // 城市状态
-    int64 last_update = 9;                   // 最后更新时间
+    CityStatus status = 8;                   // 城市状�?
+    int64 last_update = 9;                   // 最后更新时�?
 }
 
 // 建筑信息
@@ -25,18 +25,18 @@ message BuildingInfo {
     BuildingType building_type = 3;          // 建筑类型
     int32 building_level = 4;                // 建筑等级
     slg.common.v1_0_0.Position position = 5;     // 建筑位置
-    BuildingStatus status = 6;               // 建筑状态
-    int64 construction_start = 7;            // 建造开始时间
-    int64 construction_end = 8;              // 建造完成时间
+    BuildingStatus status = 6;               // 建筑状�?
+    int64 construction_start = 7;            // 建造开始时�?
+    int64 construction_end = 8;              // 建造完成时�?
     repeated ProductionQueue production = 9;  // 生产队列
-    map<string, int32> properties = 10;      // 建筑属性
+    map<string, int32> properties = 10;      // 建筑属�?
 }
 
 // 建筑升级请求
 message BuildingUpgradeRequest {
     string building_id = 1;                  // 建筑ID
     string player_id = 2;                    // 玩家ID
-    bool use_speedup = 3;                    // 是否使用加速道具
+    bool use_speedup = 3;                    // 是否使用加速道�?
     string speedup_item_id = 4;              // 加速道具ID
 }
 
@@ -48,15 +48,15 @@ message BuildingUpgradeResponse {
     int64 completion_time = 4;               // 完成时间
 }
 
-// 生产队列项
+// 生产队列�?
 message ProductionQueue {
     string queue_id = 1;                     // 队列项ID
     string template_id = 2;                  // 生产模板ID
     ProductionType production_type = 3;      // 生产类型
     int32 quantity = 4;                      // 生产数量
-    int64 start_time = 5;                    // 开始时间
+    int64 start_time = 5;                    // 开始时�?
     int64 completion_time = 6;               // 完成时间
-    ProductionStatus status = 7;             // 生产状态
+    ProductionStatus status = 7;             // 生产状�?
 }
 
 // 资源收集请求
@@ -76,15 +76,15 @@ message ResourceCollectResponse {
 // 建筑类型枚举
 enum BuildingType {
     BUILDING_TYPE_UNKNOWN = 0;
-    BUILDING_TYPE_CITY_HALL = 1;             // 市政厅
+    BUILDING_TYPE_CITY_HALL = 1;             // 市政�?
     BUILDING_TYPE_BARRACKS = 2;              // 兵营
     BUILDING_TYPE_FARM = 3;                  // 农场
     BUILDING_TYPE_MINE = 4;                  // 矿场
-    BUILDING_TYPE_LUMBER_MILL = 5;           // 伐木场
-    BUILDING_TYPE_QUARRY = 6;                // 采石场
+    BUILDING_TYPE_LUMBER_MILL = 5;           // 伐木�?
+    BUILDING_TYPE_QUARRY = 6;                // 采石�?
     BUILDING_TYPE_WAREHOUSE = 7;             // 仓库
     BUILDING_TYPE_WALL = 8;                  // 城墙
-    BUILDING_TYPE_WATCHTOWER = 9;            // 瞭望塔
+    BUILDING_TYPE_WATCHTOWER = 9;            // 瞭望�?
     BUILDING_TYPE_ACADEMY = 10;              // 学院
     BUILDING_TYPE_WORKSHOP = 11;             // 工坊
     BUILDING_TYPE_MARKET = 12;               // 市场
@@ -92,24 +92,24 @@ enum BuildingType {
     BUILDING_TYPE_HOSPITAL = 14;             // 医院
 }
 
-// 建筑状态枚举
+// 建筑状态枚�?
 enum BuildingStatus {
     BUILDING_STATUS_UNKNOWN = 0;
     BUILDING_STATUS_NORMAL = 1;              // 正常
     BUILDING_STATUS_CONSTRUCTING = 2;        // 建造中
-    BUILDING_STATUS_UPGRADING = 3;           // 升级中
-    BUILDING_STATUS_PRODUCING = 4;           // 生产中
+    BUILDING_STATUS_UPGRADING = 3;           // 升级�?
+    BUILDING_STATUS_PRODUCING = 4;           // 生产�?
     BUILDING_STATUS_DAMAGED = 5;             // 损坏
     BUILDING_STATUS_DISABLED = 6;            // 停用
 }
 
-// 城市状态枚举
+// 城市状态枚�?
 enum CityStatus {
     CITY_STATUS_UNKNOWN = 0;
     CITY_STATUS_NORMAL = 1;                  // 正常
-    CITY_STATUS_PROTECTED = 2;               // 保护状态
+    CITY_STATUS_PROTECTED = 2;               // 保护状�?
     CITY_STATUS_UNDER_ATTACK = 3;            // 遭受攻击
-    CITY_STATUS_OCCUPIED = 4;                // 被占领
+    CITY_STATUS_OCCUPIED = 4;                // 被占�?
     CITY_STATUS_ABANDONED = 5;               // 废弃
 }
 
@@ -119,15 +119,15 @@ enum ProductionType {
     PRODUCTION_TYPE_RESOURCE = 1;            // 资源生产
     PRODUCTION_TYPE_UNIT = 2;                // 单位训练
     PRODUCTION_TYPE_RESEARCH = 3;            // 研究
-    PRODUCTION_TYPE_ITEM = 4;                // 物品制造
+    PRODUCTION_TYPE_ITEM = 4;                // 物品制�?
 }
 
-// 生产状态枚举
+// 生产状态枚�?
 enum ProductionStatus {
     PRODUCTION_STATUS_UNKNOWN = 0;
-    PRODUCTION_STATUS_PENDING = 1;           // 等待中
-    PRODUCTION_STATUS_PRODUCING = 2;         // 生产中
-    PRODUCTION_STATUS_COMPLETED = 3;         // 已完成
-    PRODUCTION_STATUS_CANCELLED = 4;         // 已取消
+    PRODUCTION_STATUS_PENDING = 1;           // 等待�?
+    PRODUCTION_STATUS_PRODUCING = 2;         // 生产�?
+    PRODUCTION_STATUS_COMPLETED = 3;         // 已完�?
+    PRODUCTION_STATUS_CANCELLED = 4;         // 已取�?
     PRODUCTION_STATUS_PAUSED = 5;            // 暂停
 }

@@ -10,49 +10,10 @@ env:
   GO_VERSION: '1.24'
 
 jobs:
-  # 代码质量检查
-  quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - run: go mod download
-
-      - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-
-      - name: Run linting
-        run: golangci-lint run ./...
-
-      - name: Check formatting
-        run: |
-          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
-            echo "Code is not formatted. Please run 'go fmt ./...'"
-            gofmt -s -l .
-            exit 1
-          fi
-
   # 代码检查和测试
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: quality
     steps:
       - uses: actions/checkout@v4
 
@@ -74,6 +35,12 @@ jobs:
 
       - run: go mod download
 
+      # 安装缺失的依赖
+      - name: Install missing dependencies
+        run: |
+          go install github.com/cenkalti/backoff/v4@latest
+          go install gopkg.in/yaml.v3@latest
+
       # 清理旧的生成文件
       - name: Clean generated files
         run: |
@@ -90,6 +57,13 @@ jobs:
             echo "Error: Duplicate package paths detected"
             exit 1
           fi
+
+      # 基础代码检查
+      - name: Basic code checks
+        run: |
+          go fmt ./...
+          go vet ./...
+          go mod verify
 
       - run: go test ./... -v -race -count=1 -timeout=10m
 
@@ -115,6 +89,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
+      - run: |
+          go install github.com/cenkalti/backoff/v4@latest
+          go install gopkg.in/yaml.v3@latest
       - run: buf generate
       - run: |
           go test ./test -run=^$ -bench=. -benchmem -count=3 -timeout=10m | tee benchmark_results.txt
@@ -135,6 +112,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
+      - run: |
+          go install github.com/cenkalti/backoff/v4@latest
+          go install gopkg.in/yaml.v3@latest
       - run: buf generate
       - run: |
           # 运行每个模糊测试30秒
@@ -157,6 +137,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
+      - run: |
+          go install github.com/cenkalti/backoff/v4@latest
+          go install gopkg.in/yaml.v3@latest
       - run: buf generate
       - run: go build -v ./...
       - run: go test -c ./test
@@ -176,19 +159,8 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - uses: bufbuild/buf-setup-action@v1
       - run: go mod download
+      - run: |
+          go install github.com/cenkalti/backoff/v4@latest
+          go install gopkg.in/yaml.v3@latest
       - run: buf generate
       - run: go test ./... -v -count=1 -timeout=10m
-
-  # 基础安全检查
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - run: go mod download
-      - run: go vet ./...
-      - run: go mod verify

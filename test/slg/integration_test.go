@@ -63,23 +63,23 @@ func TestSLGProtocolIntegration(t *testing.T) {
 func TestSLGMessageSerialization(t *testing.T) {
 	// TODO: 这里应该测试实际的SLG协议消息
 	// 当生成了SLG协议代码后，可以导入并测试
-	
+
 	// 示例：测试通用的位置消息
 	position := &gamev1.Position{
 		X: 123.45,
 		Y: 678.90,
 		Z: 0.0,
 	}
-	
+
 	data, err := proto.Marshal(position)
 	require.NoError(t, err)
 	require.Greater(t, len(data), 0)
-	
+
 	// 反序列化
 	decoded := &gamev1.Position{}
 	err = proto.Unmarshal(data, decoded)
 	require.NoError(t, err)
-	
+
 	assert.InDelta(t, position.X, decoded.X, 0.001)
 	assert.InDelta(t, position.Y, decoded.Y, 0.001)
 	assert.InDelta(t, position.Z, decoded.Z, 0.001)
@@ -89,49 +89,49 @@ func TestSLGMessageSerialization(t *testing.T) {
 func TestSLGFrameEncoding(t *testing.T) {
 	// 创建一个模拟的SLG消息
 	message := &gamev1.BattlePush{
-		Seq:      12345,
-		BattleId: "slg_battle_001",
+		Seq:       12345,
+		BattleId:  "slg_battle_001",
 		StateHash: []byte{0x01, 0x02, 0x03, 0x04},
 		Units: []*gamev1.BattleUnit{
 			{
-				UnitId: "slg_unit_001",
-				Hp:     1000,
-				Mp:     500,
+				UnitId:   "slg_unit_001",
+				Hp:       1000,
+				Mp:       500,
 				Position: &gamev1.Position{X: 10.5, Y: 20.3, Z: 0.0},
 				Status:   gamev1.UnitStatus_UNIT_STATUS_ATTACKING,
 			},
 		},
 		Timestamp: time.Now().UnixMilli(),
 	}
-	
+
 	// 序列化
 	data, err := proto.Marshal(message)
 	require.NoError(t, err)
-	
+
 	// 帧编码
 	frame := protocol.EncodeFrame(protocol.OpBattlePush, data)
 	require.Greater(t, len(frame), protocol.FrameHeaderSize)
-	
+
 	// 帧解码
 	opcode, body, err := protocol.DecodeFrame(frame)
 	require.NoError(t, err)
 	assert.Equal(t, protocol.OpBattlePush, opcode)
-	
+
 	// 反序列化
 	decoded := &gamev1.BattlePush{}
 	err = proto.Unmarshal(body, decoded)
 	require.NoError(t, err)
-	
+
 	// 验证数据完整性
 	assert.Equal(t, message.Seq, decoded.Seq)
 	assert.Equal(t, message.BattleId, decoded.BattleId)
 	assert.Equal(t, message.StateHash, decoded.StateHash)
 	assert.Equal(t, len(message.Units), len(decoded.Units))
-	
+
 	if len(decoded.Units) > 0 {
 		originalUnit := message.Units[0]
 		decodedUnit := decoded.Units[0]
-		
+
 		assert.Equal(t, originalUnit.UnitId, decodedUnit.UnitId)
 		assert.Equal(t, originalUnit.Hp, decodedUnit.Hp)
 		assert.Equal(t, originalUnit.Mp, decodedUnit.Mp)
@@ -144,37 +144,37 @@ func TestSLGLoadTest(t *testing.T) {
 	if testing.Short() {
 		t.Skip("跳过负载测试")
 	}
-	
+
 	// 启动测试服务器
 	serverConfig := testserver.DefaultServerConfig(":18101")
 	serverConfig.MaxConnections = 100
 	serverConfig.PushInterval = 50 * time.Millisecond // 模拟高频推送
-	
+
 	server := testserver.New(serverConfig)
 	require.NoError(t, server.Start())
 	defer server.Shutdown(context.Background())
-	
+
 	time.Sleep(100 * time.Millisecond)
-	
+
 	// 模拟多个SLG玩家同时连接
 	const numPlayers = 20
 	clients := make([]*wsclient.Client, numPlayers)
-	
+
 	for i := 0; i < numPlayers; i++ {
-		config := wsclient.DefaultClientConfig("ws://127.0.0.1:18101/ws", 
+		config := wsclient.DefaultClientConfig("ws://127.0.0.1:18101/ws",
 			"slg-player-"+string(rune('A'+i)))
 		clients[i] = wsclient.New(config)
-		
+
 		err := clients[i].Connect(context.Background())
 		require.NoError(t, err)
 	}
-	
+
 	defer func() {
 		for _, client := range clients {
 			client.Close()
 		}
 	}()
-	
+
 	// 模拟SLG操作：移动、攻击、建造等
 	for i, client := range clients {
 		action := &gamev1.PlayerAction{
@@ -195,18 +195,18 @@ func TestSLGLoadTest(t *testing.T) {
 				},
 			},
 		}
-		
+
 		err := client.SendAction(action)
 		require.NoError(t, err)
 	}
-	
+
 	// 等待所有操作处理完成
 	time.Sleep(2 * time.Second)
-	
+
 	// 验证服务器统计
 	stats := server.GetStats()
 	t.Logf("SLG负载测试统计: %+v", stats)
-	
+
 	// 基本断言
 	assert.Equal(t, int32(numPlayers), stats["current_connections"])
 	assert.GreaterOrEqual(t, stats["total_connections"], uint64(numPlayers))

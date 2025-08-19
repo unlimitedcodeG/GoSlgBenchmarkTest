@@ -28,19 +28,19 @@ const (
 type CloseCode int
 
 const (
-	CloseNormal        CloseCode = 1000
-	CloseGoingAway     CloseCode = 1001
-	CloseProtocolError CloseCode = 1002
-	CloseUnsupported   CloseCode = 1003
-	CloseNoStatus      CloseCode = 1005
-	CloseAbnormal      CloseCode = 1006
-	CloseInvalidData   CloseCode = 1007
+	CloseNormal          CloseCode = 1000
+	CloseGoingAway       CloseCode = 1001
+	CloseProtocolError   CloseCode = 1002
+	CloseUnsupported     CloseCode = 1003
+	CloseNoStatus        CloseCode = 1005
+	CloseAbnormal        CloseCode = 1006
+	CloseInvalidData     CloseCode = 1007
 	ClosePolicyViolation CloseCode = 1008
-	CloseTooBig        CloseCode = 1009
-	CloseInternalError CloseCode = 1011
-	CloseServiceRestart CloseCode = 1012
-	CloseTryAgainLater CloseCode = 1013
-	CloseTLSHandshake  CloseCode = 1015
+	CloseTooBig          CloseCode = 1009
+	CloseInternalError   CloseCode = 1011
+	CloseServiceRestart  CloseCode = 1012
+	CloseTryAgainLater   CloseCode = 1013
+	CloseTLSHandshake    CloseCode = 1015
 )
 
 // SessionEvent 会话事件
@@ -71,43 +71,43 @@ type MessageFrame struct {
 
 // SessionStats 会话统计
 type SessionStats struct {
-	StartTime           time.Time         `json:"start_time"`
-	EndTime             time.Time         `json:"end_time"`
-	Duration            time.Duration     `json:"duration"`
-	TotalEvents         int64             `json:"total_events"`
-	MessagesSent        int64             `json:"messages_sent"`
-	MessagesReceived    int64             `json:"messages_received"`
-	BytesSent           int64             `json:"bytes_sent"`
-	BytesReceived       int64             `json:"bytes_received"`
-	ReconnectCount      int64             `json:"reconnect_count"`
-	ErrorCount          int64             `json:"error_count"`
-	AverageLatency      time.Duration     `json:"average_latency"`
-	MinLatency          time.Duration     `json:"min_latency"`
-	MaxLatency          time.Duration     `json:"max_latency"`
-	LatencyPercentiles  map[int]time.Duration `json:"latency_percentiles"`
+	StartTime          time.Time             `json:"start_time"`
+	EndTime            time.Time             `json:"end_time"`
+	Duration           time.Duration         `json:"duration"`
+	TotalEvents        int64                 `json:"total_events"`
+	MessagesSent       int64                 `json:"messages_sent"`
+	MessagesReceived   int64                 `json:"messages_received"`
+	BytesSent          int64                 `json:"bytes_sent"`
+	BytesReceived      int64                 `json:"bytes_received"`
+	ReconnectCount     int64                 `json:"reconnect_count"`
+	ErrorCount         int64                 `json:"error_count"`
+	AverageLatency     time.Duration         `json:"average_latency"`
+	MinLatency         time.Duration         `json:"min_latency"`
+	MaxLatency         time.Duration         `json:"max_latency"`
+	LatencyPercentiles map[int]time.Duration `json:"latency_percentiles"`
 }
 
 // SessionRecorder 会话录制器
 type SessionRecorder struct {
-	sessionID   string
-	startTime   time.Time
-	events      []*SessionEvent
-	frames      []*MessageFrame
-	stats       *SessionStats
-	
+	sessionID string
+	startTime time.Time
+	events    []*SessionEvent
+	frames    []*MessageFrame
+	stats     *SessionStats
+
 	// 统计计数器
-	eventCounter    atomic.Int64
-	messageCounter  atomic.Int64
-	byteCounter     atomic.Int64
-	reconnectCount  atomic.Int64
-	errorCount      atomic.Int64
-	
+	eventCounter   atomic.Int64
+	messageCounter atomic.Int64
+	byteCounter    atomic.Int64
+	reconnectCount atomic.Int64
+	errorCount     atomic.Int64
+
 	// 延迟统计
-	latencySum      atomic.Int64
-	latencyCount    atomic.Int64
-	minLatency      atomic.Int64
-	maxLatency      atomic.Int64
-	
+	latencySum   atomic.Int64
+	latencyCount atomic.Int64
+	minLatency   atomic.Int64
+	maxLatency   atomic.Int64
+
 	// 同步控制
 	mu       sync.RWMutex
 	ctx      context.Context
@@ -118,7 +118,7 @@ type SessionRecorder struct {
 // NewSessionRecorder 创建新的会话录制器
 func NewSessionRecorder(sessionID string) *SessionRecorder {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	recorder := &SessionRecorder{
 		sessionID: sessionID,
 		startTime: time.Now(),
@@ -128,18 +128,18 @@ func NewSessionRecorder(sessionID string) *SessionRecorder {
 			StartTime:          time.Now(),
 			LatencyPercentiles: make(map[int]time.Duration),
 		},
-		ctx:      ctx,
-		cancel:   cancel,
+		ctx:    ctx,
+		cancel: cancel,
 	}
-	
+
 	recorder.isActive.Store(true)
-	
+
 	// 记录会话开始事件
 	recorder.RecordEvent(EventConnect, map[string]interface{}{
 		"session_id": sessionID,
 		"start_time": recorder.startTime,
 	})
-	
+
 	return recorder
 }
 
@@ -148,7 +148,7 @@ func (r *SessionRecorder) RecordEvent(eventType EventType, metadata map[string]i
 	if !r.isActive.Load() {
 		return
 	}
-	
+
 	now := time.Now()
 	event := &SessionEvent{
 		ID:         fmt.Sprintf("event_%d", r.eventCounter.Add(1)),
@@ -158,11 +158,11 @@ func (r *SessionRecorder) RecordEvent(eventType EventType, metadata map[string]i
 		ServerTime: now,
 		Metadata:   metadata,
 	}
-	
+
 	r.mu.Lock()
 	r.events = append(r.events, event)
 	r.mu.Unlock()
-	
+
 	// 更新统计
 	r.updateStats(event)
 }
@@ -172,7 +172,7 @@ func (r *SessionRecorder) RecordMessage(direction string, rawData []byte, opcode
 	if !r.isActive.Load() {
 		return
 	}
-	
+
 	now := time.Now()
 	frame := &MessageFrame{
 		RawData:     rawData,
@@ -182,17 +182,17 @@ func (r *SessionRecorder) RecordMessage(direction string, rawData []byte, opcode
 		Direction:   direction,
 		SequenceNum: sequenceNum,
 	}
-	
+
 	r.mu.Lock()
 	r.frames = append(r.frames, frame)
 	r.mu.Unlock()
-	
+
 	// 记录消息事件
 	eventType := EventMessageSend
 	if direction == "receive" {
 		eventType = EventMessageReceive
 	}
-	
+
 	r.RecordEvent(eventType, map[string]interface{}{
 		"opcode":       opcode,
 		"message_size": len(rawData),
@@ -200,7 +200,7 @@ func (r *SessionRecorder) RecordMessage(direction string, rawData []byte, opcode
 		"sequence_num": sequenceNum,
 		"direction":    direction,
 	})
-	
+
 	// 更新消息统计
 	if direction == "send" {
 		r.messageCounter.Add(1)
@@ -216,13 +216,13 @@ func (r *SessionRecorder) RecordLatency(latency time.Duration) {
 	if !r.isActive.Load() || latency <= 0 {
 		return
 	}
-	
+
 	latencyNano := latency.Nanoseconds()
-	
+
 	// 更新延迟统计
 	r.latencySum.Add(latencyNano)
 	r.latencyCount.Add(1)
-	
+
 	// 更新最小延迟
 	for {
 		current := r.minLatency.Load()
@@ -234,7 +234,7 @@ func (r *SessionRecorder) RecordLatency(latency time.Duration) {
 			break
 		}
 	}
-	
+
 	// 更新最大延迟
 	for {
 		current := r.maxLatency.Load()
@@ -251,25 +251,25 @@ func (r *SessionRecorder) RecordLatency(latency time.Duration) {
 // RecordReconnect 记录重连事件
 func (r *SessionRecorder) RecordReconnect(attempt int, duration time.Duration, success bool) {
 	r.reconnectCount.Add(1)
-	
+
 	metadata := map[string]interface{}{
 		"attempt":  attempt,
 		"duration": duration,
 		"success":  success,
 	}
-	
+
 	r.RecordEvent(EventReconnect, metadata)
 }
 
 // RecordError 记录错误事件
 func (r *SessionRecorder) RecordError(err error, metadata map[string]interface{}) {
 	r.errorCount.Add(1)
-	
+
 	if metadata == nil {
 		metadata = make(map[string]interface{})
 	}
 	metadata["error"] = err.Error()
-	
+
 	r.RecordEvent(EventError, metadata)
 }
 
@@ -279,9 +279,9 @@ func (r *SessionRecorder) RecordClose(closeCode CloseCode, reason string) {
 		"close_code": closeCode,
 		"reason":     reason,
 	}
-	
+
 	r.RecordEvent(EventClose, metadata)
-	
+
 	// 停止录制
 	r.Stop()
 }
@@ -291,12 +291,12 @@ func (r *SessionRecorder) Stop() {
 	if !r.isActive.CompareAndSwap(true, false) {
 		return
 	}
-	
+
 	r.cancel()
-	
+
 	// 计算最终统计
 	r.calculateFinalStats()
-	
+
 	// 记录会话结束事件
 	r.RecordEvent(EventDisconnect, map[string]interface{}{
 		"end_time": time.Now(),
@@ -308,7 +308,7 @@ func (r *SessionRecorder) Stop() {
 func (r *SessionRecorder) GetSession() *Session {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	return &Session{
 		ID:        r.sessionID,
 		StartTime: r.startTime,
@@ -323,7 +323,7 @@ func (r *SessionRecorder) GetSession() *Session {
 func (r *SessionRecorder) GetEvents() []*SessionEvent {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	return append([]*SessionEvent{}, r.events...)
 }
 
@@ -331,7 +331,7 @@ func (r *SessionRecorder) GetEvents() []*SessionEvent {
 func (r *SessionRecorder) GetFrames() []*MessageFrame {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	return append([]*MessageFrame{}, r.frames...)
 }
 
@@ -339,7 +339,7 @@ func (r *SessionRecorder) GetFrames() []*MessageFrame {
 func (r *SessionRecorder) GetStats() *SessionStats {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	return r.stats
 }
 
@@ -374,7 +374,7 @@ func (r *SessionRecorder) calculateFinalStats() {
 	r.stats.BytesReceived = r.byteCounter.Load()
 	r.stats.ReconnectCount = r.reconnectCount.Load()
 	r.stats.ErrorCount = r.errorCount.Load()
-	
+
 	// 计算延迟统计
 	latencyCount := r.latencyCount.Load()
 	if latencyCount > 0 {
@@ -382,7 +382,7 @@ func (r *SessionRecorder) calculateFinalStats() {
 		r.stats.AverageLatency = time.Duration(latencySum / latencyCount)
 		r.stats.MinLatency = time.Duration(r.minLatency.Load())
 		r.stats.MaxLatency = time.Duration(r.maxLatency.Load())
-		
+
 		// 计算延迟百分位数（简化版本）
 		r.calculateLatencyPercentiles()
 	}
@@ -396,4 +396,4 @@ func (r *SessionRecorder) calculateLatencyPercentiles() {
 	r.stats.LatencyPercentiles[90] = r.stats.MaxLatency
 	r.stats.LatencyPercentiles[95] = r.stats.MaxLatency
 	r.stats.LatencyPercentiles[99] = r.stats.MaxLatency
-} 
+}

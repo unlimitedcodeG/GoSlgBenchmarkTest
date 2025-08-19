@@ -138,7 +138,7 @@ func validateProto() {
 
 func listVersions() {
 	fmt.Printf("📋 可用的SLG协议版本:\n")
-	
+
 	slgProtoDir := "slg-proto"
 	if _, err := os.Stat(slgProtoDir); os.IsNotExist(err) {
 		fmt.Printf("   未找到协议目录: %s\n", slgProtoDir)
@@ -216,7 +216,7 @@ func copyFile(src, dst string) error {
 
 func updateConfig(version string) {
 	configFile := "configs/proto-versions.yaml"
-	
+
 	// 读取现有配置
 	var config SLGProtocolConfig
 	if _, err := os.Stat(configFile); err == nil {
@@ -254,7 +254,7 @@ func updateConfig(version string) {
 		Description: fmt.Sprintf("SLG协议版本 %s", version),
 		Owner:       "SLG团队",
 		Critical:    true,
-		Modules:     make(map[string]struct {
+		Modules: make(map[string]struct {
 			Description string `yaml:"description"`
 			Owner       string `yaml:"owner"`
 			Critical    bool   `yaml:"critical"`
@@ -279,4 +279,4 @@ func updateConfig(version string) {
 	}
 
 	fmt.Printf("✅ 配置文件已更新: %s\n", configFile)
-} 
+}
