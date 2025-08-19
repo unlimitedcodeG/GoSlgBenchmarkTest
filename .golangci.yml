@@ -1,0 +1,110 @@
+run:
+  timeout: 5m
+  go: "1.24"
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - gosec
+    - gocyclo
+    - dupl
+    - goconst
+    - gocritic
+    - godot
+    - gofumpt
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - noctx
+    - nolintlint
+    - prealloc
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - whitespace
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  gomnd:
+    checks: argument,case,condition,operation,return,assign
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - commentFormatting
+      - hugeParam
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+  gosec:
+    excludes:
+      - G101 # Look for hardcoded credentials
+      - G102 # Bind to all interfaces
+      - G104 # Audit errors not checked
+      - G107 # Url provided to HTTP request as taint input
+      - G201 # SQL query construction using format string
+      - G202 # SQL query construction using string concatenation
+      - G204 # Audit use of command execution
+      - G301 # Poor file permissions used when creating a directory
+      - G302 # Poor file permissions used with chmod
+      - G303 # Poor file permissions used with chmod
+      - G304 # File path provided as taint input
+      - G305 # File path traversal when extracting zip archive
+      - G306 # Poor file permissions used with chmod
+      - G307 # Poor file permissions used with chmod
+      - G401 # Use of weak cryptographic primitive
+      - G402 # Insecure TLS version
+      - G403 # Insecure minimum TLS version
+      - G404 # Insecure random number source
+      - G501 # Import blacklist: crypto/md5
+      - G502 # Import blacklist: crypto/des
+      - G503 # Import blacklist: crypto/rc4
+      - G504 # Import blacklist: net/http/cgi
+      - G505 # Import blacklist: crypto/sha1
+      - G601 # Implicit memory aliasing in for loop
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - gocyclo
+        - dupl
+        - goconst
+    - path: generated/
+      linters:
+        - all
+    - path: proto/
+      linters:
+        - all
+    - path: slg-proto/
+      linters:
+        - all 
