@@ -509,12 +509,13 @@ func (s *Server) broadcastMessage(opcode uint16, message proto.Message) {
 	s.connections.Range(func(key, value interface{}) bool {
 		conn := value.(*Connection)
 
+		conn.mu.Lock()
 		// 只向已认证的连接推送消息
 		if conn.PlayerID == "" {
+			conn.mu.Unlock()
 			return true // 跳过未认证的连接
 		}
 
-		conn.mu.Lock()
 		conn.Conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
 		err := conn.Conn.WriteMessage(websocket.BinaryMessage, frame)
 		if err == nil {
