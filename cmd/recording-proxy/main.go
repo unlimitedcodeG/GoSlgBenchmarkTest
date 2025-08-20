@@ -24,7 +24,6 @@ var (
 	listenAddr = flag.String("listen", ":8080", "代理监听地址")
 	targetURL  = flag.String("target", "", "真实游戏服务器WebSocket地址")
 	sessionID  = flag.String("session", "", "录制会话ID")
-	configFile = flag.String("config", "configs/test-environments.yaml", "配置文件路径")
 	verbose    = flag.Bool("verbose", false, "启用详细日志")
 )
 
@@ -98,7 +97,7 @@ func main() {
 		fmt.Println("💡 Unity客户端连接地址:")
 		fmt.Printf("   ws://%s/ws\n", *listenAddr)
 		fmt.Println()
-		
+
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("❌ 服务器启动失败: %v", err)
 		}
@@ -313,14 +312,14 @@ func (p *RecordingProxy) handleStatus(w http.ResponseWriter, r *http.Request) {
 	stats := p.recorder.GetStats()
 
 	status := map[string]interface{}{
-		"session_id":     session.ID,
-		"start_time":     session.StartTime,
-		"events_count":   len(session.Events),
-		"frames_count":   len(session.Frames),
-		"target_url":     p.targetURL,
-		"listen_addr":    p.listenAddr,
-		"recording":      true,
-		"stats":          stats,
+		"session_id":   session.ID,
+		"start_time":   session.StartTime,
+		"events_count": len(session.Events),
+		"frames_count": len(session.Frames),
+		"target_url":   p.targetURL,
+		"listen_addr":  p.listenAddr,
+		"recording":    true,
+		"stats":        stats,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -332,7 +331,7 @@ func (p *RecordingProxy) handleStatus(w http.ResponseWriter, r *http.Request) {
 // handleStartRecording 处理开始录制请求
 func (p *RecordingProxy) handleStartRecording(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("🎬 收到开始录制请求")
-	
+
 	response := map[string]interface{}{
 		"status":     "recording",
 		"session_id": p.recorder.GetSession().ID,
@@ -346,7 +345,7 @@ func (p *RecordingProxy) handleStartRecording(w http.ResponseWriter, r *http.Req
 // handleStopRecording 处理停止录制请求
 func (p *RecordingProxy) handleStopRecording(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("🛑 收到停止录制请求")
-	
+
 	// 导出录制数据
 	p.exportRecording()
 
@@ -362,7 +361,7 @@ func (p *RecordingProxy) handleStopRecording(w http.ResponseWriter, r *http.Requ
 // exportRecording 导出录制数据
 func (p *RecordingProxy) exportRecording() {
 	recordedSession := p.recorder.GetSession()
-	
+
 	// 导出JSON
 	jsonData, err := p.recorder.ExportJSON()
 	if err != nil {
@@ -382,6 +381,6 @@ func (p *RecordingProxy) exportRecording() {
 	}
 
 	fmt.Printf("💾 录制数据已保存: %s (%d 字节)\n", filename, len(jsonData))
-	fmt.Printf("📊 录制统计: %d 个事件, %d 个消息帧\n", 
+	fmt.Printf("📊 录制统计: %d 个事件, %d 个消息帧\n",
 		len(recordedSession.Events), len(recordedSession.Frames))
 }
