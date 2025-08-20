@@ -29,3 +29,19 @@ timeline_report_demo_session_*.json
 *.test
 *.prof
 *.out
+
+# Build artifacts
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Recordings directory
+recordings/
+*.json
+*.csv
+
+# Temporary files
+*.tmp
+*.temp
