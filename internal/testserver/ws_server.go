@@ -84,6 +84,7 @@ type Server struct {
 	// 连接管理
 	connections sync.Map // map[string]*Connection
 	connCount   atomic.Int32
+	connWg      sync.WaitGroup // 等待所有连接goroutine退出
 
 	// 序列号生成器
 	seqGenerator atomic.Uint64
@@ -194,6 +195,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return true
 	})
 
+	// 等待所有连接处理goroutine退出
+	s.connWg.Wait()
+
 	return s.server.Shutdown(ctx)
 }
 
@@ -244,8 +248,10 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 // handleConnection 处理单个连接的生命周期
 func (s *Server) handleConnection(conn *Connection) {
+	s.connWg.Add(1)
 	defer func() {
 		s.closeConnection(conn, "Connection ended")
+		s.connWg.Done()
 	}()
 
 	// 等待登录

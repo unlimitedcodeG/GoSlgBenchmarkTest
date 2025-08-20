@@ -116,9 +116,11 @@ bench: proto ## 运行基准测试
 # 运行模糊测试
 fuzz: proto ## 运行模糊测试
 	@echo "$(COLOR_BLUE)运行模糊测试...$(COLOR_RESET)"
-	go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s
-	go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s
-	go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s
+	@targets="FuzzBattlePushUnmarshal FuzzLoginReqUnmarshal FuzzPlayerActionUnmarshal FuzzFrameDecode FuzzFrameDecoder FuzzErrorResp"; \
+	for target in $$targets; do \
+		echo "$(COLOR_YELLOW)运行 $$target...$(COLOR_RESET)"; \
+		go test ./test -run=^$$ -fuzz=^$$target$$ -fuzztime=30s || exit 1; \
+	done
 	@echo "$(COLOR_GREEN)模糊测试完成$(COLOR_RESET)"
 
 # 清理构建文件
