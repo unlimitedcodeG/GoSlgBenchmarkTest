@@ -1,0 +1,234 @@
+# 测试环境配置文件
+# 支持多环境切换，避免硬编码
+
+meta:
+  project: "GoSlgBenchmarkTest"
+  team: "QA Testing Framework"
+  last_updated: "2025-08-21"
+  config_version: "1.0.0"
+
+# 环境定义
+environments:
+  # 开发环境 - Unity研发团队提供
+  development:
+    name: "Unity开发环境"
+    description: "研发团队Unity客户端连接的开发服务器"
+    active: true
+    server:
+      ws_url: "ws://dev-game-server.pocketwarriors.com:9090/ws"
+      http_url: "http://dev-game-server.pocketwarriors.com:9090"
+      region: "dev"
+      version: "dev-latest"
+    auth:
+      token_type: "bearer"
+      default_token: "dev-test-token-12345"
+      test_accounts:
+        - username: "qa_tester_001"
+          token: "dev-token-qa001"
+          player_id: "dev_player_001"
+        - username: "qa_tester_002" 
+          token: "dev-token-qa002"
+          player_id: "dev_player_002"
+    network:
+      handshake_timeout: "15s"
+      heartbeat_interval: "30s"
+      ping_timeout: "10s"
+      reconnect_interval: "3s"
+      max_reconnect_tries: 15
+      enable_compression: true
+    testing:
+      enable_recording: true
+      session_prefix: "unity_dev"
+      auto_assertions: true
+      performance_monitoring: true
+
+  # 测试环境 - QA专用测试服务器
+  testing:
+    name: "QA测试环境"
+    description: "QA团队专用的稳定测试服务器"
+    active: true
+    server:
+      ws_url: "ws://test-game-server.pocketwarriors.com:9090/ws"
+      http_url: "http://test-game-server.pocketwarriors.com:9090"
+      region: "test"
+      version: "v2.1.0"
+    auth:
+      token_type: "bearer"
+      default_token: "test-stable-token-67890"
+      test_accounts:
+        - username: "qa_regression_001"
+          token: "test-token-reg001"
+          player_id: "test_player_001"
+        - username: "qa_performance_001"
+          token: "test-token-perf001"
+          player_id: "test_player_002"
+    network:
+      handshake_timeout: "10s"
+      heartbeat_interval: "25s"
+      ping_timeout: "8s"
+      reconnect_interval: "2s"
+      max_reconnect_tries: 10
+      enable_compression: true
+    testing:
+      enable_recording: true
+      session_prefix: "qa_test"
+      auto_assertions: true
+      performance_monitoring: true
+
+  # 预发布环境 - 接近生产的环境
+  staging:
+    name: "预发布环境"
+    description: "接近生产环境的最终测试服务器"
+    active: true
+    server:
+      ws_url: "ws://staging-game-server.pocketwarriors.com:9090/ws"
+      http_url: "http://staging-game-server.pocketwarriors.com:9090"
+      region: "staging"
+      version: "v2.1.0-rc1"
+    auth:
+      token_type: "bearer"
+      default_token: "staging-secure-token-abcdef"
+      test_accounts:
+        - username: "qa_staging_001"
+          token: "staging-token-001"
+          player_id: "staging_player_001"
+    network:
+      handshake_timeout: "8s"
+      heartbeat_interval: "20s"
+      ping_timeout: "5s"
+      reconnect_interval: "1s"
+      max_reconnect_tries: 5
+      enable_compression: true
+    testing:
+      enable_recording: true
+      session_prefix: "staging"
+      auto_assertions: true
+      performance_monitoring: true
+
+  # 本地环境 - 使用框架内置的测试服务器
+  local:
+    name: "本地测试环境"
+    description: "使用框架内置测试服务器的本地环境"
+    active: true
+    server:
+      ws_url: "ws://127.0.0.1:18090/ws"
+      http_url: "http://127.0.0.1:18090"
+      region: "local"
+      version: "framework-builtin"
+    auth:
+      token_type: "simple"
+      default_token: "local-test-token"
+      test_accounts:
+        - username: "local_tester"
+          token: "local-token"
+          player_id: "local_player_001"
+    network:
+      handshake_timeout: "5s"
+      heartbeat_interval: "30s"
+      ping_timeout: "3s"
+      reconnect_interval: "1s"
+      max_reconnect_tries: 3
+      enable_compression: false
+    testing:
+      enable_recording: true
+      session_prefix: "local"
+      auto_assertions: false
+      performance_monitoring: false
+
+# 默认环境配置
+default_environment: "development"
+
+# 全局配置
+global:
+  # 录制配置
+  recording:
+    output_dir: "./recordings"
+    auto_export: true
+    export_format: ["json", "csv"]
+    compression: true
+    retention_days: 30
+    
+  # 断言配置
+  assertions:
+    message_order:
+      enabled: true
+      min_messages: 5
+      max_messages: 1000
+    latency:
+      enabled: true
+      max_latency: "200ms"
+      percentile: 90
+    reconnect:
+      enabled: true
+      max_count: 3
+      max_duration: "10s"
+    error_rate:
+      enabled: true
+      max_rate: 0.1  # 10%
+      
+  # 性能监控配置
+  performance:
+    enable_cpu_monitoring: true
+    enable_memory_monitoring: true
+    enable_network_monitoring: true
+    sample_interval: "5s"
+    alert_thresholds:
+      cpu_usage: 80.0
+      memory_usage: 85.0
+      latency_p99: "500ms"
+
+# SLG游戏特定配置
+slg_game:
+  # 战斗系统配置
+  battle:
+    enable_battle_recording: true
+    battle_timeout: "300s"
+    required_events: 
+      - "BATTLE_START"
+      - "BATTLE_END"
+    performance_thresholds:
+      action_latency: "100ms"
+      battle_duration: "180s"
+      
+  # 建筑系统配置  
+  building:
+    enable_building_recording: true
+    operation_timeout: "30s"
+    required_events:
+      - "BUILDING_UPGRADE_START"
+      - "BUILDING_UPGRADE_COMPLETE"
+    performance_thresholds:
+      operation_latency: "200ms"
+      
+  # 联盟系统配置
+  alliance:
+    enable_alliance_recording: true
+    operation_timeout: "60s"
+    required_events:
+      - "ALLIANCE_ACTION_START"
+      - "ALLIANCE_ACTION_COMPLETE"
+    performance_thresholds:
+      operation_latency: "300ms"
+
+# Unity客户端特定配置
+unity_client:
+  # 客户端信息
+  client_info:
+    version: "2.1.0"
+    platform: "Windows"
+    device_id_prefix: "unity_test"
+    user_agent: "PocketWarriors-Unity/2.1.0"
+    
+  # 自动化配置
+  automation:
+    enable_auto_login: true
+    enable_auto_battle: false
+    enable_auto_building: false
+    test_scenario_timeout: "600s"
+    
+  # 调试配置
+  debug:
+    enable_verbose_logging: true
+    log_level: "debug"
+    enable_frame_logging: false
+    enable_performance_logging: true
