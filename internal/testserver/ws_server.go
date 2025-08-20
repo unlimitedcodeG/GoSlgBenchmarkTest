@@ -86,6 +86,10 @@ type Server struct {
 	connCount   atomic.Int32
 	connWg      sync.WaitGroup // 等待所有连接goroutine退出
 
+	// 后台任务管理
+	bgWg   sync.WaitGroup // 等待后台goroutine退出
+	stopCh chan struct{}  // 停止信号
+
 	// 序列号生成器
 	seqGenerator atomic.Uint64
 
@@ -117,6 +121,7 @@ func New(config *ServerConfig) *Server {
 				return true // 允许所有源
 			},
 		},
+		stopCh:    make(chan struct{}),
 		startTime: time.Now(),
 	}
 
@@ -149,6 +154,7 @@ func (s *Server) Start() error {
 
 	// 启动推送任务
 	if s.config.EnableBattlePush {
+		s.bgWg.Add(1)
 		go s.battlePushLoop()
 	}
 
@@ -174,6 +180,7 @@ func (s *Server) StartTLS(cert tls.Certificate) error {
 	}()
 
 	if s.config.EnableBattlePush {
+		s.bgWg.Add(1)
 		go s.battlePushLoop()
 	}
 
@@ -188,6 +195,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 	log.Printf("Shutting down test server...")
 
+	// 发送停止信号给后台任务
+	close(s.stopCh)
+
 	// 关闭所有连接
 	s.connections.Range(func(key, value interface{}) bool {
 		conn := value.(*Connection)
@@ -197,6 +207,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 	// 等待所有连接处理goroutine退出
 	s.connWg.Wait()
+
+	// 等待所有后台goroutine退出
+	s.bgWg.Wait()
 
 	return s.server.Shutdown(ctx)
 }
@@ -260,6 +273,7 @@ func (s *Server) handleConnection(conn *Connection) {
 	}
 
 	// 启动消息处理循环
+	s.connWg.Add(1)
 	go s.messageReadLoop(conn)
 
 	// 主循环：处理推送和断连检查
@@ -342,6 +356,7 @@ func (s *Server) handleLogin(conn *Connection) bool {
 func (s *Server) messageReadLoop(conn *Connection) {
 	defer func() {
 		conn.safeClose()
+		s.connWg.Done()
 	}()
 
 	conn.Conn.SetReadLimit(512 * 1024) // 512KB限制
@@ -444,39 +459,44 @@ func (s *Server) handlePlayerAction(conn *Connection, body []byte) {
 
 // battlePushLoop 战斗推送循环
 func (s *Server) battlePushLoop() {
+	defer s.bgWg.Done()
+
 	ticker := time.NewTicker(s.config.PushInterval)
 	defer ticker.Stop()
 
-	for s.isRunning.Load() {
-		<-ticker.C
+	for {
+		select {
+		case <-s.stopCh:
+			return
+		case <-ticker.C:
+			if s.connCount.Load() == 0 {
+				continue
+			}
 
-		if s.connCount.Load() == 0 {
-			continue
-		}
-
-		seq := s.seqGenerator.Add(1)
-		battlePush := &gamev1.BattlePush{
-			Seq:       seq,
-			BattleId:  fmt.Sprintf("battle_%d", seq/100), // 每100个消息一个战斗
-			StateHash: []byte{byte(seq), byte(seq >> 8), byte(seq >> 16)},
-			Units: []*gamev1.BattleUnit{
-				{
-					UnitId: fmt.Sprintf("unit_%d", seq%10),
-					Hp:     int32(100 - (seq % 100)),
-					Mp:     int32(50 + (seq % 50)),
-					Position: &gamev1.Position{
-						X: float32(seq % 100),
-						Y: float32((seq * 2) % 100),
-						Z: 0,
+			seq := s.seqGenerator.Add(1)
+			battlePush := &gamev1.BattlePush{
+				Seq:       seq,
+				BattleId:  fmt.Sprintf("battle_%d", seq/100), // 每100个消息一个战斗
+				StateHash: []byte{byte(seq), byte(seq >> 8), byte(seq >> 16)},
+				Units: []*gamev1.BattleUnit{
+					{
+						UnitId: fmt.Sprintf("unit_%d", seq%10),
+						Hp:     int32(100 - (seq % 100)),
+						Mp:     int32(50 + (seq % 50)),
+						Position: &gamev1.Position{
+							X: float32(seq % 100),
+							Y: float32((seq * 2) % 100),
+							Z: 0,
+						},
+						Status: gamev1.UnitStatus(seq%4 + 1),
 					},
-					Status: gamev1.UnitStatus(seq%4 + 1),
 				},
-			},
-			Timestamp: time.Now().UnixMilli(),
-		}
+				Timestamp: time.Now().UnixMilli(),
+			}
 
-		// 广播给所有连接
-		s.broadcastMessage(protocol.OpBattlePush, battlePush)
+			// 广播给所有连接
+			s.broadcastMessage(protocol.OpBattlePush, battlePush)
+		}
 	}
 }
 
@@ -512,6 +532,9 @@ func (s *Server) broadcastMessage(opcode uint16, message proto.Message) {
 
 	frame := protocol.EncodeFrame(opcode, body)
 
+	// 收集需要关闭的连接，避免在Range过程中修改map
+	var failedConns []*Connection
+
 	s.connections.Range(func(key, value interface{}) bool {
 		conn := value.(*Connection)
 
@@ -532,11 +555,16 @@ func (s *Server) broadcastMessage(opcode uint16, message proto.Message) {
 
 		if err != nil {
 			log.Printf("Broadcast to %s failed: %v", conn.ID, err)
-			s.closeConnection(conn, "Broadcast failed")
+			failedConns = append(failedConns, conn)
 		}
 
 		return true
 	})
+
+	// 在Range完成后关闭失败的连接
+	for _, conn := range failedConns {
+		s.closeConnection(conn, "Broadcast failed")
+	}
 }
 
 // closeConnection 关闭连接

@@ -149,11 +149,15 @@ jobs:
             cp -r GoSlgBenchmarkTest/generated/* generated/
             rm -rf GoSlgBenchmarkTest
           fi
-      - run: |
-          # 运行每个模糊测试30秒
-          go test ./test -run=^$ -fuzz=FuzzBattlePushUnmarshal -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=FuzzFrameDecode -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=FuzzPlayerActionUnmarshal -fuzztime=30s -timeout=5m
+      - name: Run fuzz tests
+        run: |
+          # 运行每个模糊测试30秒，使用精确匹配避免命名冲突
+          go test ./test -run=^$ -fuzz=^FuzzBattlePushUnmarshal$ -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=^FuzzLoginReqUnmarshal$ -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=^FuzzPlayerActionUnmarshal$ -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=^FuzzFrameDecode$ -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=^FuzzFrameDecoder$ -fuzztime=30s -timeout=5m
+          go test ./test -run=^$ -fuzz=^FuzzErrorResp$ -fuzztime=30s -timeout=5m
         env:
           GO111MODULE: on
           GOFLAGS: -mod=mod
