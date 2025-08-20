@@ -36,8 +36,14 @@ func main() {
 	fmt.Println("=====================")
 	fmt.Println()
 
+	// 创建配置管理器
+	configManager := config.NewConfigManager(
+		config.WithEnvConfigPath(*configFlag),
+		config.WithWatchEnabled(false), // 在工具中禁用监控
+	)
+
 	// 加载配置文件
-	testConfig, err := config.LoadConfig(*configFlag)
+	testConfig, err := configManager.LoadEnvironmentConfig()
 	if err != nil {
 		log.Fatalf("❌ 加载配置失败: %v", err)
 	}
@@ -58,7 +64,7 @@ func main() {
 	}
 
 	// 获取环境配置
-	env, err := testConfig.GetEnvironment(envType)
+	env, err := configManager.GetEnvironment(envType)
 	if err != nil {
 		log.Fatalf("❌ 获取环境配置失败: %v", err)
 	}

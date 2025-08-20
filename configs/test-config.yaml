@@ -1,0 +1,165 @@
+# 测试配置文件 - 使用Viper管理
+# 支持环境变量覆盖: TEST_<CONFIG_KEY>
+# 示例: TEST_STRESS_TEST_CONCURRENT_CLIENTS_DEFAULT_CLIENTS=20
+
+# 项目元信息
+meta:
+  project: "GoSlgBenchmarkTest"
+  config_version: "2.0.0"
+  last_updated: "2025-01-27"
+
+# 服务器配置
+server:
+  base_host: "127.0.0.1"
+  port_range:
+    start: 18000
+    end: 18999
+  default_timeout: "10s"
+  websocket:
+    path: "/ws"
+    handshake_timeout: "15s"
+    read_buffer_size: 4096
+    write_buffer_size: 4096
+    enable_compression: true
+  push:
+    enable_battle_push: true
+    interval: "100ms"
+    batch_size: 10
+
+# 客户端配置
+client:
+  connection:
+    timeout: "10s"
+    retry_interval: "1s"
+    max_retries: 5
+    keep_alive: true
+  heartbeat:
+    interval: "30s"
+    timeout: "10s"
+    max_missed: 3
+  reconnect:
+    enable: true
+    initial_interval: "1s"
+    max_interval: "30s"
+    multiplier: 2.0
+    max_elapsed_time: "5m"
+
+# 测试场景配置
+test_scenarios:
+  basic_connection:
+    timeout: "10s"
+    expected_state: "CONNECTED"
+    validation_delay: "100ms"
+  reconnect:
+    force_disconnect_after: "2s"
+    max_reconnect_time: "10s"
+    expected_reconnects: 2
+    sequence_validation: true
+  heartbeat:
+    test_duration: "5s"
+    heartbeat_interval: "200ms"
+    expected_min_rtts: 1
+    max_acceptable_rtt: "1s"
+  messaging:
+    warmup_messages: 10
+    warmup_delay: "1ms"
+    test_messages: 100
+    message_timeout: "5s"
+    validate_sequence: true
+
+# 压力测试配置
+stress_test:
+  concurrent_clients:
+    min_clients: 1
+    max_clients: 100
+    default_clients: 10  # 可通过 TEST_STRESS_TEST_CONCURRENT_CLIENTS_DEFAULT_CLIENTS 覆盖
+    ramp_up_duration: "5s"
+    test_duration: "60s"  # 可通过 TEST_STRESS_TEST_CONCURRENT_CLIENTS_TEST_DURATION 覆盖
+    stats_interval: "5s"
+  throughput:
+    test_duration: "10s"
+    message_interval: "1ms"
+    expected_min_throughput: 100
+    memory_monitoring: true
+  large_messages:
+    message_sizes:
+      small: 1024
+      medium: 10240
+      large: 102400
+      huge: 1048576
+    test_iterations: 100
+    memory_limit: "100MB"
+
+# 基准测试配置
+benchmark:
+  warmup_iterations: 10
+  min_test_time: "1s"
+  max_test_time: "10s"
+  single_client_roundtrip:
+    message_count: 1000
+    request_timeout: "5s"
+    measure_latency: true
+  concurrent_benchmark:
+    client_count: 10
+    messages_per_client: 100
+    parallel_execution: true
+  protocol_performance:
+    frame_sizes: [64, 256, 1024, 4096, 16384]
+    iterations_per_size: 10000
+    measure_memory: true
+
+# SLG协议配置
+slg_protocol:
+  test_data:
+    battle_request:
+      battle_id_prefix: "test_battle_"
+      player_id_prefix: "test_player_"
+      default_units: ["unit_1", "unit_2", "unit_3"]
+      formations: ["triangle", "line", "circle"]
+      skills: ["fireball", "heal", "shield", "lightning"]
+    performance:
+      message_count: 1000
+      concurrent_battles: 10
+      stress_duration: "30s"
+
+# 断言配置
+assertions:
+  message_order:
+    max_out_of_order: 0
+    timeout: "5s"
+  latency:
+    max_average: "100ms"
+    max_p95: "200ms"
+    max_p99: "500ms"
+  error_rate:
+    max_error_rate: 0.05
+    sample_size: 100
+
+# 监控配置
+monitoring:
+  performance:
+    enable: true
+    collection_interval: "1s"
+    metrics:
+      - "cpu_usage"
+      - "memory_usage"
+      - "goroutine_count"
+      - "connection_count"
+      - "message_rate"
+  health_check:
+    enable: true
+    interval: "30s"
+    timeout: "5s"
+    endpoints:
+      - "/health"
+      - "/stats"
+
+# 日志配置
+logging:
+  level: "info"  # 可通过 TEST_LOGGING_LEVEL 覆盖
+  format: "json"
+  output: "stdout"
+  file_rotation:
+    max_size: "100MB"
+    max_backups: 5
+    max_age_days: 7

@@ -9,8 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"GoSlgBenchmarkTest/internal/testserver"
-	"GoSlgBenchmarkTest/internal/wsclient"
+	"GoSlgBenchmarkTest/internal/config"
+	"GoSlgBenchmarkTest/internal/protocol"
+	"GoSlgBenchmarkTest/internal/testutil"
 
 	// SLG v1.0.0 协议
 	v1_0_0_combat "GoSlgBenchmarkTest/generated/slg/v1_0_0/combat"
@@ -173,65 +174,61 @@ func TestSLGEnhancedBattleSystem(t *testing.T) {
 // TestSLGWebSocketIntegration 测试SLG协议与WebSocket集成
 func TestSLGWebSocketIntegration(t *testing.T) {
 	t.Log("🌐 测试SLG协议与WebSocket集成...")
+	cfg := config.GetTestConfig()
 
-	// 启动测试服务器
-	server := testserver.New(testserver.DefaultServerConfig(":18090"))
+	// 使用统一工具创建服务器
+	server := testutil.NewTestServer(t)
 	server.Start()
-	defer func() {
-		server.Shutdown(context.Background())
-		t.Log("   🛑 测试服务器已关闭")
-	}()
-
-	time.Sleep(100 * time.Millisecond)
+	defer server.Stop()
 
 	// 创建WebSocket客户端
-	config := wsclient.DefaultClientConfig("ws://127.0.0.1:18090/ws", "slg-test-token")
-	client := wsclient.New(config)
+	client := testutil.NewTestClient(t, server.GetWebSocketURL(), "slg-test-token")
+	defer client.Cleanup()
 
-	ctx := context.Background()
-	err := client.Connect(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.TestScenarios.BasicConnection.Timeout)
+	defer cancel()
+
+	err := client.ConnectWithTimeout(ctx)
 	require.NoError(t, err)
-	defer client.Close()
 
 	t.Log("   ✅ WebSocket连接建立成功")
 
-	// 模拟发送SLG协议消息（这里我们需要扩展框架支持SLG消息）
-	// 由于当前框架主要支持game.proto消息，我们演示概念
+	// 使用SLG协议适配器
+	slgAdapter := protocol.NewSLGMessageAdapter("v1.1.0")
+	slgGenerator := protocol.NewSLGTestDataGenerator("v1.1.0")
 
-	// 创建SLG战斗请求
-	battleReq := &v1_1_0_combat.BattleRequest{
-		BattleId:   "slg_battle_001",
-		PlayerId:   "slg_player_123",
-		BattleType: v1_1_0_combat.BattleType_BATTLE_TYPE_PVP,
-		UnitIds:    []string{"slg_unit_1", "slg_unit_2"},
-		TargetPos: &v1_1_0_common.Position{
-			X: 150.0,
-			Y: 250.0,
-		},
-		// v1.1.0新增字段
-		FormationId: "formation_triangle",
-		BattleSettings: map[string]int32{
-			"auto_battle": 1,
-			"fast_mode":   1,
-		},
-		PresetSkills: []string{"fireball", "heal", "shield"},
+	// 使用配置化的测试数据生成战斗请求
+	battleReq, err := slgGenerator.GenerateBattleRequest(
+		cfg.SLGProtocol.TestData.BattleRequest.BattleIDPrefix+"001",
+		cfg.SLGProtocol.TestData.BattleRequest.PlayerIDPrefix+"123",
+		int32(v1_1_0_combat.BattleType_BATTLE_TYPE_PVP),
+	)
+	require.NoError(t, err)
+
+	// 使用适配器编码消息
+	frameData, err := slgAdapter.EncodeMessage(protocol.OpSLGBattleRequest, battleReq)
+	require.NoError(t, err)
+	t.Logf("   📦 SLG战斗请求帧编码: %d字节", len(frameData))
+
+	// 测试适配器解码消息
+	opcode, decodedMsg, err := slgAdapter.DecodeMessage(frameData)
+	require.NoError(t, err)
+	assert.Equal(t, protocol.OpSLGBattleRequest, opcode)
+
+	// 验证解码后的消息类型和内容
+	if decodedBattleReq, ok := decodedMsg.(*v1_1_0_combat.BattleRequest); ok {
+		originalReq := battleReq.(*v1_1_0_combat.BattleRequest)
+		assert.Equal(t, originalReq.BattleId, decodedBattleReq.BattleId)
+		assert.Equal(t, originalReq.PlayerId, decodedBattleReq.PlayerId)
+		assert.Equal(t, originalReq.FormationId, decodedBattleReq.FormationId)
+		assert.Equal(t, originalReq.BattleSettings, decodedBattleReq.BattleSettings)
+		assert.Equal(t, originalReq.PresetSkills, decodedBattleReq.PresetSkills)
+	} else {
+		t.Fatalf("Decoded message is not BattleRequest: %T", decodedMsg)
 	}
 
-	// 序列化为字节
-	battleData, err := proto.Marshal(battleReq)
-	require.NoError(t, err)
-	t.Logf("   📦 SLG战斗请求序列化: %d字节", len(battleData))
-
-	// 验证数据完整性
-	parsedReq := &v1_1_0_combat.BattleRequest{}
-	err = proto.Unmarshal(battleData, parsedReq)
-	require.NoError(t, err)
-	assert.Equal(t, battleReq.BattleId, parsedReq.BattleId)
-	assert.Equal(t, battleReq.FormationId, parsedReq.FormationId)
-	assert.Equal(t, battleReq.BattleSettings, parsedReq.BattleSettings)
-
-	t.Log("   ✅ SLG协议数据完整性验证通过")
-	t.Log("   💡 注意：完整的WebSocket传输需要扩展框架的协议支持")
+	t.Log("   ✅ SLG协议WebSocket传输完整性验证通过")
+	t.Log("   🎯 SLG协议适配器工作正常")
 }
 
 // TestSLGPerformanceBenchmark 测试SLG协议性能

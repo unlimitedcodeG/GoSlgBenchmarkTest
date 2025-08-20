@@ -9,93 +9,87 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
+	"GoSlgBenchmarkTest/internal/config"
 	"GoSlgBenchmarkTest/internal/protocol"
 	"GoSlgBenchmarkTest/internal/testserver"
+	"GoSlgBenchmarkTest/internal/testutil"
 	"GoSlgBenchmarkTest/internal/wsclient"
 	gamev1 "GoSlgBenchmarkTest/proto/game/v1"
 )
 
 // BenchmarkSingleClientRoundtrip 基准测试单客户端往返延迟
 func BenchmarkSingleClientRoundtrip(b *testing.B) {
-	server := testserver.New(testserver.DefaultServerConfig(":18090"))
+	cfg := config.GetTestConfig()
+
+	// 使用统一工具创建服务器
+	server := testutil.NewTestServer(&testing.T{})
 	server.Start()
-	defer server.Shutdown(context.Background())
+	defer server.Stop()
 
-	time.Sleep(100 * time.Millisecond)
-
-	config := wsclient.DefaultClientConfig("ws://127.0.0.1:18090/ws", "bench-token")
-	client := wsclient.New(config)
+	// 创建基准测试客户端
+	client := testutil.NewTestClient(&testing.T{}, server.GetWebSocketURL(), "bench-token")
+	defer client.Cleanup()
 
 	ctx := context.Background()
-	if err := client.Connect(ctx); err != nil {
+	if err := client.ConnectWithTimeout(ctx); err != nil {
 		b.Fatalf("Connect failed: %v", err)
 	}
-	defer client.Close()
 
-	// 预热
-	for i := 0; i < 10; i++ {
-		action := &gamev1.PlayerAction{
-			ActionSeq:       uint64(i),
-			PlayerId:        "bench-player",
-			ActionType:      gamev1.ActionType_ACTION_TYPE_MOVE,
-			ClientTimestamp: time.Now().UnixMilli(),
-		}
-		client.SendAction(action)
+	// 使用配置化的预热次数
+	warmupIterations := cfg.Benchmark.WarmupIterations
+	for i := 0; i < warmupIterations; i++ {
+		client.SendTestAction(uint64(i), "bench-player")
 		time.Sleep(time.Millisecond)
 	}
 
 	b.ResetTimer()
 
+	start := time.Now()
 	for i := 0; i < b.N; i++ {
-		action := &gamev1.PlayerAction{
-			ActionSeq:       uint64(i),
-			PlayerId:        "bench-player",
-			ActionType:      gamev1.ActionType_ACTION_TYPE_MOVE,
-			ClientTimestamp: time.Now().UnixMilli(),
-		}
-
-		start := time.Now()
-		client.SendAction(action)
+		client.SendTestAction(uint64(i), "bench-player")
 		// 简单等待，实际应用中会有响应回调
 		time.Sleep(100 * time.Microsecond)
-		b.StopTimer()
-		elapsed := time.Since(start)
-		b.ReportMetric(float64(elapsed.Nanoseconds()), "ns/op")
-		b.StartTimer()
 	}
+	totalDuration := time.Since(start)
+
+	// 使用统一断言报告基准结果
+	assertions := testutil.NewTestAssertions(&testing.T{})
+	assertions.AssertBenchmarkResults(b, b.N, totalDuration)
 }
 
 // BenchmarkConcurrentClients 基准测试并发客户端
 func BenchmarkConcurrentClients(b *testing.B) {
-	serverConfig := testserver.DefaultServerConfig(":18091")
-	serverConfig.PushInterval = 10 * time.Millisecond
-	server := testserver.New(serverConfig)
+	cfg := config.GetTestConfig()
+
+	// 使用自定义配置创建服务器（高频推送）
+	server := testutil.NewTestServerWithConfig(&testing.T{}, func(serverConfig *testserver.ServerConfig) {
+		serverConfig.PushInterval = 10 * time.Millisecond
+	})
 	server.Start()
-	defer server.Shutdown(context.Background())
+	defer server.Stop()
 
-	time.Sleep(100 * time.Millisecond)
-
-	const numClients = 10
-	clients := make([]*wsclient.Client, numClients)
+	// 使用配置化的客户端数量
+	numClients := cfg.Benchmark.ConcurrentBenchmark.ClientCount
+	clients := make([]*testutil.TestClient, numClients)
 
 	// 创建并连接客户端
 	for i := 0; i < numClients; i++ {
-		config := wsclient.DefaultClientConfig("ws://127.0.0.1:18091/ws",
+		clients[i] = testutil.NewTestClient(&testing.T{}, server.GetWebSocketURL(),
 			fmt.Sprintf("bench-token-%d", i))
-		clients[i] = wsclient.New(config)
 
-		if err := clients[i].Connect(context.Background()); err != nil {
+		if err := clients[i].ConnectAndWait(); err != nil {
 			b.Fatalf("Client %d connect failed: %v", i, err)
 		}
 	}
 
 	defer func() {
 		for _, client := range clients {
-			client.Close()
+			client.Cleanup()
 		}
 	}()
 
 	b.ResetTimer()
+	start := time.Now()
 
 	b.RunParallel(func(pb *testing.PB) {
 		clientID := int(atomic.AddInt32(&clientCounter, 1)) % numClients
@@ -104,18 +98,18 @@ func BenchmarkConcurrentClients(b *testing.B) {
 
 		for pb.Next() {
 			actionSeq++
-			action := &gamev1.PlayerAction{
-				ActionSeq:       actionSeq,
-				PlayerId:        fmt.Sprintf("bench-player-%d", clientID),
-				ActionType:      gamev1.ActionType_ACTION_TYPE_MOVE,
-				ClientTimestamp: time.Now().UnixMilli(),
-			}
-
-			if err := client.SendAction(action); err != nil {
+			if err := client.SendTestAction(actionSeq, fmt.Sprintf("bench-player-%d", clientID)); err != nil {
 				b.Errorf("Send action failed: %v", err)
 			}
 		}
 	})
+
+	totalDuration := time.Since(start)
+
+	// 使用统一断言验证并发基准测试结果
+	assertions := testutil.NewTestAssertions(&testing.T{})
+	assertions.AssertStressTestResults(clients, totalDuration,
+		float64(cfg.StressTest.Throughput.ExpectedMinThroughput))
 }
 
 // BenchmarkProtobufMarshal 基准测试Protobuf序列化性能

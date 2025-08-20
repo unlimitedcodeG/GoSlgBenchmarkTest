@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"github.com/spf13/viper"
 )
 
 // EnvironmentType 环境类型枚举
@@ -36,62 +36,62 @@ func (e EnvironmentType) IsValid() bool {
 
 // TestAccount 测试账号配置
 type TestAccount struct {
-	Username string `yaml:"username"`
-	Token    string `yaml:"token"`
-	PlayerID string `yaml:"player_id"`
+	Username string `yaml:"username" mapstructure:"username"`
+	Token    string `yaml:"token" mapstructure:"token"`
+	PlayerID string `yaml:"player_id" mapstructure:"player_id"`
 }
 
 // ServerConfig 服务器配置
 type ServerConfig struct {
-	WsURL   string `yaml:"ws_url"`
-	HttpURL string `yaml:"http_url"`
-	Region  string `yaml:"region"`
-	Version string `yaml:"version"`
+	WsURL   string `yaml:"ws_url" mapstructure:"ws_url"`
+	HttpURL string `yaml:"http_url" mapstructure:"http_url"`
+	Region  string `yaml:"region" mapstructure:"region"`
+	Version string `yaml:"version" mapstructure:"version"`
 }
 
 // AuthConfig 认证配置
 type AuthConfig struct {
-	TokenType    string        `yaml:"token_type"`
-	DefaultToken string        `yaml:"default_token"`
-	TestAccounts []TestAccount `yaml:"test_accounts"`
+	TokenType    string        `yaml:"token_type" mapstructure:"token_type"`
+	DefaultToken string        `yaml:"default_token" mapstructure:"default_token"`
+	TestAccounts []TestAccount `yaml:"test_accounts" mapstructure:"test_accounts"`
 }
 
 // NetworkConfig 网络配置
 type NetworkConfig struct {
-	HandshakeTimeout  time.Duration `yaml:"handshake_timeout"`
-	HeartbeatInterval time.Duration `yaml:"heartbeat_interval"`
-	PingTimeout       time.Duration `yaml:"ping_timeout"`
-	ReconnectInterval time.Duration `yaml:"reconnect_interval"`
-	MaxReconnectTries int           `yaml:"max_reconnect_tries"`
-	EnableCompression bool          `yaml:"enable_compression"`
+	HandshakeTimeout  time.Duration `yaml:"handshake_timeout" mapstructure:"handshake_timeout"`
+	HeartbeatInterval time.Duration `yaml:"heartbeat_interval" mapstructure:"heartbeat_interval"`
+	PingTimeout       time.Duration `yaml:"ping_timeout" mapstructure:"ping_timeout"`
+	ReconnectInterval time.Duration `yaml:"reconnect_interval" mapstructure:"reconnect_interval"`
+	MaxReconnectTries int           `yaml:"max_reconnect_tries" mapstructure:"max_reconnect_tries"`
+	EnableCompression bool          `yaml:"enable_compression" mapstructure:"enable_compression"`
 }
 
 // TestingConfig 测试配置
 type TestingConfig struct {
-	EnableRecording       bool   `yaml:"enable_recording"`
-	SessionPrefix         string `yaml:"session_prefix"`
-	AutoAssertions        bool   `yaml:"auto_assertions"`
-	PerformanceMonitoring bool   `yaml:"performance_monitoring"`
+	EnableRecording       bool   `yaml:"enable_recording" mapstructure:"enable_recording"`
+	SessionPrefix         string `yaml:"session_prefix" mapstructure:"session_prefix"`
+	AutoAssertions        bool   `yaml:"auto_assertions" mapstructure:"auto_assertions"`
+	PerformanceMonitoring bool   `yaml:"performance_monitoring" mapstructure:"performance_monitoring"`
 }
 
 // Environment 环境配置
 type Environment struct {
-	Name        string        `yaml:"name"`
-	Description string        `yaml:"description"`
-	Active      bool          `yaml:"active"`
-	Server      ServerConfig  `yaml:"server"`
-	Auth        AuthConfig    `yaml:"auth"`
-	Network     NetworkConfig `yaml:"network"`
-	Testing     TestingConfig `yaml:"testing"`
+	Name        string        `yaml:"name" mapstructure:"name"`
+	Description string        `yaml:"description" mapstructure:"description"`
+	Active      bool          `yaml:"active" mapstructure:"active"`
+	Server      ServerConfig  `yaml:"server" mapstructure:"server"`
+	Auth        AuthConfig    `yaml:"auth" mapstructure:"auth"`
+	Network     NetworkConfig `yaml:"network" mapstructure:"network"`
+	Testing     TestingConfig `yaml:"testing" mapstructure:"testing"`
 }
 
 // RecordingConfig 录制配置
 type RecordingConfig struct {
-	OutputDir     string   `yaml:"output_dir"`
-	AutoExport    bool     `yaml:"auto_export"`
-	ExportFormat  []string `yaml:"export_format"`
-	Compression   bool     `yaml:"compression"`
-	RetentionDays int      `yaml:"retention_days"`
+	OutputDir     string   `yaml:"output_dir" mapstructure:"output_dir"`
+	AutoExport    bool     `yaml:"auto_export" mapstructure:"auto_export"`
+	ExportFormat  []string `yaml:"export_format" mapstructure:"export_format"`
+	Compression   bool     `yaml:"compression" mapstructure:"compression"`
+	RetentionDays int      `yaml:"retention_days" mapstructure:"retention_days"`
 }
 
 // AssertionConfig 断言配置
@@ -129,8 +129,8 @@ type ErrorRateAssertionConfig struct {
 	MaxRate float64 `yaml:"max_rate"`
 }
 
-// PerformanceConfig 性能监控配置
-type PerformanceConfig struct {
+// DetailedPerformanceConfig 详细性能监控配置
+type DetailedPerformanceConfig struct {
 	EnableCPUMonitoring     bool                       `yaml:"enable_cpu_monitoring"`
 	EnableMemoryMonitoring  bool                       `yaml:"enable_memory_monitoring"`
 	EnableNetworkMonitoring bool                       `yaml:"enable_network_monitoring"`
@@ -147,9 +147,9 @@ type PerformanceAlertThresholds struct {
 
 // GlobalConfig 全局配置
 type GlobalConfig struct {
-	Recording   RecordingConfig   `yaml:"recording"`
-	Assertions  AssertionConfig   `yaml:"assertions"`
-	Performance PerformanceConfig `yaml:"performance"`
+	Recording   RecordingConfig           `yaml:"recording" mapstructure:"recording"`
+	Assertions  AssertionConfig           `yaml:"assertions" mapstructure:"assertions"`
+	Performance DetailedPerformanceConfig `yaml:"performance" mapstructure:"performance"`
 }
 
 // SLGBattleConfig SLG战斗系统配置
@@ -216,43 +216,55 @@ type UnityClientConfig struct {
 
 // MetaConfig 元数据配置
 type MetaConfig struct {
-	Project       string `yaml:"project"`
-	Team          string `yaml:"team"`
-	LastUpdated   string `yaml:"last_updated"`
-	ConfigVersion string `yaml:"config_version"`
+	Project       string `yaml:"project" mapstructure:"project"`
+	Team          string `yaml:"team" mapstructure:"team"`
+	LastUpdated   string `yaml:"last_updated" mapstructure:"last_updated"`
+	ConfigVersion string `yaml:"config_version" mapstructure:"config_version"`
 }
 
 // TestEnvironmentConfig 完整的测试环境配置
 type TestEnvironmentConfig struct {
-	Meta               MetaConfig                      `yaml:"meta"`
-	Environments       map[EnvironmentType]Environment `yaml:"environments"`
-	DefaultEnvironment EnvironmentType                 `yaml:"default_environment"`
-	Global             GlobalConfig                    `yaml:"global"`
-	SLGGame            SLGGameConfig                   `yaml:"slg_game"`
-	UnityClient        UnityClientConfig               `yaml:"unity_client"`
+	Meta               MetaConfig                      `yaml:"meta" mapstructure:"meta"`
+	Environments       map[EnvironmentType]Environment `yaml:"environments" mapstructure:"environments"`
+	DefaultEnvironment EnvironmentType                 `yaml:"default_environment" mapstructure:"default_environment"`
+	Global             GlobalConfig                    `yaml:"global" mapstructure:"global"`
+	SLGGame            SLGGameConfig                   `yaml:"slg_game" mapstructure:"slg_game"`
+	UnityClient        UnityClientConfig               `yaml:"unity_client" mapstructure:"unity_client"`
 }
 
-// LoadConfig 从文件加载配置
+// LoadConfig 从文件加载配置（使用viper）
 func LoadConfig(configPath string) (*TestEnvironmentConfig, error) {
-	// 如果没有指定路径，使用默认路径
-	if configPath == "" {
-		configPath = "configs/test-environments.yaml"
+	v := viper.New()
+
+	// 配置文件路径和类型
+	if configPath != "" {
+		v.SetConfigFile(configPath)
+	} else {
+		v.SetConfigName("test-environments")
+		v.SetConfigType("yaml")
+		v.AddConfigPath("./configs")
+		v.AddConfigPath("../configs")
+		v.AddConfigPath(".")
 	}
 
-	// 检查文件是否存在
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("配置文件不存在: %s", configPath)
-	}
+	// 设置环境变量前缀
+	v.SetEnvPrefix("SLGTEST")
+	v.AutomaticEnv()
 
-	// 读取文件内容
-	data, err := os.ReadFile(configPath)
-	if err != nil {
+	// 设置默认配置（在读取配置文件之前，不会覆盖文件中的值）
+	setEnvironmentDefaults(v)
+
+	// 读取配置文件
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return nil, fmt.Errorf("配置文件不存在: %s", configPath)
+		}
 		return nil, fmt.Errorf("读取配置文件失败: %w", err)
 	}
 
-	// 解析YAML
+	// 解析到结构体
 	var config TestEnvironmentConfig
-	if err := yaml.Unmarshal(data, &config); err != nil {
+	if err := v.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("解析配置文件失败: %w", err)
 	}
 
@@ -262,6 +274,70 @@ func LoadConfig(configPath string) (*TestEnvironmentConfig, error) {
 	}
 
 	return &config, nil
+}
+
+// setEnvironmentDefaults 设置环境配置默认值
+func setEnvironmentDefaults(v *viper.Viper) {
+	// Meta默认值
+	v.SetDefault("meta.project", "SLG Benchmark Test")
+	v.SetDefault("meta.config_version", "1.0.0")
+	v.SetDefault("meta.last_updated", "2024-01-01")
+
+	// 默认环境（仅在配置文件不存在时使用）
+	// v.SetDefault("default_environment", "local") // 注释掉以避免覆盖配置文件中的值
+
+	// 全局配置默认值
+	v.SetDefault("global.recording.output_dir", "./recordings")
+	v.SetDefault("global.recording.auto_export", true)
+	v.SetDefault("global.recording.export_format", []string{"json", "csv"})
+	v.SetDefault("global.recording.compression", true)
+	v.SetDefault("global.recording.retention_days", 30)
+
+	// 性能监控默认值
+	v.SetDefault("global.performance.enable_cpu_monitoring", true)
+	v.SetDefault("global.performance.enable_memory_monitoring", true)
+	v.SetDefault("global.performance.enable_network_monitoring", true)
+	v.SetDefault("global.performance.sample_interval", "1s")
+	v.SetDefault("global.performance.alert_thresholds.cpu_usage", 80.0)
+	v.SetDefault("global.performance.alert_thresholds.memory_usage", 85.0)
+	v.SetDefault("global.performance.alert_thresholds.latency_p99", "500ms")
+
+	// 断言配置默认值
+	v.SetDefault("global.assertions.message_order.enabled", true)
+	v.SetDefault("global.assertions.message_order.min_messages", 10)
+	v.SetDefault("global.assertions.message_order.max_messages", 1000)
+	v.SetDefault("global.assertions.latency.enabled", true)
+	v.SetDefault("global.assertions.latency.max_latency", "1s")
+	v.SetDefault("global.assertions.latency.percentile", 95)
+	v.SetDefault("global.assertions.reconnect.enabled", true)
+	v.SetDefault("global.assertions.reconnect.max_count", 3)
+	v.SetDefault("global.assertions.reconnect.max_duration", "30s")
+	v.SetDefault("global.assertions.error_rate.enabled", true)
+	v.SetDefault("global.assertions.error_rate.max_rate", 0.05)
+
+	// SLG游戏配置默认值
+	v.SetDefault("slg_game.battle.enable_battle_recording", true)
+	v.SetDefault("slg_game.battle.battle_timeout", "5m")
+	v.SetDefault("slg_game.battle.required_events", []string{"battle_start", "battle_end"})
+	v.SetDefault("slg_game.building.enable_building_recording", true)
+	v.SetDefault("slg_game.building.operation_timeout", "30s")
+	v.SetDefault("slg_game.building.required_events", []string{"building_upgrade", "building_complete"})
+	v.SetDefault("slg_game.alliance.enable_alliance_recording", false)
+	v.SetDefault("slg_game.alliance.operation_timeout", "1m")
+
+	// Unity客户端配置默认值
+	v.SetDefault("unity_client.client_info.version", "1.0.0")
+	v.SetDefault("unity_client.client_info.platform", "PC")
+	v.SetDefault("unity_client.client_info.device_id_prefix", "test_device")
+	v.SetDefault("unity_client.client_info.user_agent", "Unity/2023.2.0f1")
+	v.SetDefault("unity_client.automation.enable_auto_login", true)
+	v.SetDefault("unity_client.automation.enable_auto_battle", false)
+	v.SetDefault("unity_client.automation.enable_auto_building", false)
+	v.SetDefault("unity_client.automation.test_scenario_timeout", "10m")
+	v.SetDefault("unity_client.debug.enable_verbose_logging", false)
+	v.SetDefault("unity_client.debug.log_level", "INFO")
+	v.SetDefault("unity_client.debug.enable_frame_logging", false)
+	v.SetDefault("unity_client.debug.enable_performance_logging", true)
 }
 
 // GetEnvironment 获取指定环境配置
@@ -351,7 +427,7 @@ func (env *Environment) Validate(envType EnvironmentType) error {
 	return nil
 }
 
-// SaveConfig 保存配置到文件
+// SaveConfig 保存配置到文件（使用viper）
 func (c *TestEnvironmentConfig) SaveConfig(configPath string) error {
 	if configPath == "" {
 		configPath = "configs/test-environments.yaml"
@@ -362,14 +438,22 @@ func (c *TestEnvironmentConfig) SaveConfig(configPath string) error {
 		return fmt.Errorf("创建配置目录失败: %w", err)
 	}
 
-	// 序列化为YAML
-	data, err := yaml.Marshal(c)
-	if err != nil {
-		return fmt.Errorf("序列化配置失败: %w", err)
-	}
+	// 创建viper实例并设置配置
+	v := viper.New()
+	v.SetConfigFile(configPath)
+	v.SetConfigType("yaml")
 
-	// 写入文件
-	if err := os.WriteFile(configPath, data, 0644); err != nil {
+	// 直接设置配置到viper中
+
+	// 将配置写入文件
+	v.Set("meta", c.Meta)
+	v.Set("environments", c.Environments)
+	v.Set("default_environment", c.DefaultEnvironment)
+	v.Set("global", c.Global)
+	v.Set("slg_game", c.SLGGame)
+	v.Set("unity_client", c.UnityClient)
+
+	if err := v.WriteConfig(); err != nil {
 		return fmt.Errorf("写入配置文件失败: %w", err)
 	}
 

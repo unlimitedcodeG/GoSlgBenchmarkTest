@@ -6,21 +6,27 @@ import (
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
+	"github.com/spf13/viper"
 )
 
 // SLGProtocolConfig 协议配置结构
 type SLGProtocolConfig struct {
-	Versions map[string]struct {
-		Description string `yaml:"description"`
-		Owner       string `yaml:"owner"`
-		Critical    bool   `yaml:"critical"`
-		Modules     map[string]struct {
-			Description string `yaml:"description"`
-			Owner       string `yaml:"owner"`
-			Critical    bool   `yaml:"critical"`
-		} `yaml:"modules"`
-	} `yaml:"versions"`
+	Versions map[string]VersionInfo `yaml:"versions"`
+}
+
+// VersionInfo 版本信息
+type VersionInfo struct {
+	Description string                `yaml:"description"`
+	Owner       string                `yaml:"owner"`
+	Critical    bool                  `yaml:"critical"`
+	Modules     map[string]ModuleInfo `yaml:"modules"`
+}
+
+// ModuleInfo 模块信息
+type ModuleInfo struct {
+	Description string `yaml:"description"`
+	Owner       string `yaml:"owner"`
+	Critical    bool   `yaml:"critical"`
 }
 
 func main() {
@@ -217,63 +223,44 @@ func copyFile(src, dst string) error {
 func updateConfig(version string) {
 	configFile := "configs/proto-versions.yaml"
 
+	// 使用viper加载配置
+	v := viper.New()
+	v.SetConfigFile(configFile)
+	v.SetConfigType("yaml")
+
+	// 设置默认值
+	v.SetDefault("versions", make(map[string]VersionInfo))
+
 	// 读取现有配置
 	var config SLGProtocolConfig
 	if _, err := os.Stat(configFile); err == nil {
-		data, err := os.ReadFile(configFile)
-		if err == nil {
-			yaml.Unmarshal(data, &config)
+		if err := v.ReadInConfig(); err == nil {
+			v.Unmarshal(&config)
 		}
 	}
 
 	// 初始化配置
 	if config.Versions == nil {
-		config.Versions = make(map[string]struct {
-			Description string `yaml:"description"`
-			Owner       string `yaml:"owner"`
-			Critical    bool   `yaml:"critical"`
-			Modules     map[string]struct {
-				Description string `yaml:"description"`
-				Owner       string `yaml:"owner"`
-				Critical    bool   `yaml:"critical"`
-			} `yaml:"modules"`
-		})
+		config.Versions = make(map[string]VersionInfo)
 	}
 
 	// 添加新版本
-	config.Versions[version] = struct {
-		Description string `yaml:"description"`
-		Owner       string `yaml:"owner"`
-		Critical    bool   `yaml:"critical"`
-		Modules     map[string]struct {
-			Description string `yaml:"description"`
-			Owner       string `yaml:"owner"`
-			Critical    bool   `yaml:"critical"`
-		} `yaml:"modules"`
-	}{
+	config.Versions[version] = VersionInfo{
 		Description: fmt.Sprintf("SLG协议版本 %s", version),
 		Owner:       "SLG团队",
 		Critical:    true,
-		Modules: make(map[string]struct {
-			Description string `yaml:"description"`
-			Owner       string `yaml:"owner"`
-			Critical    bool   `yaml:"critical"`
-		}),
+		Modules:     make(map[string]ModuleInfo),
 	}
 
-	// 写入配置
-	data, err := yaml.Marshal(&config)
-	if err != nil {
-		log.Printf("序列化配置失败: %v", err)
-		return
-	}
-
+	// 确保目录存在
 	if err := os.MkdirAll(filepath.Dir(configFile), 0755); err != nil {
 		log.Printf("创建配置目录失败: %v", err)
 		return
 	}
 
-	if err := os.WriteFile(configFile, data, 0644); err != nil {
+	// 使用viper写入配置
+	v.Set("versions", config.Versions)
+	if err := v.WriteConfig(); err != nil {
 		log.Printf("写入配置文件失败: %v", err)
 		return
 	}
