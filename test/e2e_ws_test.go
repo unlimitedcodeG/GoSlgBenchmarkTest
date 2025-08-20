@@ -272,10 +272,14 @@ func TestConcurrentConnections(t *testing.T) {
 	require.Equal(t, int32(numClients), atomic.LoadInt32(&successCount),
 		"All clients should connect successfully")
 
-	// 验证服务器统计
+	// 验证服务器统计 - 使用Eventually等待连接完全关闭
+	require.Eventually(t, func() bool {
+		stats := server.GetStats()
+		return stats["current_connections"].(int32) == 0
+	}, 3*time.Second, 50*time.Millisecond, "All connections should be closed")
+
+	// 验证总连接数
 	stats := server.GetStats()
-	assert.Equal(t, int32(0), stats["current_connections"],
-		"All connections should be closed")
 	assert.Equal(t, uint64(numClients), stats["total_connections"],
 		"Total connections should match")
 }

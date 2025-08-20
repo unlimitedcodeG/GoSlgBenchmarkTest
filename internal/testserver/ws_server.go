@@ -333,7 +333,11 @@ func (s *Server) handleLogin(conn *Connection) bool {
 
 	// 简单验证（在真实环境中应该验证token）
 	playerID := fmt.Sprintf("player_%s_%d", loginReq.DeviceId, time.Now().Unix())
+	
+	// 使用锁保护PlayerID的写入，避免与广播的读取产生数据竞争
+	conn.mu.Lock()
 	conn.PlayerID = playerID
+	conn.mu.Unlock()
 
 	// 发送登录响应
 	loginResp := &gamev1.LoginResp{
