@@ -152,6 +152,10 @@ func (s *Server) Start() error {
 		}
 	}()
 
+	// 给服务器足够的时间启动
+	// 不要通过连接测试，因为这可能干扰后续的客户端连接
+	time.Sleep(200 * time.Millisecond)
+
 	// 启动推送任务
 	if s.config.EnableBattlePush {
 		s.bgWg.Add(1)
@@ -333,7 +337,7 @@ func (s *Server) handleLogin(conn *Connection) bool {
 
 	// 简单验证（在真实环境中应该验证token）
 	playerID := fmt.Sprintf("player_%s_%d", loginReq.DeviceId, time.Now().Unix())
-	
+
 	// 使用锁保护PlayerID的写入，避免与广播的读取产生数据竞争
 	conn.mu.Lock()
 	conn.PlayerID = playerID

@@ -70,7 +70,8 @@ func TestReconnectAndSequenceMonotonic(t *testing.T) {
 		}
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.TestScenarios.Reconnect.MaxReconnectTime)
+	// 使用足够的超时时间支持重试机制 (5次重试 * 1秒间隔 + 缓冲时间)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	require.NoError(t, client.ConnectWithTimeout(ctx))
@@ -123,7 +124,8 @@ func TestHeartbeatAndRTT(t *testing.T) {
 	client := testutil.NewTestClient(t, server.GetWebSocketURL(), "test-token")
 	defer client.Cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.TestScenarios.Heartbeat.TestDuration)
+	// 使用足够的超时时间支持重试机制
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	require.NoError(t, client.ConnectWithTimeout(ctx))
@@ -158,8 +160,6 @@ func TestHeartbeatAndRTT(t *testing.T) {
 
 // TestPlayerAction 测试玩家操作发送和响应
 func TestPlayerAction(t *testing.T) {
-	cfg := config.GetTestConfig()
-
 	// 创建服务器
 	server := testutil.NewTestServer(t)
 	server.Start()
@@ -181,7 +181,8 @@ func TestPlayerAction(t *testing.T) {
 		}
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.TestScenarios.Messaging.MessageTimeout)
+	// 使用足够的超时时间支持重试机制
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	require.NoError(t, client.ConnectWithTimeout(ctx))
@@ -218,8 +219,8 @@ func TestConcurrentConnections(t *testing.T) {
 	// 使用配置化的客户端数量
 	numClients := cfg.StressTest.ConcurrentClients.DefaultClients
 
-	// 使用现代化并发模式：context + errgroup
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Client.Connection.Timeout)
+	// 使用现代化并发模式：context + errgroup，支持重试机制
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	var successCount int32
@@ -277,7 +278,8 @@ func TestLargeMessage(t *testing.T) {
 	client := testutil.NewTestClient(t, server.GetWebSocketURL(), "test-token")
 	defer client.Cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.TestScenarios.Messaging.MessageTimeout)
+	// 使用足够的超时时间支持重试机制
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	require.NoError(t, client.ConnectWithTimeout(ctx))

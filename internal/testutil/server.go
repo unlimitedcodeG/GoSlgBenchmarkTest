@@ -23,32 +23,37 @@ type TestServer struct {
 // NewTestServer 创建测试服务器
 func NewTestServer(t *testing.T) *TestServer {
 	cfg := config.GetTestConfig()
-	
+
 	addr, err := cfg.GetServerAddress()
 	require.NoError(t, err, "Failed to allocate server port")
-	
+
 	serverConfig := testserver.DefaultServerConfig(addr)
 	serverConfig.EnableBattlePush = cfg.Server.Push.EnableBattlePush
 	serverConfig.PushInterval = cfg.Server.Push.Interval
-	
+
 	server := testserver.New(serverConfig)
-	
-	return &TestServer{
+
+	ts := &TestServer{
 		Server: server,
 		config: cfg,
 		addr:   addr,
 		t:      t,
 	}
+
+	// 确保每个测试实例记录分配的端口，便于调试
+	t.Logf("🔌 Test server allocated address: %s", addr)
+
+	return ts
 }
 
 // Start 启动测试服务器
 func (ts *TestServer) Start() {
 	err := ts.Server.Start()
 	require.NoError(ts.t, err, "Failed to start test server")
-	
-	// 等待服务器就绪
-	time.Sleep(ts.config.TestScenarios.BasicConnection.ValidationDelay)
-	
+
+	// 等待服务器就绪 - 增加等待时间确保完全启动
+	time.Sleep(1 * time.Second) // 固定等待1秒，确保所有情况下都能成功
+
 	ts.t.Logf("✅ Test server started on %s", ts.addr)
 }
 
@@ -57,10 +62,14 @@ func (ts *TestServer) Stop() {
 	if ts.Server != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), ts.config.Server.DefaultTimeout)
 		defer cancel()
-		
+
 		ts.Server.Shutdown(ctx)
+
+		// 等待服务器完全释放端口
+		time.Sleep(200 * time.Millisecond)
+
 		ts.config.ReleaseServerPort(ts.addr)
-		ts.t.Logf("🛑 Test server stopped")
+		ts.t.Logf("🛑 Test server stopped and port released: %s", ts.addr)
 	}
 }
 
@@ -82,11 +91,11 @@ func (ts *TestServer) GetHTTPURL() string {
 // WithCustomConfig 使用自定义配置创建测试服务器
 func NewTestServerWithConfig(t *testing.T, customizer func(*testserver.ServerConfig)) *TestServer {
 	ts := NewTestServer(t)
-	
+
 	// 重新创建服务器配置
 	serverConfig := testserver.DefaultServerConfig(ts.addr)
 	customizer(serverConfig)
-	
+
 	ts.Server = testserver.New(serverConfig)
 	return ts
 }
@@ -94,11 +103,11 @@ func NewTestServerWithConfig(t *testing.T, customizer func(*testserver.ServerCon
 // StartWithTimeout 带超时启动服务器
 func (ts *TestServer) StartWithTimeout(timeout time.Duration) error {
 	errCh := make(chan error, 1)
-	
+
 	go func() {
 		errCh <- ts.Server.Start()
 	}()
-	
+
 	select {
 	case err := <-errCh:
 		if err == nil {

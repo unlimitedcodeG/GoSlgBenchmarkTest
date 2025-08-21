@@ -150,12 +150,23 @@ func (r *SessionRecorder) RecordEvent(eventType EventType, metadata map[string]i
 	}
 
 	now := time.Now()
+
+	// 检查metadata中是否有自定义时间戳
+	timestamp := now
+	if metadata != nil {
+		if customTime, exists := metadata["timestamp"]; exists {
+			if t, ok := customTime.(time.Time); ok {
+				timestamp = t
+			}
+		}
+	}
+
 	event := &SessionEvent{
 		ID:         fmt.Sprintf("event_%d", r.eventCounter.Add(1)),
 		Type:       eventType,
-		Timestamp:  now,
-		ClientTime: now,
-		ServerTime: now,
+		Timestamp:  timestamp,
+		ClientTime: timestamp,
+		ServerTime: timestamp,
 		Metadata:   metadata,
 	}
 
@@ -366,7 +377,7 @@ func (r *SessionRecorder) ExportJSON() ([]byte, error) {
 		Frames:    append([]*MessageFrame{}, r.frames...),
 		Stats:     r.stats,
 	}
-	
+
 	return json.MarshalIndent(session, "", "  ")
 }
 

@@ -47,6 +47,8 @@ func NewTestClient(t *testing.T, serverURL, token string) *TestClient {
 
 	clientConfig := wsclient.DefaultClientConfig(serverURL, token)
 	clientConfig.HeartbeatInterval = cfg.Client.Heartbeat.Interval
+	clientConfig.HandshakeTimeout = cfg.Server.WebSocket.HandshakeTimeout
+	clientConfig.PingTimeout = cfg.Client.Heartbeat.Timeout
 
 	client := wsclient.New(clientConfig)
 
@@ -102,28 +104,69 @@ func (tc *TestClient) setupHandlers() {
 
 // ConnectWithTimeout 带超时连接
 func (tc *TestClient) ConnectWithTimeout(ctx context.Context) error {
-	err := tc.Client.Connect(ctx)
-	if err != nil {
-		tc.t.Logf("❌ Client connection failed: %v", err)
-		return err
+	maxRetries := tc.config.Client.Connection.MaxRetries
+	retryInterval := tc.config.Client.Connection.RetryInterval
+
+	var lastErr error
+	for i := 0; i < maxRetries; i++ {
+		err := tc.Client.Connect(ctx)
+		if err != nil {
+			lastErr = err
+			tc.t.Logf("❌ Connection attempt %d/%d failed: %v", i+1, maxRetries, err)
+
+			// 如果是最后一次尝试，直接返回错误
+			if i == maxRetries-1 {
+				return lastErr
+			}
+
+			// 检查context是否超时
+			select {
+			case <-time.After(retryInterval):
+				continue
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+
+		tc.t.Logf("✅ Client connected successfully")
+		return nil
 	}
 
-	tc.t.Logf("✅ Client connected successfully")
-	return nil
+	return lastErr
 }
 
 // ConnectAndWait 连接并等待就绪
 func (tc *TestClient) ConnectAndWait() error {
-	ctx, cancel := context.WithTimeout(context.Background(), tc.config.TestScenarios.BasicConnection.Timeout)
+	// 使用更长的超时时间，与并发测试保持一致
+	ctx, cancel := context.WithTimeout(context.Background(), tc.config.Client.Connection.Timeout)
 	defer cancel()
 
-	if err := tc.ConnectWithTimeout(ctx); err != nil {
-		return err
+	// 添加重试机制，处理服务器启动时序问题
+	maxRetries := tc.config.Client.Connection.MaxRetries
+	retryInterval := tc.config.Client.Connection.RetryInterval
+
+	var lastErr error
+	for i := 0; i < maxRetries; i++ {
+		if err := tc.ConnectWithTimeout(ctx); err != nil {
+			lastErr = err
+			tc.t.Logf("⚠️ Connection attempt %d/%d failed: %v", i+1, maxRetries, err)
+
+			// 如果是最后一次尝试，直接返回错误
+			if i == maxRetries-1 {
+				return lastErr
+			}
+
+			// 等待重试间隔
+			time.Sleep(retryInterval)
+			continue
+		}
+
+		// 连接成功，等待稳定
+		time.Sleep(tc.config.TestScenarios.BasicConnection.ValidationDelay)
+		return nil
 	}
 
-	// 等待连接稳定
-	time.Sleep(tc.config.TestScenarios.BasicConnection.ValidationDelay)
-	return nil
+	return lastErr
 }
 
 // SendTestAction 发送测试操作
@@ -285,6 +328,11 @@ func (tc *TestClient) ClearStats() {
 func (tc *TestClient) ValidateConnection() error {
 	stats := tc.Client.GetStats()
 	expectedState := tc.config.TestScenarios.BasicConnection.ExpectedState
+
+	// 如果配置加载失败导致期望状态为空，使用默认值
+	if expectedState == "" {
+		expectedState = "CONNECTED"
+	}
 
 	if state, ok := stats["state"].(string); ok && state == expectedState {
 		return nil

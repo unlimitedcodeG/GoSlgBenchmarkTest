@@ -164,7 +164,33 @@ func (a *TimelineAnalyzer) CalculateNetworkMetrics() *NetworkMetrics {
 	}
 
 	var latencies []time.Duration
-	var totalDuration time.Duration
+
+	// 计算会话实际持续时间（从第一条消息到最后一条消息）
+	var sessionDuration time.Duration
+	if len(flows) > 0 {
+		var firstTime, lastTime time.Time
+
+		for _, flow := range flows {
+			if !flow.SendTime.IsZero() {
+				if firstTime.IsZero() || flow.SendTime.Before(firstTime) {
+					firstTime = flow.SendTime
+				}
+
+				endTime := flow.SendTime
+				if !flow.ReceiveTime.IsZero() {
+					endTime = flow.ReceiveTime
+				}
+
+				if lastTime.IsZero() || endTime.After(lastTime) {
+					lastTime = endTime
+				}
+			}
+		}
+
+		if !firstTime.IsZero() && !lastTime.IsZero() {
+			sessionDuration = lastTime.Sub(firstTime)
+		}
+	}
 
 	for _, flow := range flows {
 		metrics.TotalMessages++
@@ -179,15 +205,6 @@ func (a *TimelineAnalyzer) CalculateNetworkMetrics() *NetworkMetrics {
 			metrics.TimeoutMessages++
 		case "error":
 			metrics.FailedMessages++
-		}
-
-		// 计算总持续时间
-		if !flow.SendTime.IsZero() {
-			if flow.ReceiveTime.IsZero() {
-				totalDuration += time.Since(flow.SendTime)
-			} else {
-				totalDuration += flow.ReceiveTime.Sub(flow.SendTime)
-			}
 		}
 	}
 
@@ -223,9 +240,9 @@ func (a *TimelineAnalyzer) CalculateNetworkMetrics() *NetworkMetrics {
 		metrics.PacketLoss = float64(metrics.FailedMessages+metrics.TimeoutMessages) / float64(metrics.TotalMessages)
 	}
 
-	// 计算吞吐量
-	if totalDuration > 0 {
-		metrics.Throughput = float64(metrics.SuccessfulMessages) / totalDuration.Seconds()
+	// 计算吞吐量 - 使用会话实际持续时间
+	if sessionDuration > 0 {
+		metrics.Throughput = float64(metrics.SuccessfulMessages) / sessionDuration.Seconds()
 	}
 
 	return metrics
