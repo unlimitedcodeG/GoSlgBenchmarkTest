@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.8
-
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
@@ -25,5 +25,4 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
