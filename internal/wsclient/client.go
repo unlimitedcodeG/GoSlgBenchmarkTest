@@ -101,6 +101,7 @@ type Client struct {
 
 	// 同步控制
 	mu            sync.RWMutex
+	writeMu       sync.Mutex // 专用于WebSocket写入同步
 	stopChan      chan struct{}
 	reconnectChan chan struct{}
 
@@ -290,6 +291,10 @@ func (c *Client) sendMessage(opcode uint16, message proto.Message) error {
 	if conn == nil {
 		return errors.New("connection is nil")
 	}
+
+	// 使用专用的写入锁防止并发写入
+	c.writeMu.Lock()
+	defer c.writeMu.Unlock()
 
 	conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	return conn.WriteMessage(websocket.BinaryMessage, frame)

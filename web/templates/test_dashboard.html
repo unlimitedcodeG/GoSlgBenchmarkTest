@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity SLG 测试平台 v3.0 (PGX + SQLC)</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .test-card {
+            transition: transform 0.2s;
+        }
+        .test-card:hover {
+            transform: translateY(-2px);
+        }
+        .status-badge {
+            font-size: 0.8rem;
+        }
+        .metric-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .log-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .test-progress {
+            height: 4px;
+        }
+        .test-running {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-gamepad me-2"></i>Unity SLG 测试平台 v3.0
+            </a>
+            <span class="badge bg-success ms-auto">
+                <i class="fas fa-database me-1"></i>PGX + SQLC
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 系统状态面板 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-heartbeat me-2"></i>系统状态
+                        </h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshSystemStatus()">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="systemStatus">
+                            <div class="col-md-3">
+                                <div class="metric-item text-center">
+                                    <div class="h4 text-info" id="totalConns">-</div>
+                                    <small class="text-muted">数据库连接池</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-item text-center">
+                                    <div class="h4 text-success" id="totalTests">-</div>
+                                    <small class="text-muted">总测试数</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-item text-center">
+                                    <div class="h4 text-warning" id="runningTests">-</div>
+                                    <small class="text-muted">运行中测试</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-item text-center">
+                                    <div class="h4 text-primary" id="completedTests">-</div>
+                                    <small class="text-muted">已完成测试</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速创建测试 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>快速创建测试
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100 mb-2" onclick="createQuickTest('unity_integration')">
+                                    <i class="fas fa-cube me-2"></i>Unity SLG集成测试
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info w-100 mb-2" onclick="createQuickTest('stress')">
+                                    <i class="fas fa-tachometer-alt me-2"></i>WebSocket压力测试
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-warning w-100 mb-2" onclick="createQuickTest('fuzz')">
+                                    <i class="fas fa-random me-2"></i>协议模糊测试
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-success w-100 mb-2" onclick="createQuickTest('benchmark')">
+                                    <i class="fas fa-chart-bar me-2"></i>性能基准测试
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试列表 -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>测试列表
+                        </h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshTestList()">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="testList">
+                            <!-- 测试列表将在这里动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-terminal me-2"></i>实时日志
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="log-container" id="logContainer">
+                            <div>[INFO] Unity SLG 测试平台已启动...</div>
+                            <div>[INFO] 数据库连接池: PGX + SQLC</div>
+                            <div>[INFO] 等待测试任务...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试详情模态框 -->
+        <div class="modal fade" id="testDetailModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">测试详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="testDetailContent">
+                            <!-- 测试详情将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // API 基础URL
+        const API_BASE = 'http://localhost:8080/api/v1';
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshSystemStatus();
+            refreshTestList();
+            
+            // 每5秒刷新一次数据
+            setInterval(() => {
+                refreshSystemStatus();
+                refreshTestList();
+            }, 5000);
+        });
+        
+        // 刷新系统状态
+        async function refreshSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const data = await response.json();
+                
+                // 更新连接池状态
+                const poolStats = data.database.pool_stats || {};
+                document.getElementById('totalConns').textContent = 
+                    `${poolStats.acquired_conns || 0}/${poolStats.total_conns || 0}`;
+                
+                // 更新测试统计
+                const stats = data.statistics || {};
+                document.getElementById('totalTests').textContent = stats.total_tests || 0;
+                document.getElementById('runningTests').textContent = stats.running_tests || 0;
+                document.getElementById('completedTests').textContent = stats.completed_tests || 0;
+                
+                addLog(`[INFO] 系统状态: ${data.system_health}, 数据库: ${data.database.status}`);
+            } catch (error) {
+                console.error('Failed to fetch system status:', error);
+                addLog(`[ERROR] 获取系统状态失败: ${error.message}`);
+            }
+        }
+        
+        // 刷新测试列表
+        async function refreshTestList() {
+            try {
+                const response = await fetch(`${API_BASE}/tests?limit=20`);
+                const data = await response.json();
+                
+                const testListContainer = document.getElementById('testList');
+                
+                if (data.tests && data.tests.length > 0) {
+                    testListContainer.innerHTML = data.tests.map(test => `
+                        <div class="test-card card mb-3 ${test.status === 'running' ? 'test-running' : ''}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title mb-1">${test.name}</h6>
+                                        <p class="card-text text-muted mb-2">
+                                            <span class="badge bg-secondary me-2">${test.type}</span>
+                                            <small>ID: ${test.id}</small>
+                                        </p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge status-badge ${getStatusBadgeClass(test.status)}">${getStatusText(test.status)}</span>
+                                        ${test.score ? `<div class="mt-1"><small class="text-muted">得分: <strong>${test.score.toFixed(1)}</strong></small></div>` : ''}
+                                    </div>
+                                </div>
+                                
+                                ${test.status === 'running' && test.start_time ? `
+                                    <div class="progress test-progress mt-2">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                                    </div>
+                                    <small class="text-muted">运行时间: ${getRunningTime(test.start_time)}</small>
+                                ` : ''}
+                                
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="viewTestDetail(${test.id})">
+                                        <i class="fas fa-eye"></i> 详情
+                                    </button>
+                                    
+                                    ${test.status === 'pending' ? `
+                                        <button class="btn btn-sm btn-success me-2" onclick="startTest(${test.id})">
+                                            <i class="fas fa-play"></i> 启动
+                                        </button>
+                                    ` : ''}
+                                    
+                                    ${test.status === 'running' ? `
+                                        <button class="btn btn-sm btn-warning me-2" onclick="stopTest(${test.id})">
+                                            <i class="fas fa-stop"></i> 停止
+                                        </button>
+                                    ` : ''}
+                                    
+                                    ${test.status === 'completed' || test.status === 'failed' ? `
+                                        <button class="btn btn-sm btn-info me-2" onclick="viewTestReport(${test.id})">
+                                            <i class="fas fa-chart-line"></i> 报告
+                                        </button>
+                                    ` : ''}
+                                    
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTest(${test.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    testListContainer.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-flask fa-3x mb-3"></i>
+                            <p>暂无测试任务，点击上方按钮创建新测试</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to fetch test list:', error);
+                addLog(`[ERROR] 获取测试列表失败: ${error.message}`);
+            }
+        }
+        
+        // 创建快速测试
+        async function createQuickTest(type) {
+            const testConfigs = {
+                'unity_integration': {
+                    name: `Unity SLG集成测试 - ${new Date().toLocaleTimeString()}`,
+                    type: 'unity_integration',
+                    slg_mode: true,
+                    unity_url: 'ws://localhost:7777/ws',
+                    game_url: 'ws://localhost:8080/ws',
+                    config: {
+                        duration: '30s',
+                        clients: 3,
+                        battle_scenarios: ['1v1', 'team'],
+                        unity_version: '2022.3.12f1'
+                    }
+                },
+                'stress': {
+                    name: `WebSocket压力测试 - ${new Date().toLocaleTimeString()}`,
+                    type: 'stress',
+                    config: {
+                        duration: '60s',
+                        concurrent_clients: 50,
+                        message_rate: 10,
+                        target_url: 'ws://localhost:8080/ws'
+                    }
+                },
+                'fuzz': {
+                    name: `协议模糊测试 - ${new Date().toLocaleTimeString()}`,
+                    type: 'fuzz',
+                    config: {
+                        iterations: 1000,
+                        test_cases: ['decode', 'encode', 'frame'],
+                        timeout: '30s'
+                    }
+                },
+                'benchmark': {
+                    name: `性能基准测试 - ${new Date().toLocaleTimeString()}`,
+                    type: 'benchmark',
+                    config: {
+                        duration: '60s',
+                        benchmarks: ['serialization', 'websocket', 'database'],
+                        iterations: 10000
+                    }
+                }
+            };
+            
+            try {
+                addLog(`[INFO] 创建${type}测试...`);
+                
+                const response = await fetch(`${API_BASE}/tests`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testConfigs[type])
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addLog(`[SUCCESS] 测试创建成功，ID: ${result.test_id}`);
+                    refreshTestList();
+                    
+                    // 自动启动测试
+                    setTimeout(() => startTest(result.test_id), 1000);
+                } else {
+                    addLog(`[ERROR] 测试创建失败: ${result.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Failed to create test:', error);
+                addLog(`[ERROR] 创建测试失败: ${error.message}`);
+            }
+        }
+        
+        // 启动测试
+        async function startTest(testId) {
+            try {
+                addLog(`[INFO] 启动测试 ${testId}...`);
+                
+                const response = await fetch(`${API_BASE}/tests/${testId}/start`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addLog(`[SUCCESS] 测试 ${testId} 启动成功`);
+                    refreshTestList();
+                } else {
+                    addLog(`[ERROR] 启动测试失败: ${result.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Failed to start test:', error);
+                addLog(`[ERROR] 启动测试失败: ${error.message}`);
+            }
+        }
+        
+        // 停止测试
+        async function stopTest(testId) {
+            try {
+                addLog(`[INFO] 停止测试 ${testId}...`);
+                
+                const response = await fetch(`${API_BASE}/tests/${testId}/stop`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addLog(`[SUCCESS] 测试 ${testId} 停止成功`);
+                    refreshTestList();
+                } else {
+                    addLog(`[ERROR] 停止测试失败: ${result.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Failed to stop test:', error);
+                addLog(`[ERROR] 停止测试失败: ${error.message}`);
+            }
+        }
+        
+        // 查看测试详情
+        async function viewTestDetail(testId) {
+            try {
+                const response = await fetch(`${API_BASE}/tests/${testId}`);
+                const test = await response.json();
+                
+                const modalContent = document.getElementById('testDetailContent');
+                modalContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>基本信息</h6>
+                            <table class="table table-sm">
+                                <tr><td>ID</td><td>${test.id}</td></tr>
+                                <tr><td>名称</td><td>${test.name}</td></tr>
+                                <tr><td>类型</td><td><span class="badge bg-secondary">${test.type}</span></td></tr>
+                                <tr><td>状态</td><td><span class="badge ${getStatusBadgeClass(test.status)}">${getStatusText(test.status)}</span></td></tr>
+                                <tr><td>创建时间</td><td>${new Date(test.created_at).toLocaleString()}</td></tr>
+                                ${test.start_time ? `<tr><td>开始时间</td><td>${new Date(test.start_time).toLocaleString()}</td></tr>` : ''}
+                                ${test.end_time ? `<tr><td>结束时间</td><td>${new Date(test.end_time).toLocaleString()}</td></tr>` : ''}
+                                ${test.duration ? `<tr><td>运行时长</td><td>${(test.duration / 1000).toFixed(1)}秒</td></tr>` : ''}
+                                ${test.score ? `<tr><td>得分</td><td><strong>${test.score.toFixed(1)}</strong> (${test.grade})</td></tr>` : ''}
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>配置信息</h6>
+                            <pre class="bg-light p-3 rounded"><code>${JSON.stringify(test.config || {}, null, 2)}</code></pre>
+                        </div>
+                    </div>
+                `;
+                
+                const modal = new bootstrap.Modal(document.getElementById('testDetailModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Failed to fetch test detail:', error);
+                addLog(`[ERROR] 获取测试详情失败: ${error.message}`);
+            }
+        }
+        
+        // 查看测试报告
+        async function viewTestReport(testId) {
+            try {
+                addLog(`[INFO] 加载测试报告 ${testId}...`);
+                
+                const response = await fetch(`${API_BASE}/tests/${testId}/report`);
+                const report = await response.json();
+                
+                if (response.ok) {
+                    const modalContent = document.getElementById('testDetailContent');
+                    modalContent.innerHTML = `
+                        <div class="row">
+                            <div class="col-12">
+                                <h6>测试报告 - ${report.name}</h6>
+                                <div class="alert alert-info">
+                                    <strong>总体得分:</strong> ${report.score ? report.score.toFixed(1) : 'N/A'} (${report.grade || 'N/A'})
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${report.reports && report.reports.length > 0 ? `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h6>测试摘要</h6>
+                                ${report.reports.map(r => `
+                                    <div class="card mb-2">
+                                        <div class="card-body">
+                                            <p>${r.summary || '无摘要'}</p>
+                                            ${r.raw_data ? `<small class="text-muted">原始数据: ${r.raw_data}</small>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${report.metrics && Object.keys(report.metrics).length > 0 ? `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h6>性能指标</h6>
+                                ${Object.entries(report.metrics).map(([type, metrics]) => `
+                                    <div class="card mb-2">
+                                        <div class="card-header">
+                                            <strong>${type}</strong>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                ${metrics.map(metric => `
+                                                    <div class="col-md-3 mb-2">
+                                                        <small class="text-muted">${metric.metric_name}</small>
+                                                        <div><strong>${metric.metric_value ? parseFloat(metric.metric_value).toFixed(2) : 'N/A'}</strong> ${metric.metric_unit || ''}</div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('testDetailModal'));
+                    modal.show();
+                    
+                    addLog(`[SUCCESS] 测试报告加载完成`);
+                } else {
+                    addLog(`[ERROR] 获取测试报告失败: ${report.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Failed to fetch test report:', error);
+                addLog(`[ERROR] 获取测试报告失败: ${error.message}`);
+            }
+        }
+        
+        // 删除测试
+        async function deleteTest(testId) {
+            if (!confirm('确定要删除这个测试吗？')) return;
+            
+            try {
+                addLog(`[INFO] 删除测试 ${testId}...`);
+                
+                const response = await fetch(`${API_BASE}/tests/${testId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addLog(`[SUCCESS] 测试 ${testId} 删除成功`);
+                    refreshTestList();
+                } else {
+                    addLog(`[ERROR] 删除测试失败: ${result.message || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Failed to delete test:', error);
+                addLog(`[ERROR] 删除测试失败: ${error.message}`);
+            }
+        }
+        
+        // 工具函数
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'pending': 'bg-secondary',
+                'running': 'bg-warning',
+                'completed': 'bg-success',
+                'failed': 'bg-danger',
+                'stopped': 'bg-dark'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+        
+        function getStatusText(status) {
+            const texts = {
+                'pending': '等待中',
+                'running': '运行中',
+                'completed': '已完成',
+                'failed': '失败',
+                'stopped': '已停止'
+            };
+            return texts[status] || status;
+        }
+        
+        function getRunningTime(startTime) {
+            const diff = Date.now() - new Date(startTime).getTime();
+            return `${Math.floor(diff / 1000)}秒`;
+        }
+        
+        function addLog(message) {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${time}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // 保持最多100条日志
+            while (logContainer.children.length > 100) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+    </script>
+</body>
+</html>
