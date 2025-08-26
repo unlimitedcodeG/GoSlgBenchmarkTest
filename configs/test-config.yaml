@@ -10,7 +10,7 @@ meta:
 
 # 服务器配置
 server:
-  base_host: "127.0.0.1"
+  base_host: "0.0.0.0"
   port_range:
     start: 18000
     end: 18999
@@ -107,6 +107,83 @@ benchmark:
     frame_sizes: [64, 256, 1024, 4096, 16384]
     iterations_per_size: 10000
     measure_memory: true
+
+# gRPC 负载测试配置
+grpc_loadtest:
+  default_config:
+    concurrent_clients: 10
+    duration: "60s"
+    target_rps: 100
+    request_timeout: "10s"
+    keep_alive_time: "30s"
+    keep_alive_timeout: "5s"
+    max_connections: 5
+    connection_reuse: true
+  test_methods:
+    - "Login"
+    - "SendPlayerAction"
+    - "GetPlayerStatus"
+    - "GetBattleStatus"
+  performance_thresholds:
+    max_avg_latency: "100ms"
+    max_p95_latency: "200ms"
+    max_p99_latency: "500ms"
+    min_success_rate: 0.95
+
+# HTTP API 负载测试配置
+http_loadtest:
+  default_config:
+    concurrent_clients: 10
+    duration: "60s"
+    target_rps: 100
+    timeout: "30s"
+    keep_alive: true
+    max_idle_conns: 100
+    max_conns_per_host: 50
+    follow_redirects: true
+    enable_compression: true
+  default_endpoints:
+    - path: "/api/v1/test/fast"
+      method: "GET"
+      weight: 1
+    - path: "/api/v1/test/medium"
+      method: "GET"
+      weight: 1
+    - path: "/api/v1/test/slow"
+      method: "GET"
+      weight: 1
+    - path: "/api/v1/players"
+      method: "GET"
+      weight: 2
+      query_params:
+        page: "1"
+        page_size: "10"
+    - path: "/api/v1/players"
+      method: "POST"
+      weight: 1
+      headers:
+        Content-Type: "application/json"
+      body:
+        nickname: "test_user_{{client_id}}"
+        level: 1
+  performance_thresholds:
+    max_avg_latency: "50ms"
+    max_p95_latency: "100ms"
+    max_p99_latency: "200ms"
+    min_success_rate: 0.98
+
+# 测试服务器配置
+test_servers:
+  http_server:
+    port: 19000
+    read_timeout: "30s"
+    write_timeout: "30s"
+    error_rate: 0.02
+  grpc_server:
+    port: 19001
+    keep_alive_time: "60s"
+    max_recv_msg_size: 4194304
+    error_rate: 0.01
 
 # SLG协议配置
 slg_protocol:

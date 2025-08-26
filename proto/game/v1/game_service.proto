@@ -1,0 +1,182 @@
+syntax = "proto3";
+package game.v1;
+
+option go_package = "GoSlgBenchmarkTest/proto/game/v1;gamev1";
+
+import "proto/game/v1/game.proto";
+
+// 游戏服务 - gRPC接口定义
+service GameService {
+  // 用户认证相关
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc Logout(LogoutReq) returns (LogoutResp);
+  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
+  
+  // 玩家操作相关
+  rpc SendPlayerAction(PlayerAction) returns (ActionResp);
+  rpc GetPlayerStatus(PlayerStatusReq) returns (PlayerStatusResp);
+  rpc UpdatePlayerProfile(UpdateProfileReq) returns (UpdateProfileResp);
+  
+  // 战斗相关
+  rpc GetBattleStatus(BattleStatusReq) returns (BattleStatusResp);
+  rpc JoinBattle(JoinBattleReq) returns (JoinBattleResp);
+  rpc LeaveBattle(LeaveBattleReq) returns (LeaveBattleResp);
+  
+  // 流式RPC - 实时战斗更新
+  rpc StreamBattleUpdates(BattleStreamReq) returns (stream BattlePush);
+  rpc StreamPlayerEvents(PlayerEventStreamReq) returns (stream PlayerEventPush);
+  
+  // 批量操作
+  rpc BatchPlayerActions(BatchActionReq) returns (BatchActionResp);
+  rpc GetBatchBattleStatus(BatchBattleStatusReq) returns (BatchBattleStatusResp);
+}
+
+// 新增的请求/响应消息
+message LogoutReq {
+  string session_id = 1;
+}
+
+message LogoutResp {
+  bool success = 1;
+  string message = 2;
+}
+
+message RefreshTokenReq {
+  string refresh_token = 1;
+  string device_id = 2;
+}
+
+message RefreshTokenResp {
+  bool success = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  int64 expires_at = 4;
+}
+
+message ActionResp {
+  bool success = 1;
+  uint64 action_id = 2;
+  string error_message = 3;
+  int64 server_timestamp = 4;
+}
+
+message PlayerStatusReq {
+  string player_id = 1;
+}
+
+message PlayerStatusResp {
+  string player_id = 1;
+  string status = 2; // online, offline, in_battle
+  Position current_position = 3;
+  int32 level = 4;
+  int32 experience = 5;
+  repeated PlayerItem inventory = 6;
+}
+
+message PlayerItem {
+  string item_id = 1;
+  string item_name = 2;
+  int32 quantity = 3;
+  string rarity = 4;
+}
+
+message UpdateProfileReq {
+  string player_id = 1;
+  string nickname = 2;
+  string avatar_url = 3;
+  map<string, string> settings = 4;
+}
+
+message UpdateProfileResp {
+  bool success = 1;
+  string message = 2;
+  int64 updated_at = 3;
+}
+
+message BattleStatusReq {
+  string battle_id = 1;
+  bool include_units = 2;
+}
+
+message BattleStatusResp {
+  string battle_id = 1;
+  string status = 2; // preparing, active, finished
+  repeated BattleUnit units = 3;
+  int64 start_time = 4;
+  int64 end_time = 5;
+  BattleResult result = 6;
+}
+
+message BattleResult {
+  string winner_team = 1;
+  map<string, int32> player_scores = 2;
+  int32 total_duration_ms = 3;
+}
+
+message JoinBattleReq {
+  string player_id = 1;
+  string battle_type = 2; // pve, pvp, ranked
+  string team_preference = 3; // red, blue, auto
+}
+
+message JoinBattleResp {
+  bool success = 1;
+  string battle_id = 2;
+  string team_assigned = 3;
+  string error_message = 4;
+  int64 estimated_start_time = 5;
+}
+
+message LeaveBattleReq {
+  string player_id = 1;
+  string battle_id = 2;
+  string reason = 3;
+}
+
+message LeaveBattleResp {
+  bool success = 1;
+  string message = 2;
+  bool penalty_applied = 3;
+}
+
+message BattleStreamReq {
+  string battle_id = 1;
+  string player_id = 2;
+  bool include_detailed_stats = 3;
+}
+
+message PlayerEventStreamReq {
+  string player_id = 1;
+  repeated string event_types = 2; // level_up, item_received, achievement
+}
+
+message PlayerEventPush {
+  string player_id = 1;
+  string event_type = 2;
+  string event_data = 3; // JSON格式的事件数据
+  int64 timestamp = 4;
+}
+
+message BatchActionReq {
+  string player_id = 1;
+  repeated PlayerAction actions = 2;
+  bool atomic_execution = 3; // 是否原子执行
+}
+
+message BatchActionResp {
+  bool success = 1;
+  repeated ActionResp action_results = 2;
+  string error_message = 3;
+  int32 processed_count = 4;
+}
+
+message BatchBattleStatusReq {
+  repeated string battle_ids = 1;
+  bool include_units = 2;
+}
+
+message BatchBattleStatusResp {
+  repeated BattleStatusResp battles = 1;
+  int32 total_count = 2;
+  repeated string not_found_ids = 3;
+}

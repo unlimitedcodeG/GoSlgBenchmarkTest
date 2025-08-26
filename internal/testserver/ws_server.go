@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -146,15 +147,22 @@ func (s *Server) Start() error {
 
 	log.Printf("Starting test server on %s", s.config.Addr)
 
+	// 创建监听器，确保地址格式正确
+	ln, err := net.Listen("tcp", s.config.Addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen on %s: %v", s.config.Addr, err)
+	}
+
+	log.Printf("✅ Server listening on %s", s.config.Addr)
+
 	go func() {
-		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.server.Serve(ln); err != nil && err != http.ErrServerClosed {
 			log.Printf("Server error: %v", err)
 		}
 	}()
 
 	// 给服务器足够的时间启动
-	// 不要通过连接测试，因为这可能干扰后续的客户端连接
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	// 启动推送任务
 	if s.config.EnableBattlePush {
@@ -242,8 +250,10 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	wsConn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("WebSocket upgrade failed: %v", err)
+		http.Error(w, "WebSocket upgrade failed", http.StatusBadRequest)
 		return
 	}
+	log.Printf("WebSocket upgrade successful for connection from %s", r.RemoteAddr)
 
 	connID := fmt.Sprintf("conn_%d_%d", time.Now().UnixNano(), s.totalConnections.Add(1))
 	conn := &Connection{
@@ -357,6 +367,7 @@ func (s *Server) handleLogin(conn *Connection) bool {
 	}
 
 	log.Printf("Login successful: %s -> %s", conn.ID, playerID)
+	log.Printf("Connection %s login completed, starting message loop", conn.ID)
 	return true
 }
 
@@ -374,7 +385,7 @@ func (s *Server) messageReadLoop(conn *Connection) {
 		case <-conn.stopChan:
 			return
 		default:
-			conn.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+			conn.Conn.SetReadDeadline(time.Now().Add(120 * time.Second))
 
 			messageType, rawData, err := conn.Conn.ReadMessage()
 			if err != nil {

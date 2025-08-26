@@ -1,0 +1,710 @@
+?   	GoSlgBenchmarkTest	[no test files]
+?   	GoSlgBenchmarkTest/api/handlers	[no test files]
+?   	GoSlgBenchmarkTest/cmd/recording-proxy	[no test files]
+?   	GoSlgBenchmarkTest/cmd/session-demo	[no test files]
+FAIL	GoSlgBenchmarkTest/cmd/test-platform [build failed]
+?   	GoSlgBenchmarkTest/cmd/unity-recorder	[no test files]
+?   	GoSlgBenchmarkTest/game/v1	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_0_0/building	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_0_0/combat	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_0_0/common	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_1_0/building	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_1_0/combat	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_1_0/common	[no test files]
+?   	GoSlgBenchmarkTest/generated/slg/v1_1_0/event	[no test files]
+?   	GoSlgBenchmarkTest/internal/config	[no test files]
+?   	GoSlgBenchmarkTest/internal/database	[no test files]
+?   	GoSlgBenchmarkTest/internal/db	[no test files]
+?   	GoSlgBenchmarkTest/internal/grpcserver	[no test files]
+?   	GoSlgBenchmarkTest/internal/httpserver	[no test files]
+?   	GoSlgBenchmarkTest/internal/loadtest	[no test files]
+?   	GoSlgBenchmarkTest/internal/logger	[no test files]
+?   	GoSlgBenchmarkTest/internal/protocol	[no test files]
+?   	GoSlgBenchmarkTest/internal/session	[no test files]
+?   	GoSlgBenchmarkTest/internal/testrunner	[no test files]
+?   	GoSlgBenchmarkTest/internal/testserver	[no test files]
+?   	GoSlgBenchmarkTest/internal/testutil	[no test files]
+?   	GoSlgBenchmarkTest/internal/wsclient	[no test files]
+?   	GoSlgBenchmarkTest/pkg/analyzer	[no test files]
+?   	GoSlgBenchmarkTest/pkg/dashboard	[no test files]
+?   	GoSlgBenchmarkTest/proto/game/v1	[no test files]
+=== RUN   TestBackwardCompatibility_LoginResp
+--- PASS: TestBackwardCompatibility_LoginResp (0.00s)
+=== RUN   TestBackwardCompatibility_BattlePush
+--- PASS: TestBackwardCompatibility_BattlePush (0.00s)
+=== RUN   TestBackwardCompatibility_PlayerAction
+--- PASS: TestBackwardCompatibility_PlayerAction (0.00s)
+=== RUN   TestFieldEvolution
+--- PASS: TestFieldEvolution (0.00s)
+=== RUN   TestEnumEvolution
+--- PASS: TestEnumEvolution (0.00s)
+=== RUN   TestMessageSizeGrowth
+    compat_pb_test.go:285: Large message size: 4557 bytes
+--- PASS: TestMessageSizeGrowth (0.00s)
+=== RUN   TestBasicConnection
+Debug: Before unmarshal - Raw viper values - PortRange start: 18000, end: 18999
+Debug: After unmarshal - Raw viper values - PortRange start: 18000, end: 18999
+Debug: Config struct - PortRange: 18000-18999
+Debug: Default values check - start: 18000, end: 18999
+    server.go:44: 🔌 Test server allocated address: :18000
+2025/08/26 23:47:16 Starting test server on :18000
+2025/08/26 23:47:16 ✅ Server listening on :18000
+    server.go:57: ✅ Test server started on :18000
+    e2e_ws_test.go:41: 🔌 Connecting to: ws://:18000/ws
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://:18000/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2933
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 New connection: conn_1756223239204579600_1 from 127.0.0.1:2933
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239204579600_1 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239204579600_1 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239204579600_1
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+    e2e_ws_test.go:48: 🔍 Connection state: CONNECTED
+    e2e_ws_test.go:54: ✅ Connection test passed!
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2933->127.0.0.1:18000: use of closed network connection
+2025/08/26 23:47:21 Shutting down test server...
+2025/08/26 23:47:21 Connection closed: conn_1756223239204579600_1, reason: Connection ended
+    server.go:72: 🛑 Test server stopped and port released: :18000
+--- PASS: TestBasicConnection (4.82s)
+=== RUN   FuzzBattlePushUnmarshal
+=== RUN   FuzzBattlePushUnmarshal/seed#0
+=== RUN   FuzzBattlePushUnmarshal/seed#1
+=== RUN   FuzzBattlePushUnmarshal/seed#2
+=== RUN   FuzzBattlePushUnmarshal/seed#3
+--- PASS: FuzzBattlePushUnmarshal (0.00s)
+    --- PASS: FuzzBattlePushUnmarshal/seed#0 (0.00s)
+    --- PASS: FuzzBattlePushUnmarshal/seed#1 (0.00s)
+    --- PASS: FuzzBattlePushUnmarshal/seed#2 (0.00s)
+    --- PASS: FuzzBattlePushUnmarshal/seed#3 (0.00s)
+=== RUN   FuzzLoginReqUnmarshal
+=== RUN   FuzzLoginReqUnmarshal/seed#0
+=== RUN   FuzzLoginReqUnmarshal/seed#1
+=== RUN   FuzzLoginReqUnmarshal/seed#2
+--- PASS: FuzzLoginReqUnmarshal (0.00s)
+    --- PASS: FuzzLoginReqUnmarshal/seed#0 (0.00s)
+    --- PASS: FuzzLoginReqUnmarshal/seed#1 (0.00s)
+    --- PASS: FuzzLoginReqUnmarshal/seed#2 (0.00s)
+=== RUN   FuzzPlayerActionUnmarshal
+=== RUN   FuzzPlayerActionUnmarshal/seed#0
+=== RUN   FuzzPlayerActionUnmarshal/seed#1
+=== RUN   FuzzPlayerActionUnmarshal/seed#2
+--- PASS: FuzzPlayerActionUnmarshal (0.00s)
+    --- PASS: FuzzPlayerActionUnmarshal/seed#0 (0.00s)
+    --- PASS: FuzzPlayerActionUnmarshal/seed#1 (0.00s)
+    --- PASS: FuzzPlayerActionUnmarshal/seed#2 (0.00s)
+=== RUN   FuzzFrameDecode
+=== RUN   FuzzFrameDecode/seed#0
+=== RUN   FuzzFrameDecode/seed#1
+=== RUN   FuzzFrameDecode/seed#2
+    fuzz_decode_test.go:199: Decoded invalid opcode: 1
+=== RUN   FuzzFrameDecode/seed#3
+=== RUN   FuzzFrameDecode/seed#4
+=== RUN   FuzzFrameDecode/seed#5
+--- PASS: FuzzFrameDecode (0.00s)
+    --- PASS: FuzzFrameDecode/seed#0 (0.00s)
+    --- PASS: FuzzFrameDecode/seed#1 (0.00s)
+    --- PASS: FuzzFrameDecode/seed#2 (0.00s)
+    --- PASS: FuzzFrameDecode/seed#3 (0.00s)
+    --- PASS: FuzzFrameDecode/seed#4 (0.00s)
+    --- PASS: FuzzFrameDecode/seed#5 (0.00s)
+=== RUN   FuzzFrameDecoder
+=== RUN   FuzzFrameDecoder/seed#0
+=== RUN   FuzzFrameDecoder/seed#1
+=== RUN   FuzzFrameDecoder/seed#2
+=== RUN   FuzzFrameDecoder/seed#3
+=== RUN   FuzzFrameDecoder/seed#4
+=== RUN   FuzzFrameDecoder/seed#5
+--- PASS: FuzzFrameDecoder (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#0 (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#1 (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#2 (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#3 (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#4 (0.00s)
+    --- PASS: FuzzFrameDecoder/seed#5 (0.00s)
+=== RUN   FuzzErrorResp
+=== RUN   FuzzErrorResp/seed#0
+=== RUN   FuzzErrorResp/seed#1
+--- PASS: FuzzErrorResp (0.00s)
+    --- PASS: FuzzErrorResp/seed#0 (0.00s)
+    --- PASS: FuzzErrorResp/seed#1 (0.00s)
+PASS
+ok  	GoSlgBenchmarkTest/test	5.929s
+=== RUN   TestSessionRecordingAndReplay
+    session_integration_test.go:23: 🎬 测试会话录制和回放功能...
+2025/08/26 23:47:18 Starting test server on :18090
+2025/08/26 23:47:18 ✅ Server listening on :18090
+2025/08/26 23:47:18 🚀 Starting connection process...
+2025/08/26 23:47:18 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:18 🔗 Attempting to connect...
+2025/08/26 23:47:18 🌐 Dialing WebSocket URL: ws://127.0.0.1:18090/ws
+2025/08/26 23:47:18 WebSocket upgrade successful for connection from 127.0.0.1:4948
+2025/08/26 23:47:18 New connection: conn_1756223238789433100_1 from 127.0.0.1:4948
+2025/08/26 23:47:18 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:18 🔐 Starting login handshake...
+2025/08/26 23:47:18 Login successful: conn_1756223238789433100_1 -> player_test-device_1756223238
+2025/08/26 23:47:18 Connection conn_1756223238789433100_1 login completed, starting message loop
+2025/08/26 23:47:18 Login successful: player_id=player_test-device_1756223238, session_id=session_conn_1756223238789433100_1
+2025/08/26 23:47:18 Client login completed, connection should be stable now
+2025/08/26 23:47:18 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:18 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:18 🔄 Starting background tasks...
+2025/08/26 23:47:18 🎉 Connection process completed successfully
+2025/08/26 23:47:18 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=1
+2025/08/26 23:47:18 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=2
+2025/08/26 23:47:18 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=3
+2025/08/26 23:47:19 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=4
+2025/08/26 23:47:19 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=5
+2025/08/26 23:47:20 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:20 Network error, triggering reconnect: read tcp 127.0.0.1:4948->127.0.0.1:18090: use of closed network connection
+    session_integration_test.go:98:    📹 录制完成: 31 个事件, 0 个消息帧
+2025/08/26 23:47:20 Connection closed: conn_1756223238789433100_1, reason: Connection ended
+    session_integration_test.go:108:    🔄 开始会话回放测试...
+    session_integration_test.go:141:    ✅ 回放完成: 31/0 事件重放成功
+2025/08/26 23:47:22 Shutting down test server...
+--- PASS: TestSessionRecordingAndReplay (4.11s)
+=== RUN   TestSessionAssertions
+    session_integration_test.go:147: 🧪 测试会话断言功能...
+    session_integration_test.go:243:    🔍 运行断言套件...
+    session_integration_test.go:251:    📊 断言结果: 2 通过, 2 失败, 成功率: 50.0%
+    session_integration_test.go:260:    ❌ FAIL [1] Expected at least 5 messages with opcode 2000, got 0: 0s
+    session_integration_test.go:260:    ❌ FAIL [2] No latency data available for assertion: 0s
+    session_integration_test.go:260:    ✅ PASS [3] Reconnect assertion passed: 1 reconnects within limits: 0s
+    session_integration_test.go:260:    ✅ PASS [4] Error rate assertion passed: 3.85% within limit 10.00%: 0s
+--- PASS: TestSessionAssertions (0.00s)
+=== RUN   TestTimelineAnalysis
+    session_integration_test.go:269: 📊 测试时间线分析功能...
+    session_integration_test.go:332:    📈 分析时间线...
+    session_integration_test.go:337:    🔄 分析消息流...
+    session_integration_test.go:342:    📊 计算网络指标...
+    session_integration_test.go:346:    📈 网络指标:
+    session_integration_test.go:347:       总消息数: 20
+    session_integration_test.go:348:       成功消息: 18
+    session_integration_test.go:349:       平均延迟: 45.5ms
+    session_integration_test.go:350:       最小延迟: 20ms
+    session_integration_test.go:351:       最大延迟: 71ms
+    session_integration_test.go:352:       抖动: 67h17m30s
+    session_integration_test.go:353:       丢包率: 0.00%
+    session_integration_test.go:354:       吞吐量: 18.95 msg/s
+    session_integration_test.go:357:    🚨 查找延迟异常...
+    session_integration_test.go:367:    🔗 分析连接稳定性...
+    session_integration_test.go:370:    📊 连接稳定性:
+    session_integration_test.go:371:       连接次数: 2
+    session_integration_test.go:372:       断开次数: 0
+    session_integration_test.go:373:       重连次数: 1
+    session_integration_test.go:374:       平均连接时长: 0s
+    session_integration_test.go:375:       重连率: 33.33%
+    session_integration_test.go:378:    📋 生成时间线报告...
+    session_integration_test.go:392:    📄 报告大小: 23063 字节
+    session_integration_test.go:399:    ✅ 时间线分析完成
+--- PASS: TestTimelineAnalysis (0.00s)
+=== RUN   TestSessionExportAndImport
+    session_integration_test.go:404: 💾 测试会话导出和导入功能...
+    session_integration_test.go:428:    📤 导出完成: 1930 字节
+    session_integration_test.go:450:    ✅ 导出导入测试完成
+--- PASS: TestSessionExportAndImport (0.00s)
+PASS
+ok  	GoSlgBenchmarkTest/test/session	5.944s
+=== RUN   TestSLGProtocolIntegration
+2025/08/26 23:47:17 Starting test server on :18100
+2025/08/26 23:47:17 ✅ Server listening on :18100
+2025/08/26 23:47:18 🚀 Starting connection process...
+2025/08/26 23:47:18 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:18 🔗 Attempting to connect...
+2025/08/26 23:47:18 🌐 Dialing WebSocket URL: ws://127.0.0.1:18100/ws
+2025/08/26 23:47:18 WebSocket upgrade successful for connection from 127.0.0.1:4945
+2025/08/26 23:47:18 New connection: conn_1756223238033019000_1 from 127.0.0.1:4945
+2025/08/26 23:47:18 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:18 🔐 Starting login handshake...
+2025/08/26 23:47:18 Login successful: conn_1756223238033019000_1 -> player_test-device_1756223238
+2025/08/26 23:47:18 Connection conn_1756223238033019000_1 login completed, starting message loop
+2025/08/26 23:47:18 Login successful: player_id=player_test-device_1756223238, session_id=session_conn_1756223238033019000_1
+2025/08/26 23:47:18 Client login completed, connection should be stable now
+2025/08/26 23:47:18 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:18 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:18 🔄 Starting background tasks...
+2025/08/26 23:47:18 🎉 Connection process completed successfully
+2025/08/26 23:47:18 Received action from player_test-device_1756223238: type=ACTION_TYPE_MOVE, seq=1
+    integration_test.go:59: SLG协议集成测试通过
+2025/08/26 23:47:18 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:18 Network error, triggering reconnect: read tcp 127.0.0.1:4945->127.0.0.1:18100: use of closed network connection
+2025/08/26 23:47:18 Shutting down test server...
+2025/08/26 23:47:18 Connection closed: conn_1756223238033019000_1, reason: Connection ended
+--- PASS: TestSLGProtocolIntegration (1.11s)
+=== RUN   TestSLGMessageSerialization
+--- PASS: TestSLGMessageSerialization (0.00s)
+=== RUN   TestSLGFrameEncoding
+--- PASS: TestSLGFrameEncoding (0.00s)
+=== RUN   TestSLGLoadTest
+2025/08/26 23:47:18 Starting test server on :18101
+2025/08/26 23:47:18 ✅ Server listening on :18101
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2908
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 New connection: conn_1756223239139467500_1 from 127.0.0.1:2908
+2025/08/26 23:47:19 Login successful: conn_1756223239139467500_1 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239139467500_1 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239139467500_1
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2910
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 New connection: conn_1756223239141018800_2 from 127.0.0.1:2910
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239141018800_2 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239141018800_2 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239141018800_2
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2911
+2025/08/26 23:47:19 New connection: conn_1756223239143095600_3 from 127.0.0.1:2911
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239143095600_3 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239143095600_3 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239143095600_3
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2912
+2025/08/26 23:47:19 New connection: conn_1756223239144124500_4 from 127.0.0.1:2912
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239144124500_4 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239144124500_4 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239144124500_4
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2913
+2025/08/26 23:47:19 New connection: conn_1756223239145186700_5 from 127.0.0.1:2913
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239145186700_5 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239145186700_5 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239145186700_5
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2915
+2025/08/26 23:47:19 New connection: conn_1756223239146752600_6 from 127.0.0.1:2915
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239146752600_6 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239146752600_6 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239146752600_6
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2916
+2025/08/26 23:47:19 New connection: conn_1756223239148847800_7 from 127.0.0.1:2916
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239148847800_7 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239148847800_7 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239148847800_7
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2917
+2025/08/26 23:47:19 New connection: conn_1756223239149891700_8 from 127.0.0.1:2917
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239149891700_8 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239149891700_8 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239149891700_8
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2918
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 New connection: conn_1756223239151562600_9 from 127.0.0.1:2918
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239151562600_9 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239151562600_9 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239151562600_9
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2919
+2025/08/26 23:47:19 New connection: conn_1756223239152604600_10 from 127.0.0.1:2919
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239152604600_10 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239152604600_10 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239152604600_10
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2920
+2025/08/26 23:47:19 New connection: conn_1756223239153124100_11 from 127.0.0.1:2920
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239153124100_11 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239153124100_11 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239153124100_11
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2921
+2025/08/26 23:47:19 New connection: conn_1756223239154688500_12 from 127.0.0.1:2921
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239154688500_12 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239154688500_12 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239154688500_12
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2923
+2025/08/26 23:47:19 New connection: conn_1756223239156243900_13 from 127.0.0.1:2923
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239156243900_13 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239156243900_13 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239156243900_13
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2924
+2025/08/26 23:47:19 New connection: conn_1756223239156762000_14 from 127.0.0.1:2924
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239156762000_14 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239156762000_14 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239156762000_14
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2925
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 New connection: conn_1756223239158839300_15 from 127.0.0.1:2925
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239158839300_15 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239158839300_15 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239158839300_15
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2926
+2025/08/26 23:47:19 New connection: conn_1756223239159364100_16 from 127.0.0.1:2926
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239159364100_16 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239159364100_16 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239159364100_16
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2927
+2025/08/26 23:47:19 New connection: conn_1756223239160918500_17 from 127.0.0.1:2927
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239160918500_17 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239160918500_17 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239160918500_17
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2929
+2025/08/26 23:47:19 New connection: conn_1756223239162456800_18 from 127.0.0.1:2929
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239162456800_18 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239162456800_18 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239162456800_18
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2930
+2025/08/26 23:47:19 New connection: conn_1756223239164010500_19 from 127.0.0.1:2930
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239164010500_19 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239164010500_19 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239164010500_19
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 🚀 Starting connection process...
+2025/08/26 23:47:19 🔄 State change: DISCONNECTED -> CONNECTING
+2025/08/26 23:47:19 🔗 Attempting to connect...
+2025/08/26 23:47:19 🌐 Dialing WebSocket URL: ws://127.0.0.1:18101/ws
+2025/08/26 23:47:19 WebSocket upgrade successful for connection from 127.0.0.1:2931
+2025/08/26 23:47:19 New connection: conn_1756223239165048400_20 from 127.0.0.1:2931
+2025/08/26 23:47:19 ✅ WebSocket dial successful, response status: 101 Switching Protocols
+2025/08/26 23:47:19 🔐 Starting login handshake...
+2025/08/26 23:47:19 Login successful: conn_1756223239165048400_20 -> player_test-device_1756223239
+2025/08/26 23:47:19 Connection conn_1756223239165048400_20 login completed, starting message loop
+2025/08/26 23:47:19 Login successful: player_id=player_test-device_1756223239, session_id=session_conn_1756223239165048400_20
+2025/08/26 23:47:19 Client login completed, connection should be stable now
+2025/08/26 23:47:19 ✅ WebSocket connection established, setting state to CONNECTED
+2025/08/26 23:47:19 🔄 State change: CONNECTING -> CONNECTED
+2025/08/26 23:47:19 🔄 Starting background tasks...
+2025/08/26 23:47:19 🎉 Connection process completed successfully
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=1
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=2
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=3
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=4
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=5
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=6
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=7
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=8
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=9
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=10
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=11
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=12
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=13
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=14
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=15
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=16
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=17
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=18
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=19
+2025/08/26 23:47:19 Received action from player_test-device_1756223239: type=ACTION_TYPE_MOVE, seq=20
+    integration_test.go:208: SLG负载测试统计: map[current_connections:20 running:true sequence_number:40 total_connections:20 total_messages:20 uptime_seconds:2.6341684]
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2908->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239139467500_1, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2910->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239141018800_2, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2911->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239143095600_3, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2912->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239144124500_4, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2913->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239145186700_5, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2915->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239146752600_6, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2916->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239148847800_7, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2917->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239149891700_8, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2918->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239151562600_9, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2919->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239152604600_10, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2920->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239153124100_11, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239154688500_12, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2921->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2923->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239156243900_13, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2924->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239156762000_14, reason: Connection ended
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2925->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239158839300_15, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2926->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239159364100_16, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2927->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239160918500_17, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2929->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239162456800_18, reason: Connection ended
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2930->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 🔄 State change: CONNECTED -> CLOSED
+2025/08/26 23:47:21 Connection closed: conn_1756223239164010500_19, reason: Connection ended
+2025/08/26 23:47:21 Shutting down test server...
+2025/08/26 23:47:21 Network error, triggering reconnect: read tcp 127.0.0.1:2931->127.0.0.1:18101: use of closed network connection
+2025/08/26 23:47:21 Connection closed: conn_1756223239165048400_20, reason: Connection ended
+--- PASS: TestSLGLoadTest (2.64s)
+=== RUN   TestSLGProtocolVersionCompatibility
+    slg_protocol_test.go:28: 🧪 测试SLG协议版本兼容性...
+    slg_protocol_test.go:46:    序列化v1.0.0战斗请求: 61字节
+    slg_protocol_test.go:52:    ✅ v1.1.0成功解析v1.0.0消息
+    slg_protocol_test.go:65:    ✅ 所有字段兼容性验证通过
+--- PASS: TestSLGProtocolVersionCompatibility (0.00s)
+=== RUN   TestSLGNewFeaturesV1_1_0
+    slg_protocol_test.go:70: 🚀 测试SLG v1.1.0新功能...
+    slg_protocol_test.go:82:    序列化PVP匹配请求: 42字节
+    slg_protocol_test.go:90:    ✅ PVP协议序列化/反序列化成功
+    slg_protocol_test.go:104:    序列化活动信息: 46字节
+    slg_protocol_test.go:110:    ✅ 活动系统协议序列化/反序列化成功
+--- PASS: TestSLGNewFeaturesV1_1_0 (0.00s)
+=== RUN   TestSLGEnhancedBattleSystem
+    slg_protocol_test.go:115: ⚔️ 测试增强的战斗系统...
+    slg_protocol_test.go:159:    序列化增强战斗单位: 186字节
+    slg_protocol_test.go:171:    ✅ 增强战斗系统验证通过
+--- PASS: TestSLGEnhancedBattleSystem (0.00s)
+=== RUN   TestSLGWebSocketIntegration
+    slg_protocol_test.go:176: 🌐 测试SLG协议与WebSocket集成...
+Debug: Before unmarshal - Raw viper values - PortRange start: 18000, end: 18999
+Debug: After unmarshal - Raw viper values - PortRange start: 18000, end: 18999
+Debug: Config struct - PortRange: 18000-18999
+Debug: Default values check - start: 18000, end: 18999
+    server.go:44: 🔌 Test server allocated address: :18001
+2025/08/26 23:47:21 Starting test server on :18001
+2025/08/26 23:47:21 ✅ Server listening on :18001
+    server.go:57: ✅ Test server started on :18001
+    slg_protocol_test.go:194:    ✅ WebSocket连接建立成功
+    slg_protocol_test.go:211:    📦 SLG战斗请求帧编码: 120字节
+    slg_protocol_test.go:230:    ✅ SLG协议WebSocket传输完整性验证通过
+    slg_protocol_test.go:231:    🎯 SLG协议适配器工作正常
+2025/08/26 23:47:23 🔄 State change: DISCONNECTED -> CLOSED
+    client.go:101: 🔄 State change: DISCONNECTED -> CLOSED
+    client.go:395: 🧹 Client cleanup completed
+2025/08/26 23:47:23 Shutting down test server...
+    server.go:72: 🛑 Test server stopped and port released: :18001
+--- PASS: TestSLGWebSocketIntegration (2.71s)
+=== RUN   TestSLGPerformanceBenchmark
+    slg_protocol_test.go:236: ⚡ 测试SLG协议性能...
+    slg_protocol_test.go:288:    📊 1000次序列化耗时: 15.7654ms (平均: 15.765µs)
+    slg_protocol_test.go:293:    📦 复杂战斗状态大小: 324字节
+    slg_protocol_test.go:303:    📊 1000次反序列化耗时: 14.5118ms (平均: 14.511µs)
+    slg_protocol_test.go:312:    ✅ SLG协议性能测试通过
+--- PASS: TestSLGPerformanceBenchmark (0.03s)
+=== RUN   TestSLGMessageSizeAnalysis
+    slg_protocol_test.go:317: 📏 SLG消息大小分析...
+    slg_protocol_test.go:354:    📦 简单战斗请求(v1.0.0): 26 字节
+    slg_protocol_test.go:354:    📦 增强战斗请求(v1.1.0): 93 字节
+    slg_protocol_test.go:354:    📦 PVP匹配请求: 32 字节
+    slg_protocol_test.go:354:    📦 活动信息: 79 字节
+    slg_protocol_test.go:357:    💡 消息大小分析完成，协议设计合理
+--- PASS: TestSLGMessageSizeAnalysis (0.00s)
+PASS
+ok  	GoSlgBenchmarkTest/test/slg	7.567s
+FAIL	GoSlgBenchmarkTest/tools [build failed]
+?   	GoSlgBenchmarkTest/tools/grpc-test-client	[no test files]
+?   	GoSlgBenchmarkTest/tools/slg-proto-manager	[no test files]
+FAIL

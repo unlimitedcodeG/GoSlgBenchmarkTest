@@ -120,7 +120,7 @@ esac
 echo -n "🔧 检查Go环境... "
 if ! command -v go &> /dev/null; then
     echo -e "${RED}❌ Go未安装或不在PATH中${NC}"
-    echo -e "${YELLOW}请确保已安装Go 1.24+并添加到PATH中${NC}"
+    echo -e "${YELLOW}请确保已安装Go 1.25+并添加到PATH中${NC}"
     exit 1
 fi
 

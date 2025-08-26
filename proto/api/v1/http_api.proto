@@ -1,0 +1,240 @@
+syntax = "proto3";
+package api.v1;
+
+option go_package = "GoSlgBenchmarkTest/proto/api/v1;apiv1";
+
+
+// HTTP REST API 接口定义（用于性能测试）
+// 这些消息类型用于HTTP JSON API，不是gRPC
+
+// 测试接口请求/响应
+message TestCreateReq {
+  string test_name = 1;
+  string test_type = 2; // "websocket", "grpc", "http"
+  TestConfig config = 3;
+  map<string, string> parameters = 4;
+}
+
+message TestCreateResp {
+  bool success = 1;
+  int64 test_id = 2;
+  string message = 3;
+  string test_status = 4;
+}
+
+message TestConfig {
+  int32 concurrent_clients = 1;
+  int32 duration_seconds = 2;
+  int32 target_rps = 3; // requests per second
+  string endpoint_url = 4;
+  HTTPConfig http_config = 5;
+  GRPCConfig grpc_config = 6;
+}
+
+message HTTPConfig {
+  string method = 1; // GET, POST, PUT, DELETE
+  map<string, string> headers = 2;
+  string request_body = 3;
+  int32 timeout_ms = 4;
+  bool keep_alive = 5;
+}
+
+message GRPCConfig {
+  string service_name = 1;
+  string method_name = 2;
+  string request_data = 3; // JSON格式的请求数据
+  int32 timeout_ms = 4;
+  bool use_tls = 5;
+}
+
+message TestStartReq {
+  int64 test_id = 1;
+}
+
+message TestStartResp {
+  bool success = 1;
+  string message = 2;
+  int64 started_at = 3;
+}
+
+message TestStopReq {
+  int64 test_id = 1;
+  string reason = 2;
+}
+
+message TestStopResp {
+  bool success = 1;
+  string message = 2;
+  int64 stopped_at = 3;
+}
+
+message TestStatusReq {
+  int64 test_id = 1;
+}
+
+message TestStatusResp {
+  int64 test_id = 1;
+  string status = 2; // created, running, completed, failed, stopped
+  TestMetrics metrics = 3;
+  int64 created_at = 4;
+  int64 started_at = 5;
+  int64 completed_at = 6;
+  string error_message = 7;
+}
+
+message TestMetrics {
+  // 基础指标
+  int64 total_requests = 1;
+  int64 successful_requests = 2;
+  int64 failed_requests = 3;
+  double success_rate = 4;
+  
+  // 延迟指标 (毫秒)
+  double avg_response_time = 5;
+  double min_response_time = 6;
+  double max_response_time = 7;
+  double p50_response_time = 8;
+  double p95_response_time = 9;
+  double p99_response_time = 10;
+  
+  // 吞吐量指标
+  double requests_per_second = 11;
+  double bytes_per_second = 12;
+  
+  // 连接指标
+  int32 active_connections = 13;
+  int32 total_connections = 14;
+  int32 connection_errors = 15;
+  
+  // 错误统计
+  map<string, int32> error_types = 16;
+  map<int32, int32> status_codes = 17; // HTTP状态码统计
+  
+  // 时间序列数据 (用于图表)
+  repeated TimeSeriesPoint response_time_series = 18;
+  repeated TimeSeriesPoint throughput_series = 19;
+  repeated TimeSeriesPoint error_rate_series = 20;
+}
+
+message TimeSeriesPoint {
+  int64 timestamp = 1;
+  double value = 2;
+  string label = 3;
+}
+
+message TestListReq {
+  int32 page = 1;
+  int32 page_size = 2;
+  string filter_type = 3; // 按测试类型过滤
+  string filter_status = 4; // 按状态过滤
+}
+
+message TestListResp {
+  repeated TestSummary tests = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message TestSummary {
+  int64 test_id = 1;
+  string test_name = 2;
+  string test_type = 3;
+  string status = 4;
+  int64 created_at = 5;
+  int32 duration_seconds = 6;
+  double success_rate = 7;
+  double avg_response_time = 8;
+}
+
+message TestReportReq {
+  int64 test_id = 1;
+  string format = 2; // "json", "html", "pdf"
+  bool include_charts = 3;
+}
+
+message TestReportResp {
+  bool success = 1;
+  string download_url = 2;
+  string format = 3;
+  int64 generated_at = 4;
+  TestDetailedMetrics detailed_metrics = 5;
+}
+
+message TestDetailedMetrics {
+  TestMetrics summary = 1;
+  
+  // 详细统计
+  LatencyDistribution latency_distribution = 2;
+  ThroughputAnalysis throughput_analysis = 3;
+  ErrorAnalysis error_analysis = 4;
+  ResourceUsage resource_usage = 5;
+}
+
+message LatencyDistribution {
+  repeated LatencyBucket buckets = 1;
+  double standard_deviation = 2;
+  double median = 3;
+}
+
+message LatencyBucket {
+  double lower_bound = 1;
+  double upper_bound = 2;
+  int64 count = 3;
+  double percentage = 4;
+}
+
+message ThroughputAnalysis {
+  double peak_rps = 1;
+  double sustained_rps = 2;
+  repeated ThroughputPeriod periods = 3;
+}
+
+message ThroughputPeriod {
+  int64 start_time = 1;
+  int64 end_time = 2;
+  double average_rps = 3;
+  int64 request_count = 4;
+}
+
+message ErrorAnalysis {
+  repeated ErrorCategory categories = 1;
+  repeated ErrorTrend trends = 2;
+}
+
+message ErrorCategory {
+  string error_type = 1;
+  int64 count = 2;
+  double percentage = 3;
+  string description = 4;
+}
+
+message ErrorTrend {
+  int64 timestamp = 1;
+  int32 error_count = 2;
+  double error_rate = 3;
+}
+
+message ResourceUsage {
+  CPUUsage cpu = 1;
+  MemoryUsage memory = 2;
+  NetworkUsage network = 3;
+}
+
+message CPUUsage {
+  double avg_cpu_percent = 1;
+  double max_cpu_percent = 2;
+  repeated TimeSeriesPoint cpu_series = 3;
+}
+
+message MemoryUsage {
+  int64 avg_memory_bytes = 1;
+  int64 max_memory_bytes = 2;
+  repeated TimeSeriesPoint memory_series = 3;
+}
+
+message NetworkUsage {
+  int64 total_bytes_sent = 1;
+  int64 total_bytes_received = 2;
+  double avg_bandwidth_mbps = 3;
+}

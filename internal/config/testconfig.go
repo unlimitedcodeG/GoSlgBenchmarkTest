@@ -27,6 +27,10 @@ type TestConfig struct {
 	Logging           LoggingConfig           `yaml:"logging"`
 	NetworkSimulation NetworkSimulationConfig `yaml:"network_simulation"`
 	CICD              CICDConfig              `yaml:"ci_cd"`
+	// 新增：负载测试配置
+	HTTPLoadTest HTTPLoadTestConfig `yaml:"http_loadtest"`
+	GRPCLoadTest GRPCLoadTestConfig `yaml:"grpc_loadtest"`
+	TestServers  TestServersConfig  `yaml:"test_servers"`
 }
 
 type TestMetaConfig struct {
@@ -347,6 +351,69 @@ type ReportingConfig struct {
 	OutputFormats    []string `yaml:"output_formats"`
 }
 
+// HTTPLoadTestConfig HTTP负载测试配置
+type HTTPLoadTestConfig struct {
+	DefaultConfig         HTTPDefaultConfig         `yaml:"default_config"`
+	PerformanceThresholds HTTPPerformanceThresholds `yaml:"performance_thresholds"`
+}
+
+type HTTPDefaultConfig struct {
+	ConcurrentClients int           `yaml:"concurrent_clients"`
+	Duration          time.Duration `yaml:"duration"`
+	TargetRPS         int           `yaml:"target_rps"`
+	Timeout           time.Duration `yaml:"timeout"`
+	KeepAlive         bool          `yaml:"keep_alive"`
+	MaxIdleConns      int           `yaml:"max_idle_conns"`
+}
+
+type HTTPPerformanceThresholds struct {
+	MaxAvgLatency  time.Duration `yaml:"max_avg_latency"`
+	MaxP99Latency  time.Duration `yaml:"max_p99_latency"`
+	MinSuccessRate float64       `yaml:"min_success_rate"`
+}
+
+// GRPCLoadTestConfig gRPC负载测试配置
+type GRPCLoadTestConfig struct {
+	DefaultConfig         GRPCDefaultConfig         `yaml:"default_config"`
+	TestMethods           []string                  `yaml:"test_methods"`
+	PerformanceThresholds GRPCPerformanceThresholds `yaml:"performance_thresholds"`
+}
+
+type GRPCDefaultConfig struct {
+	ConcurrentClients int           `yaml:"concurrent_clients"`
+	Duration          time.Duration `yaml:"duration"`
+	TargetRPS         int           `yaml:"target_rps"`
+	RequestTimeout    time.Duration `yaml:"request_timeout"`
+	KeepAliveTime     time.Duration `yaml:"keep_alive_time"`
+	MaxConnections    int           `yaml:"max_connections"`
+}
+
+type GRPCPerformanceThresholds struct {
+	MaxAvgLatency  time.Duration `yaml:"max_avg_latency"`
+	MaxP99Latency  time.Duration `yaml:"max_p99_latency"`
+	MinSuccessRate float64       `yaml:"min_success_rate"`
+}
+
+// TestServersConfig 测试服务器配置
+type TestServersConfig struct {
+	HTTPServer HTTPServerConfig `yaml:"http_server"`
+	GRPCServer GRPCServerConfig `yaml:"grpc_server"`
+}
+
+type HTTPServerConfig struct {
+	Port         int           `yaml:"port"`
+	ReadTimeout  time.Duration `yaml:"read_timeout"`
+	WriteTimeout time.Duration `yaml:"write_timeout"`
+	ErrorRate    float64       `yaml:"error_rate"`
+}
+
+type GRPCServerConfig struct {
+	Port           int           `yaml:"port"`
+	KeepAliveTime  time.Duration `yaml:"keep_alive_time"`
+	MaxRecvMsgSize int           `yaml:"max_recv_msg_size"`
+	ErrorRate      float64       `yaml:"error_rate"`
+}
+
 // 全局配置实例
 var (
 	globalConfig  *TestConfig
@@ -511,6 +578,51 @@ func createMinimalTestConfig() *TestConfig {
 			OutputDir:   "./recordings",
 			Compression: true,
 		},
+		HTTPLoadTest: HTTPLoadTestConfig{
+			DefaultConfig: HTTPDefaultConfig{
+				ConcurrentClients: 20,
+				Duration:          120 * time.Second,
+				TargetRPS:         500,
+				Timeout:           30 * time.Second,
+				KeepAlive:         true,
+				MaxIdleConns:      100,
+			},
+			PerformanceThresholds: HTTPPerformanceThresholds{
+				MaxAvgLatency:  50 * time.Millisecond,
+				MaxP99Latency:  200 * time.Millisecond,
+				MinSuccessRate: 0.98,
+			},
+		},
+		GRPCLoadTest: GRPCLoadTestConfig{
+			DefaultConfig: GRPCDefaultConfig{
+				ConcurrentClients: 15,
+				Duration:          90 * time.Second,
+				TargetRPS:         300,
+				RequestTimeout:    10 * time.Second,
+				KeepAliveTime:     30 * time.Second,
+				MaxConnections:    8,
+			},
+			TestMethods: []string{"Login", "SendPlayerAction", "GetPlayerStatus", "GetBattleStatus"},
+			PerformanceThresholds: GRPCPerformanceThresholds{
+				MaxAvgLatency:  30 * time.Millisecond,
+				MaxP99Latency:  100 * time.Millisecond,
+				MinSuccessRate: 0.99,
+			},
+		},
+		TestServers: TestServersConfig{
+			HTTPServer: HTTPServerConfig{
+				Port:         19000,
+				ReadTimeout:  30 * time.Second,
+				WriteTimeout: 30 * time.Second,
+				ErrorRate:    0.02,
+			},
+			GRPCServer: GRPCServerConfig{
+				Port:           19001,
+				KeepAliveTime:  60 * time.Second,
+				MaxRecvMsgSize: 4 * 1024 * 1024, // 4MB
+				ErrorRate:      0.01,
+			},
+		},
 		TestScenarios: TestScenariosConfig{
 			BasicConnection: BasicConnectionConfig{
 				Timeout:         10 * time.Second,
@@ -577,23 +689,57 @@ func loadConfigFromFile() (*TestConfig, *viper.Viper, error) {
 		}
 	}
 
+	// 打印详细的调试信息
+	fmt.Printf("Debug: Before unmarshal - Raw viper values - PortRange start: %v, end: %v\n",
+		v.Get("server.port_range.start"), v.Get("server.port_range.end"))
+
 	// 解析到结构体
 	var config TestConfig
 	if err := v.Unmarshal(&config); err != nil {
 		// 如果unmarshal失败，返回最小配置而不是错误
 		fmt.Printf("Warning: Failed to unmarshal config, using minimal config: %v\n", err)
 		config = *createMinimalTestConfig()
+		return &config, v, nil
 	}
+
+	// PortRange - 修复端口范围解析问题
+	config.Server.PortRange.Start = v.GetInt("server.port_range.start")
+	config.Server.PortRange.End = v.GetInt("server.port_range.end")
+
+	// DefaultTimeout - 智能解析：优先尝试duration，失败则尝试int秒
+	if config.Server.DefaultTimeout == 0 {
+		d := v.GetDuration("server.default_timeout")
+		if d == 0 {
+			// 如果duration解析失败，尝试解析为int秒数
+			if seconds := v.GetInt("server.default_timeout"); seconds > 0 {
+				config.Server.DefaultTimeout = time.Duration(seconds) * time.Second
+			} else {
+				// 最后兜底使用默认值
+				config.Server.DefaultTimeout = 10 * time.Second
+			}
+		} else {
+			config.Server.DefaultTimeout = d
+		}
+	}
+
+	// StressTest - 修复压力测试配置解析问题
+	if config.StressTest.ConcurrentClients.DefaultClients == 0 {
+		config.StressTest.ConcurrentClients.DefaultClients = v.GetInt("stress_test.concurrent_clients.default_clients")
+	}
+
+	// 打印详细的调试信息
+	fmt.Printf("Debug: After unmarshal - Raw viper values - PortRange start: %v, end: %v\n",
+		v.Get("server.port_range.start"), v.Get("server.port_range.end"))
+	fmt.Printf("Debug: Config struct - PortRange: %d-%d\n", config.Server.PortRange.Start, config.Server.PortRange.End)
+	fmt.Printf("Debug: Default values check - start: %v, end: %v\n",
+		v.GetString("server.port_range.start"), v.GetString("server.port_range.end"))
 
 	// 验证配置
 	if err := validateConfig(&config); err != nil {
 		// 如果验证失败，返回最小配置而不是错误
 		fmt.Printf("Warning: Config validation failed, using minimal config: %v\n", err)
 		config = *createMinimalTestConfig()
-		// 再次验证最小配置，如果仍然失败，则跳过验证
-		if err := validateConfig(&config); err != nil {
-			fmt.Printf("Warning: Even minimal config validation failed: %v\n", err)
-		}
+		return &config, v, nil
 	}
 
 	return &config, v, nil
@@ -718,6 +864,39 @@ func setDefaultValues(v *viper.Viper) {
 	v.SetDefault("logging.file_rotation.max_size", "100MB")
 	v.SetDefault("logging.file_rotation.max_backups", 5)
 	v.SetDefault("logging.file_rotation.max_age_days", 7)
+
+	// HTTP负载测试默认值
+	v.SetDefault("http_loadtest.default_config.concurrent_clients", 20)
+	v.SetDefault("http_loadtest.default_config.duration", "120s")
+	v.SetDefault("http_loadtest.default_config.target_rps", 500)
+	v.SetDefault("http_loadtest.default_config.timeout", "30s")
+	v.SetDefault("http_loadtest.default_config.keep_alive", true)
+	v.SetDefault("http_loadtest.default_config.max_idle_conns", 100)
+	v.SetDefault("http_loadtest.performance_thresholds.max_avg_latency", "50ms")
+	v.SetDefault("http_loadtest.performance_thresholds.max_p99_latency", "200ms")
+	v.SetDefault("http_loadtest.performance_thresholds.min_success_rate", 0.98)
+
+	// gRPC负载测试默认值
+	v.SetDefault("grpc_loadtest.default_config.concurrent_clients", 15)
+	v.SetDefault("grpc_loadtest.default_config.duration", "90s")
+	v.SetDefault("grpc_loadtest.default_config.target_rps", 300)
+	v.SetDefault("grpc_loadtest.default_config.request_timeout", "10s")
+	v.SetDefault("grpc_loadtest.default_config.keep_alive_time", "30s")
+	v.SetDefault("grpc_loadtest.default_config.max_connections", 8)
+	v.SetDefault("grpc_loadtest.test_methods", []string{"Login", "SendPlayerAction", "GetPlayerStatus", "GetBattleStatus"})
+	v.SetDefault("grpc_loadtest.performance_thresholds.max_avg_latency", "30ms")
+	v.SetDefault("grpc_loadtest.performance_thresholds.max_p99_latency", "100ms")
+	v.SetDefault("grpc_loadtest.performance_thresholds.min_success_rate", 0.99)
+
+	// 测试服务器默认值
+	v.SetDefault("test_servers.http_server.port", 19000)
+	v.SetDefault("test_servers.http_server.read_timeout", "30s")
+	v.SetDefault("test_servers.http_server.write_timeout", "30s")
+	v.SetDefault("test_servers.http_server.error_rate", 0.02)
+	v.SetDefault("test_servers.grpc_server.port", 19001)
+	v.SetDefault("test_servers.grpc_server.keep_alive_time", "60s")
+	v.SetDefault("test_servers.grpc_server.max_recv_msg_size", 4*1024*1024)
+	v.SetDefault("test_servers.grpc_server.error_rate", 0.01)
 }
 
 // validateConfig 验证配置有效性

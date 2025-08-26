@@ -235,9 +235,9 @@ func (a *TimelineAnalyzer) CalculateNetworkMetrics() *NetworkMetrics {
 		metrics.Jitter = a.calculateJitter(latencies, metrics.AverageLatency)
 	}
 
-	// 计算丢包率
+	// 计算丢包率 - 只计算传输层丢包，不包含应用层超时
 	if metrics.TotalMessages > 0 {
-		metrics.PacketLoss = float64(metrics.FailedMessages+metrics.TimeoutMessages) / float64(metrics.TotalMessages)
+		metrics.PacketLoss = float64(metrics.FailedMessages) / float64(metrics.TotalMessages)
 	}
 
 	// 计算吞吐量 - 使用会话实际持续时间
@@ -283,20 +283,46 @@ func (a *TimelineAnalyzer) AnalyzeConnectionStability() map[string]interface{} {
 		}
 	}
 
-	// 计算连接统计
-	connectionCount := len(connectEvents)
+	// 计算连接统计 - 重新设计逻辑
+	// reconnect事件也算作连接建立，但需要正确计算连接时长
+	allConnectionEvents := append(connectEvents, reconnectEvents...)
+	connectionCount := len(allConnectionEvents)
 	disconnectionCount := len(disconnectEvents)
 	reconnectCount := len(reconnectEvents)
 
-	// 计算平均连接时长
+	// 计算平均连接时长 - 改进算法
 	var totalConnectionTime time.Duration
 	var connectionDurations []time.Duration
+	var connectionDetails []map[string]interface{} // 用于调试
 
-	for i, connectEvent := range connectEvents {
+	// 配对连接事件和断开事件
+	for i, connEvent := range allConnectionEvents {
+		var endTime time.Time
+		var connectionType string
+
 		if i < len(disconnectEvents) {
-			duration := disconnectEvents[i].Timestamp.Sub(connectEvent.Timestamp)
+			endTime = disconnectEvents[i].Timestamp
+			connectionType = "primary"
+		} else {
+			// 最后一个连接使用会话结束时间
+			endTime = a.session.EndTime
+			connectionType = "final"
+		}
+
+		duration := endTime.Sub(connEvent.Timestamp)
+		if duration > 0 {
 			totalConnectionTime += duration
 			connectionDurations = append(connectionDurations, duration)
+
+			// 记录连接详情用于调试
+			connectionDetails = append(connectionDetails, map[string]interface{}{
+				"index":      i + 1,
+				"type":       connectionType,
+				"start_time": connEvent.Timestamp,
+				"end_time":   endTime,
+				"duration":   duration,
+				"event_type": connEvent.Type,
+			})
 		}
 	}
 
@@ -313,6 +339,7 @@ func (a *TimelineAnalyzer) AnalyzeConnectionStability() map[string]interface{} {
 		"avg_connection_duration": avgConnectionDuration,
 		"connection_ratio":        float64(connectionCount) / float64(disconnectionCount+1),
 		"reconnect_rate":          float64(reconnectCount) / float64(connectionCount+1),
+		"connection_details":      connectionDetails, // 添加调试信息
 	}
 
 	// 添加连接时长分布
@@ -324,6 +351,7 @@ func (a *TimelineAnalyzer) AnalyzeConnectionStability() map[string]interface{} {
 		stability["min_connection_duration"] = connectionDurations[0]
 		stability["max_connection_duration"] = connectionDurations[len(connectionDurations)-1]
 		stability["median_connection_duration"] = connectionDurations[len(connectionDurations)/2]
+		stability["total_connection_time"] = totalConnectionTime
 	}
 
 	return stability
@@ -376,20 +404,29 @@ func (a *TimelineAnalyzer) extractMessageID(event *SessionEvent) string {
 	return event.ID
 }
 
-// calculateJitter 计算抖动（延迟变化的标准差）
+// calculateJitter 计算抖动（相邻延迟变化）
 func (a *TimelineAnalyzer) calculateJitter(latencies []time.Duration, avgLatency time.Duration) time.Duration {
 	if len(latencies) < 2 {
 		return 0
 	}
 
-	var sumSquares int64
-	for _, latency := range latencies {
-		diff := latency - avgLatency
-		sumSquares += int64(diff * diff)
+	// 计算相邻延迟之间的差异（真正的抖动定义）
+	var jitterSum time.Duration
+	for i := 1; i < len(latencies); i++ {
+		diff := latencies[i] - latencies[i-1]
+		if diff < 0 {
+			diff = -diff // 取绝对值
+		}
+		jitterSum += diff
 	}
 
-	variance := sumSquares / int64(len(latencies))
-	jitterNano := int64(time.Duration(variance).Nanoseconds())
+	// 返回平均抖动
+	avgJitter := jitterSum / time.Duration(len(latencies)-1)
 
-	return time.Duration(jitterNano)
+	// 确保抖动不为负数
+	if avgJitter < 0 {
+		return 0
+	}
+
+	return avgJitter
 }

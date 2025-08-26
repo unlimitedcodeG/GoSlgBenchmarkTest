@@ -109,7 +109,14 @@ func (tc *TestClient) ConnectWithTimeout(ctx context.Context) error {
 
 	var lastErr error
 	for i := 0; i < maxRetries; i++ {
+		tc.t.Logf("🔄 Connection attempt %d/%d starting...", i+1, maxRetries)
+		if tc.Client == nil {
+			tc.t.Logf("❌ Client is nil!")
+			return fmt.Errorf("client is nil")
+		}
+		tc.t.Logf("🔍 About to call tc.Client.Connect(ctx)...")
 		err := tc.Client.Connect(ctx)
+		tc.t.Logf("🔍 tc.Client.Connect(ctx) returned, err=%v", err)
 		if err != nil {
 			lastErr = err
 			tc.t.Logf("❌ Connection attempt %d/%d failed: %v", i+1, maxRetries, err)
@@ -128,6 +135,13 @@ func (tc *TestClient) ConnectWithTimeout(ctx context.Context) error {
 			}
 		}
 
+		// 验证连接状态是否真的变成了 CONNECTED
+		time.Sleep(100 * time.Millisecond) // 给状态变化一些时间
+		if stats := tc.Client.GetStats(); stats["state"] != "CONNECTED" {
+			tc.t.Logf("⚠️ Connect returned success but state is: %s", stats["state"])
+			return fmt.Errorf("connection state verification failed: expected CONNECTED, got %s", stats["state"])
+		}
+
 		tc.t.Logf("✅ Client connected successfully")
 		return nil
 	}
@@ -137,6 +151,7 @@ func (tc *TestClient) ConnectWithTimeout(ctx context.Context) error {
 
 // ConnectAndWait 连接并等待就绪
 func (tc *TestClient) ConnectAndWait() error {
+	tc.t.Logf("🚀 ConnectAndWait starting...")
 	// 使用更长的超时时间，与并发测试保持一致
 	ctx, cancel := context.WithTimeout(context.Background(), tc.config.Client.Connection.Timeout)
 	defer cancel()
@@ -145,27 +160,38 @@ func (tc *TestClient) ConnectAndWait() error {
 	maxRetries := tc.config.Client.Connection.MaxRetries
 	retryInterval := tc.config.Client.Connection.RetryInterval
 
+	tc.t.Logf("🔄 ConnectAndWait will try %d times with %v intervals", maxRetries, retryInterval)
+	tc.t.Logf("🔍 Config debug: Client.Connection.MaxRetries = %d", tc.config.Client.Connection.MaxRetries)
+	tc.t.Logf("🔍 Config debug: Client.Connection.RetryInterval = %v", tc.config.Client.Connection.RetryInterval)
 	var lastErr error
 	for i := 0; i < maxRetries; i++ {
+		tc.t.Logf("🔄 ConnectAndWait: calling ConnectWithTimeout (attempt %d/%d)", i+1, maxRetries)
 		if err := tc.ConnectWithTimeout(ctx); err != nil {
 			lastErr = err
-			tc.t.Logf("⚠️ Connection attempt %d/%d failed: %v", i+1, maxRetries, err)
+			tc.t.Logf("⚠️ ConnectAndWait: ConnectWithTimeout failed: %v", err)
 
 			// 如果是最后一次尝试，直接返回错误
 			if i == maxRetries-1 {
+				tc.t.Logf("❌ ConnectAndWait: max retries exceeded, returning error")
 				return lastErr
 			}
 
 			// 等待重试间隔
+			tc.t.Logf("⏱️ ConnectAndWait: waiting %v before retry", retryInterval)
 			time.Sleep(retryInterval)
 			continue
 		}
 
+		tc.t.Logf("✅ ConnectAndWait: ConnectWithTimeout succeeded")
 		// 连接成功，等待稳定
-		time.Sleep(tc.config.TestScenarios.BasicConnection.ValidationDelay)
+		validationDelay := tc.config.TestScenarios.BasicConnection.ValidationDelay
+		tc.t.Logf("⏱️ ConnectAndWait: waiting %v for connection stabilization", validationDelay)
+		time.Sleep(validationDelay)
+		tc.t.Logf("🎉 ConnectAndWait: returning success")
 		return nil
 	}
 
+	tc.t.Logf("❌ ConnectAndWait: all retries failed")
 	return lastErr
 }
 

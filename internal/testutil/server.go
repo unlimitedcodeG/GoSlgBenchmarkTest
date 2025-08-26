@@ -52,7 +52,7 @@ func (ts *TestServer) Start() {
 	require.NoError(ts.t, err, "Failed to start test server")
 
 	// 等待服务器就绪 - 增加等待时间确保完全启动
-	time.Sleep(1 * time.Second) // 固定等待1秒，确保所有情况下都能成功
+	time.Sleep(2 * time.Second) // 增加等待时间到2秒
 
 	ts.t.Logf("✅ Test server started on %s", ts.addr)
 }

@@ -170,6 +170,15 @@ func (r *SessionRecorder) RecordEvent(eventType EventType, metadata map[string]i
 		Metadata:   metadata,
 	}
 
+	// 从metadata中提取Opcode
+	if metadata != nil {
+		if opcode, exists := metadata["opcode"]; exists {
+			if op, ok := opcode.(uint16); ok {
+				event.Opcode = op
+			}
+		}
+	}
+
 	r.mu.Lock()
 	r.events = append(r.events, event)
 	r.mu.Unlock()

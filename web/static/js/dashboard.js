@@ -1,5 +1,97 @@
 // Dashboard JavaScript - Unity SLG 测试平台
 
+// Axios配置和日志记录
+class AxiosLogger {
+    constructor() {
+        this.enableLogging = this.getLoggingEnabled();
+        this.setupAxiosInterceptors();
+    }
+
+    getLoggingEnabled() {
+        // 检查环境变量或localStorage
+        return localStorage.getItem('ENABLE_AXIOS_LOGGING') === 'true' ||
+               window.location.search.includes('debug=axios');
+    }
+
+    setupAxiosInterceptors() {
+        // 请求拦截器
+        axios.interceptors.request.use(
+            (config) => {
+                if (this.enableLogging) {
+                    console.log('🚀 Axios Request:', {
+                        method: config.method?.toUpperCase(),
+                        url: config.url,
+                        headers: config.headers,
+                        data: config.data,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                return config;
+            },
+            (error) => {
+                if (this.enableLogging) {
+                    console.error('❌ Axios Request Error:', error);
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // 响应拦截器
+        axios.interceptors.response.use(
+            (response) => {
+                if (this.enableLogging) {
+                    console.log('✅ Axios Response:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        url: response.config.url,
+                        method: response.config.method?.toUpperCase(),
+                        headers: response.headers,
+                        data: response.data,
+                        duration: Date.now() - new Date(response.config.timestamp || Date.now()),
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                return response;
+            },
+            (error) => {
+                if (this.enableLogging) {
+                    console.error('❌ Axios Response Error:', {
+                        status: error.response?.status,
+                        statusText: error.response?.statusText,
+                        url: error.config?.url,
+                        method: error.config?.method?.toUpperCase(),
+                        data: error.response?.data,
+                        message: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                return Promise.reject(error);
+            }
+        );
+    }
+
+    toggleLogging() {
+        this.enableLogging = !this.enableLogging;
+        localStorage.setItem('ENABLE_AXIOS_LOGGING', this.enableLogging);
+        console.log(`🔧 Axios logging ${this.enableLogging ? 'enabled' : 'disabled'}`);
+        return this.enableLogging;
+    }
+
+    logConfig() {
+        if (this.enableLogging) {
+            console.log('📋 Axios Configuration:', {
+                baseURL: axios.defaults.baseURL,
+                timeout: axios.defaults.timeout,
+                headers: axios.defaults.headers,
+                logging: this.enableLogging
+            });
+        }
+    }
+}
+
+// 创建全局axios日志记录器实例
+const axiosLogger = new AxiosLogger();
+
 class DashboardManager {
     constructor() {
         this.wsConnection = null;
@@ -147,8 +239,11 @@ class DashboardManager {
     // 获取时间段数据
     async fetchPeriodData(period) {
         try {
-            const response = await fetch(`/api/dashboard/data?period=${period}`);
-            return await response.json();
+            const response = await axios.get(`/api/dashboard/data`, {
+                params: { period },
+                timeout: 10000
+            });
+            return response.data;
         } catch (error) {
             console.error('获取时间段数据失败:', error);
             return null;
@@ -500,59 +595,60 @@ async function submitNewTest() {
     }
     
     try {
-        const response = await fetch('/api/v1/tests', {
-            method: 'POST',
+        const response = await axios.post('/api/v1/tests', testData, {
+            timeout: 15000,
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(testData)
+            }
         });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
+
+        const result = response.data;
+
+        if (response.status >= 200 && response.status < 300) {
             // 关闭模态框
             bootstrap.Modal.getInstance(document.getElementById('newTestModal')).hide();
-            
+
             // 显示成功通知
             dashboard.showNotification('测试创建成功', `测试 ${result.test_id} 已创建`, 'success');
-            
+
             // 询问是否立即启动
             if (confirm('是否立即启动测试？')) {
                 startTest(result.test_id);
             }
-            
+
             // 刷新测试列表
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
-            
+
         } else {
             alert('创建测试失败：' + result.message);
         }
     } catch (error) {
         console.error('创建测试出错:', error);
-        alert('创建测试出错：' + error.message);
+        const message = error.response?.data?.message || error.message;
+        alert('创建测试出错：' + message);
     }
 }
 
 // 启动测试
 async function startTest(testId) {
     try {
-        const response = await fetch(`/api/v1/tests/${testId}/start`, {
-            method: 'POST'
+        const response = await axios.post(`/api/v1/tests/${testId}/start`, {}, {
+            timeout: 10000
         });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
+
+        const result = response.data;
+
+        if (response.status >= 200 && response.status < 300) {
             dashboard.showNotification('测试已启动', `测试 ${testId} 正在运行`, 'success');
         } else {
             alert('启动测试失败：' + result.message);
         }
     } catch (error) {
         console.error('启动测试出错:', error);
-        alert('启动测试出错：' + error.message);
+        const message = error.response?.data?.message || error.message;
+        alert('启动测试出错：' + message);
     }
 }
 
@@ -568,4 +664,29 @@ let dashboard;
 document.addEventListener('DOMContentLoaded', function() {
     dashboard = new DashboardManager();
     console.log('🎮 Unity SLG 测试平台 Dashboard 已初始化');
+
+    // 添加axios日志控制
+    setupAxiosLoggingControls();
 });
+
+// 设置axios日志控制
+function setupAxiosLoggingControls() {
+    // 添加键盘快捷键 (Ctrl+Shift+L) 来切换日志
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.shiftKey && event.key === 'L') {
+            event.preventDefault();
+            const enabled = axiosLogger.toggleLogging();
+            dashboard.showNotification(
+                'Axios日志',
+                `请求/响应日志已${enabled ? '启用' : '禁用'}`,
+                'info'
+            );
+        }
+    });
+
+    // 添加日志状态显示
+    if (axiosLogger.enableLogging) {
+        console.log('🔍 Axios logging is ENABLED. Use Ctrl+Shift+L to toggle.');
+        axiosLogger.logConfig();
+    }
+}

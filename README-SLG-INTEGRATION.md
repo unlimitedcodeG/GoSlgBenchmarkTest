@@ -44,7 +44,7 @@ GoSlgBenchmarkTest/
 
 > **前置要求**:
 >
-> - 安装Go 1.24+
+> - 安装Go 1.25+
 > - 确保PowerShell执行策略允许脚本运行: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
 #### 方法1: PowerShell工具（推荐）
@@ -89,7 +89,7 @@ go test .\test\slg -v
 
 > **前置要求**:
 >
-> - 安装Go 1.24+
+> - 安装Go 1.25+
 > - 安装make工具
 > - 确保有protoc工具（可选，用于高级功能）
 

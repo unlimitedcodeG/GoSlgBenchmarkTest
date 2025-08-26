@@ -71,7 +71,7 @@ try {
     Write-Host "✅ Go环境检查通过: $goVersion" -ForegroundColor Green
 } catch {
     Write-Host "❌ Go环境检查失败: $_" -ForegroundColor Red
-    Write-Host "请确保已安装Go 1.24+并添加到PATH中" -ForegroundColor Yellow
+    Write-Host "请确保已安装Go 1.25+并添加到PATH中" -ForegroundColor Yellow
     exit 1
 }
 

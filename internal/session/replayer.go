@@ -201,7 +201,7 @@ func (r *SessionReplayer) Stop() error {
 		r.mu.Unlock()
 		return nil
 	}
-	
+
 	r.isPlaying = false
 	r.isPaused = false
 	r.stats.EndTime = time.Now()
@@ -262,7 +262,7 @@ func (r *SessionReplayer) replayLoop() {
 		r.mu.RLock()
 		paused := r.isPaused
 		r.mu.RUnlock()
-		
+
 		if paused {
 			select {
 			case <-r.resumeCh:

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -160,22 +161,28 @@ func (c *Client) SetRTTHandler(handler RTTHandler) {
 
 // Connect 连接到服务器
 func (c *Client) Connect(ctx context.Context) error {
+	log.Printf("🚀 Starting connection process...")
 	if !c.compareAndSwapState(StateDisconnected, StateConnecting) {
 		return errors.New("client is not in disconnected state")
 	}
 
+	log.Printf("🔗 Attempting to connect...")
 	if err := c.doConnect(ctx); err != nil {
+		log.Printf("❌ Connection failed: %v", err)
 		c.setState(StateDisconnected)
 		return err
 	}
 
+	log.Printf("✅ WebSocket connection established, setting state to CONNECTED")
 	c.setState(StateConnected)
 
+	log.Printf("🔄 Starting background tasks...")
 	// 启动后台任务
 	go c.heartbeatLoop()
 	go c.readLoop()
 	go c.reconnectLoop()
 
+	log.Printf("🎉 Connection process completed successfully")
 	return nil
 }
 
@@ -185,8 +192,10 @@ func (c *Client) doConnect(ctx context.Context) error {
 		"User-Agent": []string{c.config.UserAgent},
 	}
 
+	log.Printf("🌐 Dialing WebSocket URL: %s", c.config.URL)
 	conn, resp, err := c.dialer.DialContext(ctx, c.config.URL, headers)
 	if err != nil {
+		log.Printf("❌ WebSocket dial failed: %v", err)
 		return fmt.Errorf("dial failed: %w", err)
 	}
 	defer func() {
@@ -194,11 +203,13 @@ func (c *Client) doConnect(ctx context.Context) error {
 			resp.Body.Close()
 		}
 	}()
+	log.Printf("✅ WebSocket dial successful, response status: %s", resp.Status)
 
 	c.mu.Lock()
 	c.conn = conn
 	c.mu.Unlock()
 
+	log.Printf("🔐 Starting login handshake...")
 	// 执行登录握手
 	return c.doLogin(ctx)
 }
@@ -240,6 +251,7 @@ func (c *Client) doLogin(ctx context.Context) error {
 
 	log.Printf("Login successful: player_id=%s, session_id=%s",
 		loginResp.PlayerId, loginResp.SessionId)
+	log.Printf("Client login completed, connection should be stable now")
 
 	return nil
 }
@@ -396,7 +408,14 @@ func (c *Client) sendHeartbeat() {
 	}
 
 	if err := c.sendMessage(protocol.OpHeartbeat, heartbeat); err != nil {
-		log.Printf("Send heartbeat failed: %v", err)
+		// 检查是否是网络错误而不是超时
+		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+			// 发送超时是正常的，继续等待
+			log.Printf("Heartbeat send timeout, will retry: %v", err)
+			return
+		}
+		// 真正的网络错误才触发重连
+		log.Printf("Heartbeat send failed with network error: %v", err)
 		c.triggerReconnect()
 	}
 }
@@ -404,6 +423,11 @@ func (c *Client) sendHeartbeat() {
 // checkPing 检查ping超时
 func (c *Client) checkPing() {
 	lastPingTime := time.Unix(0, c.lastPingTime.Load())
+	// 如果从未发送过心跳，跳过超时检查
+	if lastPingTime.IsZero() {
+		return
+	}
+
 	if time.Since(lastPingTime) > c.config.PingTimeout {
 		log.Printf("Ping timeout, triggering reconnect")
 		c.triggerReconnect()
@@ -424,7 +448,13 @@ func (c *Client) readLoop() {
 
 			opcode, message, err := c.readMessage(context.Background())
 			if err != nil {
-				log.Printf("Read message failed: %v", err)
+				// 检查是否是网络错误而不是超时
+				if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+					// 读取超时是正常的，继续等待消息
+					continue
+				}
+				// 真正的网络错误才触发重连
+				log.Printf("Network error, triggering reconnect: %v", err)
 				c.triggerReconnect()
 				continue
 			}
@@ -494,6 +524,7 @@ func (c *Client) reconnectLoop() {
 		case <-c.stopChan:
 			return
 		case <-c.reconnectChan:
+			log.Printf("⚠️ Reconnect triggered in reconnectLoop")
 			c.doReconnect()
 		}
 	}
@@ -558,16 +589,22 @@ func (c *Client) getState() ClientState {
 // setState 设置状态
 func (c *Client) setState(newState ClientState) {
 	oldState := ClientState(c.state.Swap(int32(newState)))
-	if oldState != newState && c.onStateChange != nil {
-		c.onStateChange(oldState, newState)
+	if oldState != newState {
+		log.Printf("🔄 State change: %s -> %s", oldState.String(), newState.String())
+		if c.onStateChange != nil {
+			c.onStateChange(oldState, newState)
+		}
 	}
 }
 
 // compareAndSwapState 原子性状态切换
 func (c *Client) compareAndSwapState(oldState, newState ClientState) bool {
 	swapped := c.state.CompareAndSwap(int32(oldState), int32(newState))
-	if swapped && c.onStateChange != nil {
-		c.onStateChange(oldState, newState)
+	if swapped {
+		log.Printf("🔄 State change: %s -> %s", oldState.String(), newState.String())
+		if c.onStateChange != nil {
+			c.onStateChange(oldState, newState)
+		}
 	}
 	return swapped
 }
