@@ -507,7 +507,7 @@ func (p *ExtendedTestPlatform) healthCheckHandler(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(response)
 }
 
-func main() {
+func extendedMain() {
 	// 初始化日志
 	logger.InitLogger()
 

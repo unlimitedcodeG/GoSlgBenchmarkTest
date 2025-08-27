@@ -10,7 +10,7 @@ import (
 	gamev1 "GoSlgBenchmarkTest/proto/game/v1"
 )
 
-func main() {
+func generateTestDataMain() {
 	// 创建testdata目录
 	testdataDir := "testdata"
 	if err := os.MkdirAll(testdataDir, 0755); err != nil {
