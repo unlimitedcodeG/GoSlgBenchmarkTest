@@ -222,7 +222,7 @@ func (te *TestExecutor) executeFuzzTests(testID int64, config *DynamicConfig) er
 			"-parallel", "1",
 		})
 		if err != nil {
-			logger.LogError("test-runner", fmt.Sprintf("模糊测试 %s 失败: %v", fuzzTest), &testID)
+			logger.LogError("test-runner", fmt.Sprintf("模糊测试 %s 失败: %v", fuzzTest, err), &testID)
 			// 继续执行其他测试，不中断
 		}
 	}
