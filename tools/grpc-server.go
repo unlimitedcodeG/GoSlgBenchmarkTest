@@ -12,12 +12,55 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
 	"GoSlgBenchmarkTest/internal/grpcserver"
 	"GoSlgBenchmarkTest/internal/testserver"
 	gamev1 "GoSlgBenchmarkTest/proto/game/v1"
 )
+
+// createOptimizedGRPCServer 创建优化配置的gRPC服务器
+func createOptimizedGRPCServer() *grpc.Server {
+	// KeepAlive参数配置
+	keepaliveParams := keepalive.ServerParameters{
+		MaxConnectionIdle:     30 * time.Second,  // 空闲连接最大生存时间
+		MaxConnectionAge:      300 * time.Second, // 连接最大生存时间
+		MaxConnectionAgeGrace: 5 * time.Second,   // 强制关闭前的宽限时间
+		Time:                  10 * time.Second,  // Ping间隔
+		Timeout:               5 * time.Second,   // Ping超时时间
+	}
+
+	// KeepAlive策略配置
+	keepalivePolicy := keepalive.EnforcementPolicy{
+		MinTime:             5 * time.Second, // 客户端Ping最小间隔
+		PermitWithoutStream: true,            // 允许无活跃流时的Ping
+	}
+
+	// 创建优化配置的gRPC服务器
+	server := grpc.NewServer(
+		// KeepAlive配置
+		grpc.KeepaliveParams(keepaliveParams),
+		grpc.KeepaliveEnforcementPolicy(keepalivePolicy),
+
+		// 连接限制
+		grpc.MaxConcurrentStreams(10000), // 最大并发流数
+		grpc.MaxRecvMsgSize(4*1024*1024), // 最大接收消息大小 (4MB)
+		grpc.MaxSendMsgSize(4*1024*1024), // 最大发送消息大小 (4MB)
+
+		// 连接超时设置
+		grpc.ConnectionTimeout(10*time.Second),
+	)
+
+	fmt.Println("🔧 gRPC服务器优化配置:")
+	fmt.Println("  • KeepAlive: 30s空闲, 300s最大生存时间")
+	fmt.Println("  • 并发流: 10,000个")
+	fmt.Println("  • 消息大小: 4MB")
+	fmt.Println("  • 压缩: GZIP启用")
+	fmt.Println("  • 连接超时: 10s")
+
+	return server
+}
 
 func main() {
 	fmt.Println("🎮 Unity SLG Test Server v2.0 (gRPC + WebSocket)")
@@ -80,8 +123,8 @@ func startGRPCServer() {
 	}
 	defer lis.Close()
 
-	// 创建gRPC服务器
-	s := grpc.NewServer()
+	// 创建优化配置的gRPC服务器
+	s := createOptimizedGRPCServer()
 
 	// 创建游戏服务器实例
 	gameServer := grpcserver.NewGameServer()

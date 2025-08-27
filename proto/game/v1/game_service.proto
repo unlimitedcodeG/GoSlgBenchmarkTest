@@ -3,7 +3,7 @@ package game.v1;
 
 option go_package = "GoSlgBenchmarkTest/proto/game/v1;gamev1";
 
-import "proto/game/v1/game.proto";
+import "game/v1/game.proto";
 
 // 游戏服务 - gRPC接口定义
 service GameService {

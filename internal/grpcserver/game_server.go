@@ -69,8 +69,8 @@ func (s *GameServer) Login(ctx context.Context, req *gamev1.LoginReq) (*gamev1.L
 		return nil, status.Error(codes.Unauthenticated, "token is required")
 	}
 
-	// 模拟登录处理时间
-	time.Sleep(10 * time.Millisecond)
+	// 模拟登录处理时间 - 减少延迟以提高性能
+	time.Sleep(2 * time.Millisecond)
 
 	playerID := fmt.Sprintf("player_%s", req.Token)
 	sessionID := fmt.Sprintf("session_%d", time.Now().UnixNano())
@@ -448,8 +448,8 @@ func (s *GameServer) BatchPlayerActions(ctx context.Context, req *gamev1.BatchAc
 	}, nil
 }
 
-// BatchBattleStatus 批量获取战斗状态
-func (s *GameServer) BatchBattleStatus(ctx context.Context, req *gamev1.BatchBattleStatusReq) (*gamev1.BatchBattleStatusResp, error) {
+// GetBatchBattleStatus 批量获取战斗状态
+func (s *GameServer) GetBatchBattleStatus(ctx context.Context, req *gamev1.BatchBattleStatusReq) (*gamev1.BatchBattleStatusResp, error) {
 	battles := make([]*gamev1.BattleStatusResp, 0, len(req.BattleIds))
 	notFound := make([]string, 0)
 
