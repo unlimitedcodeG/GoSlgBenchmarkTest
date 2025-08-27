@@ -464,7 +464,7 @@ func TestTimelineAnalysisRealWallClock(t *testing.T) {
 	sessionID := fmt.Sprintf("timeline_enhanced_test_%d", time.Now().Unix())
 	recorder := session.NewSessionRecorder(sessionID)
 
-	// 模拟5分钟的复杂消息流
+	// 模拟5分钟的复杂消息流（真实墙钟时间测试）
 	startWallTime := time.Now()
 	testDuration := 300 * time.Second         // 5分钟测试
 	messageInterval := 100 * time.Millisecond // 每100ms一个消息

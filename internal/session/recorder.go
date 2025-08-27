@@ -360,7 +360,30 @@ func (r *SessionRecorder) GetStats() *SessionStats {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	return r.stats
+	// 返回统计信息的拷贝，避免数据竞争
+	statsCopy := &SessionStats{
+		StartTime:          r.stats.StartTime,
+		EndTime:            r.stats.EndTime,
+		Duration:           r.stats.Duration,
+		TotalEvents:        r.stats.TotalEvents,
+		MessagesSent:       r.stats.MessagesSent,
+		MessagesReceived:   r.stats.MessagesReceived,
+		BytesSent:          r.stats.BytesSent,
+		BytesReceived:      r.stats.BytesReceived,
+		ReconnectCount:     r.stats.ReconnectCount,
+		ErrorCount:         r.stats.ErrorCount,
+		AverageLatency:     r.stats.AverageLatency,
+		MinLatency:         r.stats.MinLatency,
+		MaxLatency:         r.stats.MaxLatency,
+		LatencyPercentiles: make(map[int]time.Duration),
+	}
+
+	// 拷贝延迟百分位数
+	for k, v := range r.stats.LatencyPercentiles {
+		statsCopy.LatencyPercentiles[k] = v
+	}
+
+	return statsCopy
 }
 
 // ExportJSON 导出为JSON格式
@@ -392,6 +415,9 @@ func (r *SessionRecorder) ExportJSON() ([]byte, error) {
 
 // updateStats 更新统计信息
 func (r *SessionRecorder) updateStats(event *SessionEvent) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	switch event.Type {
 	case EventMessageSend:
 		r.stats.MessagesSent++
@@ -406,6 +432,9 @@ func (r *SessionRecorder) updateStats(event *SessionEvent) {
 
 // calculateFinalStats 计算最终统计
 func (r *SessionRecorder) calculateFinalStats() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	r.stats.EndTime = time.Now()
 	r.stats.Duration = r.stats.EndTime.Sub(r.stats.StartTime)
 	r.stats.TotalEvents = int64(len(r.events))
