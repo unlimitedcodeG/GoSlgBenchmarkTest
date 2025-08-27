@@ -26,9 +26,16 @@ func TestSessionRecordingAndReplay(t *testing.T) {
 	// 启动测试服务器
 	server := testserver.New(testserver.DefaultServerConfig(":18090"))
 	require.NoError(t, server.Start())
-	defer server.Shutdown(context.Background())
 
-	time.Sleep(100 * time.Millisecond)
+	// 确保服务器完全启动
+	time.Sleep(200 * time.Millisecond)
+
+	// 延迟清理服务器
+	defer func() {
+		t.Log("🧹 清理测试服务器...")
+		server.Shutdown(context.Background())
+		time.Sleep(500 * time.Millisecond)
+	}()
 
 	// 创建会话录制器
 	sessionID := fmt.Sprintf("test_session_%d", time.Now().Unix())
@@ -37,6 +44,13 @@ func TestSessionRecordingAndReplay(t *testing.T) {
 	// 创建WebSocket客户端
 	config := wsclient.DefaultClientConfig("ws://127.0.0.1:18090/ws", "session-test-token")
 	client := wsclient.New(config)
+
+	// 延迟清理客户端
+	defer func() {
+		t.Log("🧹 清理测试客户端...")
+		client.Close()
+		time.Sleep(200 * time.Millisecond)
+	}()
 
 	// 设置消息处理器，记录到录制器
 	client.SetPushHandler(func(opcode uint16, message proto.Message) {

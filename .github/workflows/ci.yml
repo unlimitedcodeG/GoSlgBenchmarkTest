@@ -102,6 +102,16 @@ jobs:
           file: ./coverage.out
           flags: unittests
           name: codecov-umbrella
+          
+      # 清理可能占用的端口
+      - name: Cleanup ports after tests
+        if: always()
+        run: |
+          echo "🧹 清理测试后可能占用的端口..."
+          sudo fuser -k 18090/tcp 2>/dev/null || true
+          sudo fuser -k 18100/tcp 2>/dev/null || true
+          sudo fuser -k 18101/tcp 2>/dev/null || true
+          sleep 2
 
   # WebSocket 集成测试（独立工作流，处理长时间运行测试）
   websocket_integration:
@@ -190,6 +200,12 @@ jobs:
       # 运行其他WebSocket相关测试
       - name: Run Other WebSocket Tests
         run: |
+          # 强制清理端口18090
+          echo "🧹 清理端口18090..."
+          sudo fuser -k 18090/tcp 2>/dev/null || true
+          sleep 2
+          
+          # 运行测试
           go test ./test/session -v -run "TestSessionRecordingAndReplay|TestSessionAssertions" -timeout=2m
 
       # 清理后台进程
@@ -199,6 +215,20 @@ jobs:
           if [ ! -z "$SERVER_PID" ]; then
             echo "Stopping WebSocket server (PID: $SERVER_PID)"
             kill $SERVER_PID 2>/dev/null || true
+          fi
+          
+          # 强制清理端口占用
+          echo "🧹 强制清理端口18090..."
+          sudo fuser -k 18090/tcp 2>/dev/null || true
+          sudo lsof -ti:18090 | xargs -r kill -9 2>/dev/null || true
+          sleep 3
+          
+          # 验证端口已释放
+          if lsof -i:18090 >/dev/null 2>&1; then
+            echo "⚠️  端口18090仍被占用，强制清理..."
+            sudo netstat -tlnp | grep :18090 | awk '{print $7}' | cut -d'/' -f1 | xargs -r sudo kill -9
+          else
+            echo "✅ 端口18090已成功释放"
           fi
 
       # 上传WebSocket测试报告
