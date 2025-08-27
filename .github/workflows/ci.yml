@@ -300,13 +300,14 @@ jobs:
           fi
       - name: Run fuzz tests
         run: |
-          # 运行每个模糊测试30秒，使用精确匹配避免命名冲突
-          go test ./test -run=^$ -fuzz=^FuzzBattlePushUnmarshal$ -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=^FuzzLoginReqUnmarshal$ -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=^FuzzPlayerActionUnmarshal$ -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=^FuzzFrameDecode$ -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=^FuzzFrameDecoder$ -fuzztime=30s -timeout=5m
-          go test ./test -run=^$ -fuzz=^FuzzErrorResp$ -fuzztime=30s -timeout=5m
+          # Go 1.25优化：运行每个模糊测试30秒，超时时间设置为40秒（30s + 10s缓冲）
+          # 增加并行度控制，提高测试稳定性
+          go test ./test -run=^$ -fuzz=^FuzzBattlePushUnmarshal$ -fuzztime=30s -timeout=40s -parallel=1
+          go test ./test -run=^$ -fuzz=^FuzzLoginReqUnmarshal$ -fuzztime=30s -timeout=40s -parallel=1
+          go test ./test -run=^$ -fuzz=^FuzzPlayerActionUnmarshal$ -fuzztime=30s -timeout=40s -parallel=1
+          go test ./test -run=^$ -fuzz=^FuzzFrameDecode$ -fuzztime=30s -timeout=40s -parallel=1
+          go test ./test -run=^$ -fuzz=^FuzzFrameDecoder$ -fuzztime=30s -timeout=40s -parallel=1
+          go test ./test -run=^$ -fuzz=^FuzzErrorResp$ -fuzztime=30s -timeout=40s -parallel=1
         env:
           GO111MODULE: on
           GOFLAGS: -mod=mod

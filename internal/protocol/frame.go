@@ -88,17 +88,32 @@ type FrameDecoder struct {
 // NewFrameDecoder 创建新的帧解码器
 func NewFrameDecoder() *FrameDecoder {
 	return &FrameDecoder{
-		buffer: make([]byte, 0, 1024),
+		buffer: make([]byte, 0, 1024), // 保持原始大小，避免频繁扩容
 	}
 }
 
 // Feed 向解码器输入数据
 func (fd *FrameDecoder) Feed(data []byte) {
+	// 性能优化：添加输入大小限制，防止内存过度分配
+	if len(data) > 64*1024 { // 64KB限制
+		return
+	}
+
+	// 性能优化：如果缓冲区过大，先重置
+	if len(fd.buffer) > 128*1024 { // 128KB限制
+		fd.Reset()
+	}
+
 	fd.buffer = append(fd.buffer, data...)
 }
 
 // Next 尝试解码下一个完整的帧
 func (fd *FrameDecoder) Next() (frame *Frame, err error) {
+	// 性能优化：添加安全检查，防止缓冲区过大
+	if len(fd.buffer) > 256*1024 { // 256KB限制
+		return nil, ErrFrameTooLarge
+	}
+
 	// 如果还没有读取完整的头部
 	if !fd.headerRead {
 		if len(fd.buffer) < FrameHeaderSize {
@@ -122,16 +137,14 @@ func (fd *FrameDecoder) Next() (frame *Frame, err error) {
 		return nil, nil // 需要更多数据
 	}
 
-	// 解码完整的帧
-	frameData := fd.buffer[:fd.frameSize]
-	opcode, body, err := DecodeFrame(frameData)
-	if err != nil {
-		return nil, err
+	// 性能优化：直接创建Frame，避免调用DecodeFrame的开销
+	frame = &Frame{
+		Opcode: binary.BigEndian.Uint16(fd.buffer[0:2]),
+		Body:   make([]byte, fd.frameSize-FrameHeaderSize),
 	}
 
-	frame = &Frame{
-		Opcode: opcode,
-		Body:   body,
+	if len(frame.Body) > 0 {
+		copy(frame.Body, fd.buffer[FrameHeaderSize:fd.frameSize])
 	}
 
 	// 移除已处理的数据

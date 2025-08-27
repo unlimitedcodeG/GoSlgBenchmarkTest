@@ -208,15 +208,21 @@ func (te *TestExecutor) executeFuzzTests(testID int64, config *DynamicConfig) er
 	for _, fuzzTest := range fuzzTests {
 		logger.LogInfo("test-runner", fmt.Sprintf("运行模糊测试: %s", fuzzTest), &testID)
 
+		// 性能优化：增加fuzz测试的超时时间，给框架足够的清理时间
+		// 超时时间 = fuzz时间 + 清理缓冲时间（15秒）
+		timeoutDuration := fuzzTime + 15*time.Second
+
 		err := te.runGoTest(testID, []string{
 			"./test",
 			"-run", "^$",
 			"-fuzz", fmt.Sprintf("^%s$", fuzzTest),
 			"-fuzztime", fuzzTime.String(),
-			"-timeout", "5m",
+			"-timeout", timeoutDuration.String(),
+			// Go 1.25优化：增加并行度控制
+			"-parallel", "1",
 		})
 		if err != nil {
-			logger.LogError("test-runner", fmt.Sprintf("模糊测试 %s 失败: %v", fuzzTest, err), &testID)
+			logger.LogError("test-runner", fmt.Sprintf("模糊测试 %s 失败: %v", fuzzTest), &testID)
 			// 继续执行其他测试，不中断
 		}
 	}

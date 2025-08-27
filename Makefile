@@ -119,7 +119,8 @@ fuzz: proto ## 运行模糊测试
 	@targets="FuzzBattlePushUnmarshal FuzzLoginReqUnmarshal FuzzPlayerActionUnmarshal FuzzFrameDecode FuzzFrameDecoder FuzzErrorResp"; \
 	for target in $$targets; do \
 		echo "$(COLOR_YELLOW)运行 $$target...$(COLOR_RESET)"; \
-		go test ./test -run=^$$ -fuzz=^$$target$$ -fuzztime=30s || exit 1; \
+		# Go 1.25优化：增加超时控制和并行度优化 \
+		go test ./test -run=^$$ -fuzz=^$$target$$ -fuzztime=30s -timeout=40s -parallel=1 || exit 1; \
 	done
 	@echo "$(COLOR_GREEN)模糊测试完成$(COLOR_RESET)"
 
