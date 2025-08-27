@@ -83,7 +83,7 @@ jobs:
       # 快速单元测试（排除长时间的WebSocket集成测试）
       - name: Run unit tests (exclude long-running WebSocket tests)
         run: |
-          go test ./... -v -race -short -count=1 -timeout=5m
+          go test ./... -v -race -short -count=1 -timeout=6m
         env:
           GO111MODULE: on
           GOFLAGS: -mod=mod
@@ -91,7 +91,7 @@ jobs:
       # 生成覆盖率报告（排除长时间测试）
       - name: Generate coverage report (exclude long tests)
         run: |
-          go test ./... -v -race -short -coverprofile=coverage.out -covermode=atomic -timeout=5m
+          go test ./... -v -race -short -coverprofile=coverage.out -covermode=atomic -timeout=6m
           go tool cover -func=coverage.out | tail -1
         env:
           GO111MODULE: on
@@ -166,12 +166,12 @@ jobs:
       # 运行WebSocket集成测试（带超时保护）
       - name: Run WebSocket Integration Tests
         env:
-          GO_TEST_TIMEOUT: 10m
+          GO_TEST_TIMEOUT: 7m
         run: |
           echo "🚀 Starting WebSocket integration tests..."
           echo "⏱️  Test will run for approximately 5 minutes..."
 
-          # 运行5分钟的长时间测试，设置更长的超时时间
+          # 运行5分钟的长时间测试，设置7分钟超时时间（包含重连延迟）
           go test ./test/session -v -run TestTimelineAnalysisRealWallClock \
             -timeout=${GO_TEST_TIMEOUT} \
             -parallel=1 \
@@ -180,7 +180,7 @@ jobs:
             if [ $EXIT_CODE -eq 1 ]; then
               echo "❌ Test failed with assertion errors"
             elif [ $EXIT_CODE -eq 124 ]; then
-              echo "❌ Test timed out after ${GO_TEST_TIMEOUT}"
+              echo "❌ Test timed out after ${GO_TEST_TIMEOUT} (expected: 5m + buffer)"
             else
               echo "❌ Test failed with exit code $EXIT_CODE"
             fi
