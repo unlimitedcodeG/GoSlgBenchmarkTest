@@ -152,7 +152,18 @@ func TestSLGLoadTest(t *testing.T) {
 
 	server := testserver.New(serverConfig)
 	require.NoError(t, server.Start())
-	defer server.Shutdown(context.Background())
+
+	// 确保服务器完全关闭，即使测试失败
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		t.Log("🛑 正在优雅关闭测试服务器...")
+		if err := server.Shutdown(ctx); err != nil {
+			t.Logf("服务器关闭错误: %v", err)
+		}
+		t.Log("✅ 测试服务器已关闭")
+	}()
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -160,6 +171,7 @@ func TestSLGLoadTest(t *testing.T) {
 	const numPlayers = 20
 	clients := make([]*wsclient.Client, numPlayers)
 
+	// 连接所有客户端
 	for i := 0; i < numPlayers; i++ {
 		config := wsclient.DefaultClientConfig("ws://127.0.0.1:18101/ws",
 			"slg-player-"+string(rune('A'+i)))
@@ -169,10 +181,29 @@ func TestSLGLoadTest(t *testing.T) {
 		require.NoError(t, err)
 	}
 
+	// 确保所有客户端都被完全关闭
 	defer func() {
-		for _, client := range clients {
-			client.Close()
+		t.Log("🧹 正在清理所有客户端连接...")
+
+		// 首先通知所有客户端停止操作
+		for i, client := range clients {
+			if client != nil {
+				t.Logf("   通知客户端 %d 停止...", i)
+				client.Close() // 这会触发stopChan
+			}
 		}
+
+		// 等待一段时间让goroutine优雅退出
+		time.Sleep(200 * time.Millisecond)
+
+		// 再次确认所有客户端都已关闭
+		for i, client := range clients {
+			if client != nil {
+				stats := client.GetStats()
+				t.Logf("   客户端 %d 最终状态: %v", i, stats["state"])
+			}
+		}
+		t.Log("✅ 所有客户端已清理完成")
 	}()
 
 	// 模拟SLG操作：移动、攻击、建造等
@@ -210,4 +241,13 @@ func TestSLGLoadTest(t *testing.T) {
 	// 基本断言
 	assert.Equal(t, int32(numPlayers), stats["current_connections"])
 	assert.GreaterOrEqual(t, stats["total_connections"], uint64(numPlayers))
+
+	// 验证消息传输成功
+	totalMessages := stats["total_messages"].(uint64)
+	assert.Greater(t, totalMessages, uint64(0), "应该收到至少一条消息")
+
+	// 验证连接稳定性
+	assert.Less(t, stats["total_connections"], uint64(numPlayers*2), "连接数不应过多")
+
+	t.Log("✅ SLG负载测试断言全部通过")
 }

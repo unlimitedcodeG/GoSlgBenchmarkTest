@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -380,14 +381,21 @@ func (c *Client) unmarshalMessage(opcode uint16, body []byte) (proto.Message, er
 
 // heartbeatLoop 心跳循环
 func (c *Client) heartbeatLoop() {
+	defer log.Printf("Heartbeat loop exited for client")
+
 	ticker := time.NewTicker(c.config.HeartbeatInterval)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-c.stopChan:
+			log.Printf("Heartbeat loop received stop signal, exiting...")
 			return
 		case <-ticker.C:
+			// 检查客户端是否正在关闭
+			if c.getState() == StateClosed {
+				return
+			}
 			if c.getState() == StateConnected {
 				c.sendHeartbeat()
 				c.checkPing()
@@ -436,12 +444,20 @@ func (c *Client) checkPing() {
 
 // readLoop 消息读取循环
 func (c *Client) readLoop() {
+	defer log.Printf("Read loop exited for client")
+
 	for {
 		select {
 		case <-c.stopChan:
+			log.Printf("Read loop received stop signal, exiting...")
 			return
 		default:
-			if c.getState() != StateConnected {
+			state := c.getState()
+			if state != StateConnected {
+				// 如果已经关闭或正在关闭，不触发重连
+				if state == StateClosed {
+					return
+				}
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}
@@ -453,6 +469,22 @@ func (c *Client) readLoop() {
 					// 读取超时是正常的，继续等待消息
 					continue
 				}
+
+				// 检查客户端是否正在关闭
+				if c.getState() == StateClosed {
+					log.Printf("Client is closing, not triggering reconnect")
+					return
+				}
+
+				// 检查错误是否是连接关闭相关的
+				errStr := err.Error()
+				if strings.Contains(errStr, "use of closed network connection") ||
+					strings.Contains(errStr, "connection reset") ||
+					strings.Contains(errStr, "broken pipe") {
+					log.Printf("Connection closed by server, not triggering reconnect: %v", err)
+					return
+				}
+
 				// 真正的网络错误才触发重连
 				log.Printf("Network error, triggering reconnect: %v", err)
 				c.triggerReconnect()
@@ -519,11 +551,19 @@ func (c *Client) handleBattlePush(push *gamev1.BattlePush) {
 
 // reconnectLoop 重连循环
 func (c *Client) reconnectLoop() {
+	defer log.Printf("Reconnect loop exited for client")
+
 	for {
 		select {
 		case <-c.stopChan:
+			log.Printf("Reconnect loop received stop signal, exiting...")
 			return
 		case <-c.reconnectChan:
+			// 检查客户端是否正在关闭
+			if c.getState() == StateClosed {
+				log.Printf("Client is closing, not performing reconnect")
+				return
+			}
 			log.Printf("⚠️ Reconnect triggered in reconnectLoop")
 			c.doReconnect()
 		}

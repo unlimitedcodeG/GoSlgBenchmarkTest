@@ -210,7 +210,25 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	// 发送停止信号给后台任务
 	close(s.stopCh)
 
+	// 先通知所有连接准备关闭，避免新的重连尝试
+	log.Printf("Notifying all connections to close gracefully...")
+	s.connections.Range(func(key, value interface{}) bool {
+		conn := value.(*Connection)
+		// 发送关闭信号给连接的stopChan，让客户端goroutine优雅退出
+		select {
+		case <-conn.stopChan:
+			// 已经关闭
+		default:
+			conn.safeClose()
+		}
+		return true
+	})
+
+	// 等待一段时间让客户端处理关闭信号
+	time.Sleep(100 * time.Millisecond)
+
 	// 关闭所有连接
+	log.Printf("Closing all connections...")
 	s.connections.Range(func(key, value interface{}) bool {
 		conn := value.(*Connection)
 		s.closeConnection(conn, "Server shutdown")
@@ -218,11 +236,14 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	})
 
 	// 等待所有连接处理goroutine退出
+	log.Printf("Waiting for connection goroutines to exit...")
 	s.connWg.Wait()
 
 	// 等待所有后台goroutine退出
+	log.Printf("Waiting for background goroutines to exit...")
 	s.bgWg.Wait()
 
+	log.Printf("Test server shutdown completed")
 	return s.server.Shutdown(ctx)
 }
 

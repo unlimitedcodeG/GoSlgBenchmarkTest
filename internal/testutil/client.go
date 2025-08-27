@@ -396,6 +396,23 @@ func (tc *TestClient) Cleanup() {
 	}
 }
 
+// WaitForCleanup 等待客户端完全清理（所有goroutine退出）
+func (tc *TestClient) WaitForCleanup(timeout time.Duration) error {
+	deadline := time.Now().Add(timeout)
+
+	// 等待一段时间让goroutine退出
+	for time.Now().Before(deadline) {
+		// 检查客户端状态是否为已关闭
+		if tc.Client.GetStats()["state"] == "CLOSED" {
+			tc.t.Logf("✅ Client fully cleaned up")
+			return nil
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	return fmt.Errorf("timeout waiting for client cleanup")
+}
+
 // GetConnectionCount 获取连接数（用于状态变化统计）
 func (tc *TestClient) GetConnectionCount() int {
 	tc.mu.RLock()
